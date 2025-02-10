@@ -21,3 +21,15 @@
 - [ ] Tests de connexion Discord
 - [ ] Documentation Discord Developer
 - [ ] Tests unitaires intégration Discord
+
+
+#### 🟡 v0.3.0 : Conteneurisation avec Docker
+**Description:** Mise en place de l'environnement Docker
+- [ ] Création Dockerfile
+- [ ] Configuration docker-compose.yml
+- [ ] Configuration des networks Docker
+- [ ] Configuration des volumes
+- [ ] Scripts de démarrage
+- [ ] Documentation Docker
+- [ ] Tests des conteneurs
+

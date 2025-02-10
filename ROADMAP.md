@@ -33,3 +33,26 @@
 - [ ] Documentation Docker
 - [ ] Tests des conteneurs
 
+#### 🟡 v0.4.0 : Base de Données PostgreSQL
+**Description:** Configuration et mise en place de la base de données
+1. Configuration initiale
+   - [ ] Installation PostgreSQL dans Docker
+   - [ ] Configuration TypeORM
+   - [ ] Configuration des migrations
+   - [ ] Tests de connexion
+
+2. Modèles de données
+   - [ ] Entity Members
+   - [ ] Entity Discord_users
+   - [ ] Entity Dashboard_accounts
+   - [ ] Entity Identification_requests
+   - [ ] Entity Guilds
+   - [ ] Entity Guilds_configurations
+   - [ ] Entity Roles
+   - [ ] Entity Channels
+   - [ ] Entity Categories
+   - [ ] Entity Campuses
+   - [ ] Entity Courses
+   - [ ] Entity Promotions
+   - [ ] Tests unitaires des entités
+

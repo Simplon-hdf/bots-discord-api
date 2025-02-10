@@ -91,3 +91,24 @@
 3. Couche Repositories
    - [ ] Configuration des repositories
    - [ ] Tests unitaires repositories
+
+
+
+#### 🟡 v0.7.0 : Logique Métier Core
+**Description:** Implémentation des fonctionnalités métier essentielles
+
+1. Gestion des Guildes
+   - [ ] Création/Configuration guildes
+   - [ ] Gestion des membres
+   - [ ] Gestion des rôles
+   - [ ] Tests unitaires guildes
+
+2. Gestion des Campus
+   - [ ] CRUD campus
+   - [ ] Association membres/campus
+   - [ ] Tests unitaires campus
+
+3. Gestion des Formations
+   - [ ] CRUD formations
+   - [ ] Association campus/formations
+   - [ ] Tests unitaires formations

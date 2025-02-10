@@ -112,3 +112,14 @@
    - [ ] CRUD formations
    - [ ] Association campus/formations
    - [ ] Tests unitaires formations
+
+
+#### 🟡 v0.8.0 : Documentation API avec Swagger
+**Description:** Documentation complète de l'API
+- [ ] Configuration Swagger
+- [ ] Documentation des endpoints
+- [ ] Documentation des modèles
+- [ ] Documentation des réponses
+- [ ] Tests de la documentation
+- [ ] Génération documentation
+- [ ] Interface interactive

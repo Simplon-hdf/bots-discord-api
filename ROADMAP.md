@@ -56,3 +56,14 @@
    - [ ] Entity Promotions
    - [ ] Tests unitaires des entités
 
+
+
+#### 🟡 v0.5.0 : CI/CD
+**Description:** Mise en place de l'intégration et du déploiement continus
+- [ ] Configuration GitHub Actions
+- [ ] Pipeline de tests
+- [ ] Pipeline de build
+- [ ] Pipeline de déploiement
+- [ ] Tests automatisés
+- [ ] Documentation CI/CD
+- [ ] Monitoring

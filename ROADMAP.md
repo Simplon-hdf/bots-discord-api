@@ -67,3 +67,27 @@
 - [ ] Tests automatisés
 - [ ] Documentation CI/CD
 - [ ] Monitoring
+
+
+#### 🟡 v0.6.0 : Architecture N-Tiers
+**Description:** Implémentation de l'architecture en couches
+
+1. Couche Controllers
+   - [ ] MembersController
+   - [ ] GuildsController
+   - [ ] ChannelsController
+   - [ ] CampusController
+   - [ ] CoursesController
+   - [ ] Tests unitaires controllers
+
+2. Couche Services
+   - [ ] MembersService
+   - [ ] GuildsService
+   - [ ] ChannelsService
+   - [ ] CampusService
+   - [ ] CoursesService
+   - [ ] Tests unitaires services
+
+3. Couche Repositories
+   - [ ] Configuration des repositories
+   - [ ] Tests unitaires repositories

@@ -3,7 +3,6 @@
 ## Versions planifiées
 
 #### 🟡 v0.1.0 : Initialisation du Projet
-**Description:** Mise en place de l'environnement de développement et structure de base
 - [ ] Création du projet NestJS
 - [ ] Configuration de base (tsconfig, eslint, prettier)
 - [ ] Structure des dossiers (N-tiers)
@@ -11,9 +10,6 @@
 - [ ] README initial
 - [ ] Documentation de base
 - [ ] Tests de la configuration
-
-#### 🟡 v0.2.0 : Configuration Discord Developer
-**Description:** Mise en place de l'intégration avec l'API Discord
 - [ ] Création application Discord Developer
 - [ ] Configuration des tokens et secrets
 - [ ] Mise en place des webhooks Discord
@@ -21,10 +17,6 @@
 - [ ] Tests de connexion Discord
 - [ ] Documentation Discord Developer
 - [ ] Tests unitaires intégration Discord
-
-
-#### 🟡 v0.3.0 : Conteneurisation avec Docker
-**Description:** Mise en place de l'environnement Docker
 - [ ] Création Dockerfile
 - [ ] Configuration docker-compose.yml
 - [ ] Configuration des networks Docker
@@ -32,34 +24,23 @@
 - [ ] Scripts de démarrage
 - [ ] Documentation Docker
 - [ ] Tests des conteneurs
-
-#### 🟡 v0.4.0 : Base de Données PostgreSQL
-**Description:** Configuration et mise en place de la base de données
-1. Configuration initiale
-   - [ ] Installation PostgreSQL dans Docker
-   - [ ] Configuration TypeORM
-   - [ ] Configuration des migrations
-   - [ ] Tests de connexion
-
-2. Modèles de données
-   - [ ] Entity Members
-   - [ ] Entity Discord_users
-   - [ ] Entity Dashboard_accounts
-   - [ ] Entity Identification_requests
-   - [ ] Entity Guilds
-   - [ ] Entity Guilds_configurations
-   - [ ] Entity Roles
-   - [ ] Entity Channels
-   - [ ] Entity Categories
-   - [ ] Entity Campuses
-   - [ ] Entity Courses
-   - [ ] Entity Promotions
-   - [ ] Tests unitaires des entités
-
-
-
-#### 🟡 v0.5.0 : CI/CD
-**Description:** Mise en place de l'intégration et du déploiement continus
+- [ ] Installation PostgreSQL dans Docker
+- [ ] Configuration TypeORM
+- [ ] Configuration des migrations
+- [ ] Tests de connexion
+- [ ] Entity Members
+- [ ] Entity Discord_users
+- [ ] Entity Dashboard_accounts
+- [ ] Entity Identification_requests
+- [ ] Entity Guilds
+- [ ] Entity Guilds_configurations
+- [ ] Entity Roles
+- [ ] Entity Channels
+- [ ] Entity Categories
+- [ ] Entity Campuses
+- [ ] Entity Courses
+- [ ] Entity Promotions
+- [ ] Tests unitaires des entités
 - [ ] Configuration GitHub Actions
 - [ ] Pipeline de tests
 - [ ] Pipeline de build
@@ -69,7 +50,7 @@
 - [ ] Monitoring
 
 
-#### 🟡 v0.6.0 : Architecture N-Tiers
+#### 🟡 v0.2.0 : Architecture N-Tiers
 **Description:** Implémentation de l'architecture en couches
 
 1. Couche Controllers
@@ -94,7 +75,7 @@
 
 
 
-#### 🟡 v0.7.0 : Logique Métier Core
+#### 🟡 v0.3.0 : Logique Métier Core
 **Description:** Implémentation des fonctionnalités métier essentielles
 
 1. Gestion des Guildes
@@ -114,7 +95,7 @@
    - [ ] Tests unitaires formations
 
 
-#### 🟡 v0.8.0 : Documentation API avec Swagger
+#### 🟡 v0.4.0 : Documentation API avec Swagger
 **Description:** Documentation complète de l'API
 - [ ] Configuration Swagger
 - [ ] Documentation des endpoints
@@ -126,7 +107,7 @@
 
 
 
-#### 🟡 v0.9.0 : Dashboard Minimal
+#### 🟡 v0.5.0 : Dashboard Minimal
 **Description:** Interface d'administration basique
 - [ ] Interface de connexion
 - [ ] Gestion des guildes
@@ -137,7 +118,7 @@
 - [ ] Documentation utilisateur
 
 
-#### 🟡 v1.0.0 : Tests et Qualité
+#### 🟡 v0.6.0 : Tests et Qualité
 **Description:** Couverture complète des tests
 1. Tests Unitaires
    - [ ] Tests controllers

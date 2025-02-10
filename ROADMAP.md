@@ -135,3 +135,22 @@
 - [ ] Gestion des formations
 - [ ] Tests E2E dashboard
 - [ ] Documentation utilisateur
+
+
+#### 🟡 v1.0.0 : Tests et Qualité
+**Description:** Couverture complète des tests
+1. Tests Unitaires
+   - [ ] Tests controllers
+   - [ ] Tests services
+   - [ ] Tests repositories
+   - [ ] Tests helpers
+
+2. Tests E2E
+   - [ ] Tests flows complets
+   - [ ] Tests intégration Discord
+   - [ ] Tests dashboard
+
+3. Qualité
+   - [ ] Coverage > 80%
+   - [ ] Linting
+   - [ ] Documentation complète

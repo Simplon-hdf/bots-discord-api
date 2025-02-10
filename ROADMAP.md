@@ -123,3 +123,15 @@
 - [ ] Tests de la documentation
 - [ ] Génération documentation
 - [ ] Interface interactive
+
+
+
+#### 🟡 v0.9.0 : Dashboard Minimal
+**Description:** Interface d'administration basique
+- [ ] Interface de connexion
+- [ ] Gestion des guildes
+- [ ] Gestion des membres
+- [ ] Gestion des campus
+- [ ] Gestion des formations
+- [ ] Tests E2E dashboard
+- [ ] Documentation utilisateur

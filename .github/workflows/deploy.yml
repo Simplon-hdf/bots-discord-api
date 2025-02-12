@@ -1,6 +1,7 @@
 name: Deploy to VPS 
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
   pull_request:
@@ -29,8 +30,8 @@ jobs:
           file: ./Dockerfile.prod
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/api-bots-discord:latest
-          cache-from: type=registry, ref=${{ secrets.DOCKERHUB_USERNAME }}/api-bots-discord
-          cache-to: type=inline
+          #cache-from: type=registry, ref=${{ secrets.DOCKERHUB_USERNAME }}/api-bots-discord
+          #cache-to: type=inline
 
   deploy:
     needs: build-and-push-docker-image
@@ -48,9 +49,10 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "docker-compose.prod.yml, /nginx/"
-          target: "/var/wwww/api-bots-discord"
+          source: "docker-compose.prod.yml, nginx/nginx.conf"
+          target: "~/var/wwww/api-bots-discord"
           strip_components: 0
+          overwrite: true
 
       - name: Déploiment sur le VPS 
         uses: appleboy/ssh-action@master
@@ -67,7 +69,24 @@ jobs:
           port: ${{ secrets.SSH_PORT }}    
           envs: POSTEGRES_HOST, POSTEGRES_PORT, POSTEGRES_USER, POSTEGRES_PASSWORD, POSTEGRES_DB
           script: |
+          
+            # Création ou mise à jour du fichier .env
+            cd ~/var/wwww/api-bots-discord
+            cat > .env.production << EOL
+            # PostgreSQL
+            POSTGRES_HOST=$POSTGRES_HOST
+            POSTGRES_PORT=$POSTGRES_PORT
+            POSTGRES_USER=$POSTGRES_USER
+            POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+            POSTGRES_DB=$POSTGRES_DB
+
+            # API
+            NODE_ENV=production
+            PORT=3000
+            EOL
+
             #Pull de l'image docker de l'api
+            
             sudo docker-compose -f docker-compose.prod.yml pull
 
             #Redémarrage des services

@@ -1,0 +1,89 @@
+name: Deploy to VPS 
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-push-docker-image:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Vérification du code 
+      - uses: actions/checkout@v4
+
+      - name: Configuration de docker Buildx 
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Connexion au Docker Hub 
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+      - use: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.prod
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/api-bots-discord:latest
+          cache-from: type=registry, ref=${{ secrets.DOCKERHUB_USERNAME }}/api-bots-discord
+          cache-to: type=inline
+
+  deploy:
+    needs: build-and-push-docker-image
+    runs-on: ubuntu-latest
+    environement: production
+
+    steps:
+      - name: Vérification du code 
+      - uses: actions/checkout@v4
+
+      - name : Copie des fichiers de configuration
+      - uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "docker-compose.prod.yml, /nginx/"
+          target: "/var/wwww/api-bots-discord"
+          strip_components: 0
+
+      - name: Déploiment sur le VPS 
+      - uses: appleboy/ssh-action@master
+        env:
+          POSTEGRES_HOST: ${{ secrets.POSTEGRES_HOST }}
+          POSTEGRES_PORT: ${{ secrets.POSTEGRES_PORT }}
+          POSTEGRES_USER: ${{ secrets.POSTEGRES_USER }}
+          POSTEGRES_PASSWORD: ${{ secrets.POSTEGRES_PASSWORD }}
+          POSTEGRES_DB: ${{ secrets.POSTEGRES_DB }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}    
+          envs: POSTEGRES_HOST, POSTEGRES_PORT, POSTEGRES_USER, POSTEGRES_PASSWORD, POSTEGRES_DB
+          script: |
+            #Pull de l'image docker de l'api
+            sudo docker-compose -f docker-compose.prod.yml pull
+
+            #Redémarrage des services
+            sudo docker-compose -f docker-compose.prod.yml down
+            sudo docker-compose -f docker-compose.prod.yml up -d
+
+            #Nettoyage des images inutiles
+            sudo docker image prune -f -a 
+
+            #Vérification du déploiement
+            echo "Vérification des services..."
+            sudo docker-compose -f docker-compose.prod.yml ps
+
+            #Vérification des logs
+            if [ $? -ne 0 ]; then 
+              echo "Erreur détectée. Veuillez consulter les logs."
+              sudo docker-compose -f docker-compose.prod.yml logs
+              exit 1
+            fi 

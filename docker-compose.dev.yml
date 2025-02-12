@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  app-dev:
+    container_name: bots-api-dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    env_file: .env.development
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - db  
+    networks:
+      - app-network
+
+  db: 
+    image: postgres:17-alpine
+    container_name: bots-api-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bots-api
+    ports:
+      - "5432:5432"
+    volumes: 
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:

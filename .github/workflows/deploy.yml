@@ -50,7 +50,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: "docker-compose.prod.yml, nginx/nginx.conf"
-          target: "~/var/wwww/api-bots-discord"
+          target: "~/var/www/bots-discord-api"
           strip_components: 0
           overwrite: true
 
@@ -70,9 +70,15 @@ jobs:
           envs: POSTEGRES_HOST, POSTEGRES_PORT, POSTEGRES_USER, POSTEGRES_PASSWORD, POSTEGRES_DB
           script: |
           
-            # Création ou mise à jour du fichier .env
-            cd ~/var/wwww/api-bots-discord
+            # Création du répertoir de déploiement
+            mkdir ~/var/www/bots-discord-api
+
+            #Déplacement dans le répertoir de déploiement 
+            cd ~/var/www/bots-discord-api
+
+            #Création ou mise à jour du fichier .env
             cat > .env.production << EOL
+            
             # PostgreSQL
             POSTGRES_HOST=$POSTGRES_HOST
             POSTGRES_PORT=$POSTGRES_PORT

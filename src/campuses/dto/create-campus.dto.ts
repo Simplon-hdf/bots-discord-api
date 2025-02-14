@@ -1,3 +1,3 @@
 export class CreateCampusDto {
-  location: string;
+  name: string;
 }

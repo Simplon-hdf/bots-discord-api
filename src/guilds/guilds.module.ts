@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GuildService } from './guild.service';
-import { GuildController } from './guild.controller';
+import { GuildService } from './guilds.service';
+import { GuildController } from './guilds.controller';
 import { Guild } from './entities/guild.entity';
 
 @Module({

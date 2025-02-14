@@ -193,5 +193,84 @@ $ npm run test:cov
 - [Justin Didelot](https://github.com/Srekaens)
 - [Abdel](https://github.com/UnknOownU)
 
+## API Endpoints
+
+### Guild Endpoints
+
+#### Create a Guild
+- **POST** `/guild`
+```json
+{
+  "uuid": "123456789012345678",
+  "name": "My Discord Server",
+  "memberCount": 100,
+  "configuration": {
+    "welcomeChannel": "123456789",
+    "prefix": "!",
+    "language": "fr"
+  }
+}
+```
+
+#### Get All Guilds
+- **GET** `/guild`
+
+#### Get One Guild
+- **GET** `/guild/:uuid`
+Example: `/guild/123456789012345678`
+
+#### Update a Guild
+- **PUT** `/guild/:uuid`
+```json
+{
+  "uuid": "123456789012345678",
+  "name": "Updated Server Name",
+  "memberCount": 150,
+  "configuration": {
+    "welcomeChannel": "987654321",
+    "prefix": "?",
+    "language": "en"
+  }
+}
+```
+
+#### Delete a Guild
+- **DELETE** `/guild/:uuid`
+Example: `/guild/123456789012345678`
+
+### Campus Endpoints
+
+#### Create a Campus
+- **POST** `/campus`
+```json
+{
+  "location": "Valenciennes"
+}
+```
+
+#### Get All Campuses
+- **GET** `/campus`
+
+#### Get One Campus
+- **GET** `/campus/:uuid`
+Example: `/campus/550e8400-e29b-41d4-a716-446655440000`
+
+#### Update a Campus
+- **PUT** `/campus/:uuid`
+```json
+{
+  "location": "Lille"
+}
+```
+
+#### Delete a Campus
+- **DELETE** `/campus/:uuid`
+Example: `/campus/550e8400-e29b-41d4-a716-446655440000`
+
+Note: 
+- All timestamps (`createdAt`, `updatedAt`) are managed automatically
+- For Guild endpoints, the `uuid` must be a valid Discord server ID (17-20 digits)
+- For Campus endpoints, the `uuid` is automatically generated
+
 
 

@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Param, Delete, Put, NotFoundException } from '@nestjs/common';
-import { GuildService } from './guild.service';
+import { GuildService } from './guilds.service';
 import { CreateGuildDto } from './dto/create-guild.dto';
 import { UpdateGuildDto } from './dto/update-guild.dto';
 

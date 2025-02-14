@@ -6,7 +6,7 @@ export class Campus {
   uuid: string;
 
   @Column()
-  location: string;
+  name: string;
 
   @CreateDateColumn({
     name: 'created_at',

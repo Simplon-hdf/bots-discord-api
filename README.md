@@ -68,7 +68,8 @@ Les messages de commit doivent suivre ce format :
 
 **_type_** : Le type de modification, par exemple "fix" ou "feat".
 
-**_portée_** : Le dossier concerné (un commit par fichier modifié, supprimé ou ajouté).
+**_portée_** : Le dossier concerné (un commit par fichier modifié, supprimé ou ajouté). La portée à indiquer sera l'identifiant de la tâche associée au ticket, par exemple noter 86c21fxeg pour la tâche suivante: \
+![Exemple de tâche](./src/assets/task-scope-example.png)
 
 **_titre du commit_**: Une description concise du changement apporté. En l'occurence  (en anglais)
 

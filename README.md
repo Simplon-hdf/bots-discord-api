@@ -244,7 +244,7 @@ Example: `/guild/123456789012345678`
 - **POST** `/campus`
 ```json
 {
-  "location": "Valenciennes"
+  "name": "Valenciennes"
 }
 ```
 
@@ -259,7 +259,7 @@ Example: `/campus/550e8400-e29b-41d4-a716-446655440000`
 - **PUT** `/campus/:uuid`
 ```json
 {
-  "location": "Lille"
+  "name": "Lille"
 }
 ```
 

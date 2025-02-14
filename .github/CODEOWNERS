@@ -1,0 +1,9 @@
+
+# Au moins un des Tech lead doit valider toute modification.
+
+* @BborisB @YohanF1245 @EnguerranSGG @MessaKami @gabrielluthun @UnknOownU
+
+# Un des responsables de l'API doit approuver les modifications du README et des fichiers de configuration GitHub (dont les workflows GitHub Actions)
+
+README.md @Martial59110 @EnguerranSGG
+.github/ @Martial59110 @EnguerranSGG

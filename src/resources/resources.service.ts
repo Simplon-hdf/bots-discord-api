@@ -7,6 +7,7 @@ import { UpdateResourceDto } from './dto/update-resource.dto';
 import { Member } from '../members/entities/member.entity';
 import { plainToInstance } from 'class-transformer';
 import { ResourceResponseDto } from './dto/responses/resource.response.dto';
+import { Comment } from '../comments/entities/comment.entity';
 
 @Injectable()
 export class ResourcesService {
@@ -15,6 +16,8 @@ export class ResourcesService {
     private resourcesRepository: Repository<Resource>,
     @InjectRepository(Member)
     private membersRepository: Repository<Member>,
+    @InjectRepository(Comment)
+    private commentsRepository: Repository<Comment>
   ) {}
 
   async create(createResourceDto: CreateResourceDto): Promise<ResourceResponseDto> {
@@ -63,6 +66,28 @@ export class ResourcesService {
     }
 
     return plainToInstance(ResourceResponseDto, resource, { excludeExtraneousValues: true });
+  }
+
+  async findComments(uuid: string): Promise<Comment[]> {
+    // Vérifie d'abord si la ressource existe
+    const resource = await this.resourcesRepository.findOne({
+      where: { uuidResource: uuid }
+    });
+
+    if (!resource) {
+      throw new NotFoundException(`Resource with UUID ${uuid} not found`);
+    }
+
+    // Récupère les commentaires de la ressource
+    const comments = await this.commentsRepository.find({
+      where: { uuidResource: uuid },
+      relations: ['member', 'resource'],
+      order: {
+        createdAt: 'DESC'
+      }
+    });
+
+    return comments;
   }
 
   async update(uuid: string, updateResourceDto: UpdateResourceDto): Promise<ResourceResponseDto> {

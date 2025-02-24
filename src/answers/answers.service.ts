@@ -22,10 +22,16 @@ export class AnswersService {
   }
 
   async findOne(uuid: string) {
+    if (!uuid) {
+      throw new BadRequestException('UUID is required');
+    }
     return this.answersRepository.findOneBy({ uuid });
   }
 
   async update(uuid: string, updateAnswerDto: UpdateAnswerDto) {
+    if (!uuid) {
+      throw new BadRequestException('UUID is required');
+    }
     const answer = await this.answersRepository.findOneBy({ uuid });
     if (!answer) {
       return null;
@@ -35,6 +41,9 @@ export class AnswersService {
   }
 
   async remove(uuid: string) {
+    if (!uuid) {
+      throw new BadRequestException('UUID is required');
+    }
     return this.answersRepository.delete({ uuid });
   }
 }

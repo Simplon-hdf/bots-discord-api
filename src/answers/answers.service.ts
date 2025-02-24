@@ -13,6 +13,9 @@ export class AnswersService {
   ) {}
 
   async create(createAnswerQuestionDto: CreateAnswerQuestionDto) {
+    if (!createAnswerQuestionDto) {
+      throw new BadRequestException('Answer data is required');
+    }
     const answer = this.answersRepository.create(createAnswerQuestionDto);
     return this.answersRepository.save(answer);
   }
@@ -31,6 +34,9 @@ export class AnswersService {
   async update(uuid: string, updateAnswerDto: UpdateAnswerDto) {
     if (!uuid) {
       throw new BadRequestException('UUID is required');
+    }
+    if (!updateAnswerDto) {
+      throw new BadRequestException('Update data is required');
     }
     const answer = await this.answersRepository.findOneBy({ uuid });
     if (!answer) {

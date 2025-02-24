@@ -14,7 +14,13 @@ export class MembersService {
 
   // Créer un nouveau membre
   async create(createMemberDto: CreateMemberDto): Promise<Member> {
-    const member = this.membersRepository.create(createMemberDto);
+    const member = this.membersRepository.create({
+      ...createMemberDto,
+      guild_username: createMemberDto.guildUsername,
+      community_role: createMemberDto.communityRole,
+      uuid_guild: createMemberDto.uuidGuild,
+      uuid_discord: createMemberDto.uuidDiscord
+    });
     return await this.membersRepository.save(member);
   }
 
@@ -35,7 +41,14 @@ export class MembersService {
   // Mettre à jour un membre
   async update(uuid: string, updateMemberDto: UpdateMemberDto): Promise<Member> {
     const member = await this.findOne(uuid);
-    Object.assign(member, updateMemberDto);
+    const updatedMember = {
+      ...updateMemberDto,
+      guild_username: updateMemberDto.guildUsername,
+      community_role: updateMemberDto.communityRole,
+      uuid_guild: updateMemberDto.uuidGuild,
+      uuid_discord: updateMemberDto.uuidDiscord
+    };
+    Object.assign(member, updatedMember);
     return await this.membersRepository.save(member);
   }
 

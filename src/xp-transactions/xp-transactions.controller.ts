@@ -18,26 +18,7 @@ export class XpTransactionsController {
   @ApiResponse({ 
     status: 201, 
     description: 'Transaction XP créée avec succès',
-    type: XpTransaction,
-    content: {
-      'application/json': {
-        example: {
-          uuid: '550e8400-e29b-41d4-a716-446655440000',
-          transaction_type: 'GAIN',
-          transaction_value: 100,
-          createdAt: '2024-03-14T12:00:00Z',
-          uuidMember: '123e4567-e89b-12d3-a456-426614174000',
-          member: {
-            uuid: '123e4567-e89b-12d3-a456-426614174000',
-            guild_username: 'JohnDoe',
-            xp: '100.00',
-            level: 1,
-            community_role: 'Member',
-            status: 'Active'
-          }
-        }
-      }
-    }
+    type: XpTransactionResponseDto
   })
   @ApiResponse({ status: 400, description: 'Données invalides' })
   @ApiResponse({ status: 404, description: 'Membre non trouvé' })
@@ -59,13 +40,13 @@ export class XpTransactionsController {
     return await this.xpTransactionsService.findAll();
   }
 
-  @Get('member/:uuid_member')
+  @Get('member/:uuid')
   @ApiOperation({ 
     summary: 'Récupérer les transactions XP d\'un membre',
     description: 'Retourne la liste des transactions XP d\'un membre spécifique.'
   })
   @ApiParam({ 
-    name: 'uuid_member',
+    name: 'uuid',
     description: 'UUID du membre dont on veut récupérer les transactions',
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
@@ -75,8 +56,8 @@ export class XpTransactionsController {
     type: [XpTransactionResponseDto] 
   })
   @ApiResponse({ status: 404, description: 'Membre non trouvé' })
-  async findByMember(@Param('uuid_member') uuid_member: string): Promise<XpTransactionResponseDto[]> {
-    return await this.xpTransactionsService.findByMember(uuid_member);
+  async findByMember(@Param('uuid') uuid: string): Promise<XpTransactionResponseDto[]> {
+    return await this.xpTransactionsService.findByMember(uuid);
   }
 
   @Get(':uuid')

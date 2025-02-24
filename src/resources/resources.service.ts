@@ -18,14 +18,14 @@ export class ResourcesService {
   ) {}
 
   async create(createResourceDto: CreateResourceDto): Promise<ResourceResponseDto> {
-    const { uuid_member, ...resourceData } = createResourceDto;
+    const { uuidMember, ...resourceData } = createResourceDto;
     
     // On cherche le membre
     const member = await this.membersRepository.findOne({
-      where: { uuid_member: uuid_member }
+      where: { uuidMember }
     });
     if (!member) {
-      throw new NotFoundException(`Member with UUID ${uuid_member} not found`);
+      throw new NotFoundException(`Member with UUID ${uuidMember} not found`);
     }
 
     // On crée la ressource avec le membre
@@ -36,7 +36,7 @@ export class ResourcesService {
     
     const savedResource = await this.resourcesRepository.save(resource);
     const resourceWithRelations = await this.resourcesRepository.findOne({
-      where: { uuid_resource: savedResource.uuid_resource },
+      where: { uuidResource: savedResource.uuidResource },
       relations: ['creator', 'reports', 'reports.reporter']
     });
     return plainToInstance(ResourceResponseDto, resourceWithRelations, { excludeExtraneousValues: true });
@@ -53,7 +53,7 @@ export class ResourcesService {
 
   async findOne(uuid: string): Promise<ResourceResponseDto> {
     const resource = await this.resourcesRepository.findOne({
-      where: { uuid_resource: uuid },
+      where: { uuidResource: uuid },
       relations: ['creator', 'reports', 'reports.reporter']
     });
 
@@ -66,7 +66,7 @@ export class ResourcesService {
 
   async update(uuid: string, updateResourceDto: UpdateResourceDto): Promise<ResourceResponseDto> {
     const existingResource = await this.resourcesRepository.findOne({
-      where: { uuid_resource: uuid }
+      where: { uuidResource: uuid }
     });
     
     if (!existingResource) {
@@ -79,7 +79,7 @@ export class ResourcesService {
     });
 
     const resourceWithRelations = await this.resourcesRepository.findOne({
-      where: { uuid_resource: updatedResource.uuid_resource },
+      where: { uuidResource: updatedResource.uuidResource },
       relations: ['creator', 'reports', 'reports.reporter']
     });
 
@@ -88,7 +88,7 @@ export class ResourcesService {
 
   async remove(uuid: string): Promise<void> {
     const resource = await this.resourcesRepository.findOne({
-      where: { uuid_resource: uuid }
+      where: { uuidResource: uuid }
     });
     
     if (!resource) {

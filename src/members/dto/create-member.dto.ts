@@ -16,7 +16,7 @@ export class CreateMemberDto {
   })
   @IsString()
   @MaxLength(50)
-  guild_username: string;
+  guildUsername: string;
 
   @ApiProperty({
     description: 'Points d\'expérience du membre (format: nombre décimal avec 2 décimales)',
@@ -42,7 +42,7 @@ export class CreateMemberDto {
   })
   @IsString()
   @MaxLength(50)
-  community_role: string;
+  communityRole: string;
 
   @ApiProperty({
     description: 'Statut du membre',
@@ -59,12 +59,12 @@ export class CreateMemberDto {
     example: '123e4567-e89b-12d3-a456-426614174001'
   })
   @IsUUID()
-  uuid_guild: string;
+  uuidGuild: string;
 
   @ApiProperty({
     description: 'UUID Discord du membre',
     example: '123e4567-e89b-12d3-a456-426614174002'
   })
   @IsUUID()
-  uuid_discord: string;
+  uuidDiscord: string;
 }

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { ReportType, ReportCategory } from '../../../reports/entities/report.entity';
+import { VoteType } from '../../../votes/entities/vote.entity';
 
 export class ResourceCreatorResponseDto {
   @ApiProperty({
@@ -101,6 +102,91 @@ export class ResourceReportResponseDto {
   reporter: ResourceCreatorResponseDto;
 }
 
+export class ResourceVoteResponseDto {
+  @ApiProperty({
+    description: 'UUID du vote',
+    example: '123e4567-e89b-12d3-a456-426614174000'
+  })
+  @Expose()
+  uuidVote: string;
+
+  @ApiProperty({
+    description: 'Type de vote',
+    enum: VoteType,
+    example: VoteType.UPVOTE
+  })
+  @Expose()
+  voteType: VoteType;
+
+  @ApiProperty({
+    description: 'Date de création',
+    example: '2024-02-22T12:00:00Z'
+  })
+  @Expose()
+  createdAt: Date;
+
+  @ApiProperty({
+    description: 'Statut actif du vote',
+    example: true
+  })
+  @Expose()
+  isActive: boolean;
+
+  @ApiProperty({
+    description: 'Membre qui a voté',
+    type: () => ResourceCreatorResponseDto
+  })
+  @Expose()
+  @Type(() => ResourceCreatorResponseDto)
+  member: ResourceCreatorResponseDto;
+}
+
+export class ResourceCommentResponseDto {
+  @ApiProperty({
+    description: 'UUID du commentaire',
+    example: '123e4567-e89b-12d3-a456-426614174000'
+  })
+  @Expose()
+  uuidComment: string;
+
+  @ApiProperty({
+    description: 'Contenu du commentaire',
+    example: 'Très bon travail sur ce projet !'
+  })
+  @Expose()
+  content: string;
+
+  @ApiProperty({
+    description: 'Statut du commentaire',
+    example: 'active'
+  })
+  @Expose()
+  status: string;
+
+  @ApiProperty({
+    description: 'Date de création',
+    example: '2024-02-22T12:00:00Z'
+  })
+  @Expose()
+  createdAt: Date;
+
+  @ApiProperty({
+    description: 'Membre qui a commenté',
+    type: () => ResourceCreatorResponseDto
+  })
+  @Expose()
+  @Type(() => ResourceCreatorResponseDto)
+  member: ResourceCreatorResponseDto;
+
+  @ApiProperty({
+    description: 'Votes du commentaire',
+    type: () => [ResourceVoteResponseDto]
+  })
+  @Expose()
+  @Type(() => ResourceVoteResponseDto)
+  votes: ResourceVoteResponseDto[];
+}
+
 export class ResourceResponseDto {
   @ApiProperty({
     description: 'UUID de la ressource',
@@ -173,4 +259,20 @@ export class ResourceResponseDto {
   @Expose()
   @Type(() => ResourceReportResponseDto)
   reports: ResourceReportResponseDto[];
+
+  @ApiProperty({
+    description: 'Votes de la ressource',
+    type: () => [ResourceVoteResponseDto]
+  })
+  @Expose()
+  @Type(() => ResourceVoteResponseDto)
+  votes: ResourceVoteResponseDto[];
+
+  @ApiProperty({
+    description: 'Commentaires de la ressource',
+    type: () => [ResourceCommentResponseDto]
+  })
+  @Expose()
+  @Type(() => ResourceCommentResponseDto)
+  comments: ResourceCommentResponseDto[];
 } 

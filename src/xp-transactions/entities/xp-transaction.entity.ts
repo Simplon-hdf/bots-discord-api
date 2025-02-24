@@ -33,8 +33,8 @@ export class XpTransaction {
     description: 'UUID unique de la transaction XP',
     example: '550e8400-e29b-41d4-a716-446655440000'
   })
-  @PrimaryGeneratedColumn('uuid', { name: 'uuid_xp_transaction' })
-  uuid_xp_transaction: string;
+  @PrimaryGeneratedColumn('uuid')
+  uuidXpTransaction: string;
 
   @ApiProperty({
     description: 'Type de la transaction (GAIN ou LOSS)',
@@ -43,9 +43,9 @@ export class XpTransaction {
   })
   @Column({
     type: 'enum',
-    enum: XpTransactionType
+    enum: XpTransactionType,
   })
-  transaction_type: XpTransactionType;
+  transactionType: XpTransactionType;
 
   @ApiProperty({
     description: 'Source de la transaction',
@@ -63,7 +63,7 @@ export class XpTransaction {
     example: '100.00'
   })
   @Column({ type: 'decimal', precision: 15, scale: 2 })
-  transaction_value: string;
+  transactionValue: string;
 
   @ApiProperty({
     description: 'Raison de la transaction',
@@ -90,34 +90,32 @@ export class XpTransaction {
     type: 'enum',
     enum: ReferenceType,
     nullable: true,
-    name: 'reference_type'
   })
-  reference_type?: ReferenceType;
+  referenceType?: ReferenceType;
 
   @ApiProperty({
     description: 'UUID de l\'objet référencé',
     example: '123e4567-e89b-12d3-a456-426614174000',
     required: false
   })
-  @Column({ type: 'uuid', nullable: true, name: 'reference_uuid' })
-  reference_uuid?: string;
+  @Column({ type: 'uuid', nullable: true })
+  referenceUuid?: string;
 
   @ApiProperty({
     description: 'Date de création',
     example: '2024-03-14T12:00:00Z'
   })
-  @CreateDateColumn({ name: 'created_at' })
-  created_at: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
   @ApiProperty({
     description: 'Le membre concerné par la transaction',
     type: () => Member
   })
-  
-  @Column('uuid', { name: 'uuid_member' })
+  @Column('uuid')
   uuidMember: string;
   
-  @ManyToOne(() => Member, member => member.xp_transactions)
+  @ManyToOne(() => Member, member => member.xpTransactions)
   @JoinColumn({ name: 'uuid_member' })
   member: Member;
 }

@@ -3,7 +3,6 @@ import {
   Get, 
   Post, 
   Body, 
-  Put, 
   Param, 
   Delete, 
   HttpStatus, 
@@ -13,7 +12,6 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { VotesService } from './votes.service';
 import { CreateVoteDto } from './dto/create-vote.dto';
-import { UpdateVoteDto } from './dto/update-vote.dto';
 import { Vote } from './entities/vote.entity';
 
 @ApiTags('Votes')
@@ -35,8 +33,7 @@ export class VotesController {
           itemId: '123e4567-e89b-12d3-a456-426614174002',
           voteType: 'upvote',
           voteCreatedAt: '2024-01-01T00:00:00Z',
-          voteUpdatedAt: '2024-01-01T00:00:00Z',
-          voteIsActive: true
+          voteUpdatedAt: '2024-01-01T00:00:00Z'
         }
       }
     }
@@ -79,8 +76,7 @@ export class VotesController {
           itemId: '123e4567-e89b-12d3-a456-426614174002',
           voteType: 'upvote',
           voteCreatedAt: '2024-01-01T00:00:00Z',
-          voteUpdatedAt: '2024-01-01T00:00:00Z',
-          voteIsActive: true
+          voteUpdatedAt: '2024-01-01T00:00:00Z'
         }]
       }
     }
@@ -124,8 +120,7 @@ export class VotesController {
           itemId: '123e4567-e89b-12d3-a456-426614174002',
           voteType: 'upvote',
           voteCreatedAt: '2024-01-01T00:00:00Z',
-          voteUpdatedAt: '2024-01-01T00:00:00Z',
-          voteIsActive: true
+          voteUpdatedAt: '2024-01-01T00:00:00Z'
         }
       }
     }
@@ -169,74 +164,6 @@ export class VotesController {
       }
       throw new HttpException(
         'Erreur lors de la récupération du vote',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
-  }
-
-  @Put(':id')
-  @ApiOperation({ summary: 'Mettre à jour un vote' })
-  @ApiParam({ name: 'id', description: 'ID du vote', type: 'string' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Vote mis à jour avec succès',
-    type: Vote,
-    content: {
-      'application/json': {
-        example: {
-          voteUuid: '123e4567-e89b-12d3-a456-426614174000',
-          userId: '123e4567-e89b-12d3-a456-426614174001',
-          itemId: '123e4567-e89b-12d3-a456-426614174002',
-          voteType: 'downvote',
-          voteCreatedAt: '2024-01-01T00:00:00Z',
-          voteUpdatedAt: '2024-01-01T00:00:00Z',
-          voteIsActive: true
-        }
-      }
-    }
-  })
-  @ApiResponse({ 
-    status: 404, 
-    description: 'Vote non trouvé',
-    content: {
-      'application/json': {
-        example: {
-          statusCode: 404,
-          message: 'Vote non trouvé',
-          error: 'Not Found'
-        }
-      }
-    }
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Erreur serveur',
-    content: {
-      'application/json': {
-        example: {
-          statusCode: 500,
-          message: 'Erreur lors de la mise à jour du vote',
-          error: 'Internal Server Error'
-        }
-      }
-    }
-  })
-  async update(
-    @Param('id', ParseUUIDPipe) id: string, 
-    @Body() updateVoteDto: UpdateVoteDto
-  ): Promise<Vote> {
-    try {
-      const vote = await this.votesService.update(id, updateVoteDto);
-      if (!vote) {
-        throw new HttpException('Vote non trouvé', HttpStatus.NOT_FOUND);
-      }
-      return vote;
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Erreur lors de la mise à jour du vote',
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }

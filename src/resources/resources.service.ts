@@ -41,14 +41,37 @@ export class ResourcesService {
     const savedResource = await this.resourcesRepository.save(resource);
     const resourceWithRelations = await this.resourcesRepository.findOne({
       where: { uuidResource: savedResource.uuidResource },
-      relations: ['creator', 'reports', 'reports.reporter']
+      relations: [
+        'creator',
+        'reports',
+        'reports.reporter',
+        'votes',
+        'votes.member',
+        'comments',
+        'comments.member',
+        'comments.votes',
+        'comments.votes.member'
+      ]
     });
     return plainToInstance(ResourceResponseDto, resourceWithRelations, { excludeExtraneousValues: true });
   }
 
   async findAll(): Promise<ResourceResponseDto[]> {
     const resources = await this.resourcesRepository.find({
-      relations: ['creator', 'reports', 'reports.reporter']
+      relations: [
+        'creator',
+        'reports',
+        'reports.reporter',
+        'votes',
+        'votes.member',
+        'comments',
+        'comments.member',
+        'comments.votes',
+        'comments.votes.member'
+      ],
+      order: {
+        createdAt: 'DESC'
+      }
     });
     return resources.map(resource => 
       plainToInstance(ResourceResponseDto, resource, { excludeExtraneousValues: true })
@@ -58,7 +81,17 @@ export class ResourcesService {
   async findOne(uuid: string): Promise<ResourceResponseDto> {
     const resource = await this.resourcesRepository.findOne({
       where: { uuidResource: uuid },
-      relations: ['creator', 'reports', 'reports.reporter']
+      relations: [
+        'creator',
+        'reports',
+        'reports.reporter',
+        'votes',
+        'votes.member',
+        'comments',
+        'comments.member',
+        'comments.votes',
+        'comments.votes.member'
+      ]
     });
 
     if (!resource) {
@@ -81,7 +114,7 @@ export class ResourcesService {
     // Récupère les commentaires de la ressource
     const comments = await this.commentsRepository.find({
       where: { uuidResource: uuid },
-      relations: ['member', 'resource'],
+      relations: ['member', 'resource', 'votes', 'votes.member'],
       order: {
         createdAt: 'DESC'
       }
@@ -106,7 +139,17 @@ export class ResourcesService {
 
     const resourceWithRelations = await this.resourcesRepository.findOne({
       where: { uuidResource: updatedResource.uuidResource },
-      relations: ['creator', 'reports', 'reports.reporter']
+      relations: [
+        'creator',
+        'reports',
+        'reports.reporter',
+        'votes',
+        'votes.member',
+        'comments',
+        'comments.member',
+        'comments.votes',
+        'comments.votes.member'
+      ]
     });
 
     return plainToInstance(ResourceResponseDto, resourceWithRelations, { excludeExtraneousValues: true });

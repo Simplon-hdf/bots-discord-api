@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Member } from '../../members/entities/member.entity';
 import { Report } from '../../reports/entities/report.entity';
 import { Comment } from '../../comments/entities/comment.entity';
+import { Vote } from '../../votes/entities/vote.entity';
 
 @Entity('resources')
 export class Resource {
@@ -88,4 +89,11 @@ export class Resource {
   })
   @OneToMany(() => Comment, comment => comment.resource)
   comments: Comment[];
+
+  @ApiProperty({
+    description: 'Les votes de la ressource',
+    type: () => [Vote]
+  })
+  @OneToMany(() => Vote, vote => vote.resource)
+  votes: Vote[];
 } 

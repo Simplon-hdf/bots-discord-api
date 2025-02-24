@@ -7,7 +7,7 @@ export class CreateRoleDto {
         example: '123e4567-e89b-12d3-a456-426614174000'
     })
     @IsUUID()
-    uuid_role: string;
+    uuidRole: string;
 
     @ApiProperty({
         description: 'Nom du rôle',
@@ -25,7 +25,7 @@ export class CreateRoleDto {
     @IsString()
     @MaxLength(50)
     @Matches(/^\d+$/, { message: 'member_count doit être une chaîne numérique' })
-    member_count: string;
+    memberCount: string;
 
     @ApiProperty({
         description: 'Position du rôle dans la hiérarchie',
@@ -34,7 +34,7 @@ export class CreateRoleDto {
     @IsString()
     @MaxLength(50)
     @Matches(/^\d+$/, { message: 'role_position doit être une chaîne numérique' })
-    role_position: string;
+    rolePosition: string;
 
     @ApiProperty({
         description: 'Indique si le rôle est affiché séparément dans la liste des membres',
@@ -58,5 +58,5 @@ export class CreateRoleDto {
         example: '123e4567-e89b-12d3-a456-426614174001'
     })
     @IsUUID()
-    uuid_guild: string;
+    uuidGuild: string;
 }

@@ -21,7 +21,7 @@ export class GuildsService {
   // Récupérer toutes les guilds
   async findAll(): Promise<Guild[]> {
     return await this.guildRepository.find({
-      relations: ['course', 'members', 'roles', 'channels', 'categories', 'campus', 'promotions', 'template']
+      relations: ['course', 'members', 'roles', 'channels', 'categories', 'campuses', 'promotions', 'template']
     });
   }
 
@@ -29,7 +29,7 @@ export class GuildsService {
   async findOne(uuid: string): Promise<Guild> {
     const guild = await this.guildRepository.findOne({
       where: { uuid },
-      relations: ['course', 'members', 'roles', 'channels', 'categories', 'campus', 'promotions', 'template']
+      relations: ['course', 'members', 'roles', 'channels', 'categories', 'campuses', 'promotions', 'template']
     });
 
     if (!guild) {

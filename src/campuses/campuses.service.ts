@@ -19,11 +19,11 @@ export class CampusesService {
   async create(createCampusDto: CreateCampusDto): Promise<Campus> {
     try {
       const newRole = this.roleRepository.create({
-        uuid_role: createCampusDto.uuid_role, 
-        uuid_guild: createCampusDto.uuid_guild,
+        uuidRole: createCampusDto.uuidRole, 
+        uuidGuild: createCampusDto.uuidGuild,
         name: createCampusDto.name,
-        member_count: "0",
-        role_position: "0",
+        memberCount: 0,
+        rolePosition: 0,
         hoist: false,
         color: "#000000",
       });
@@ -32,7 +32,7 @@ export class CampusesService {
 
       const newCampus = this.campusRepository.create({
         ...createCampusDto,
-        uuid_role: savedRole.uuid_role,
+        uuidRole: savedRole.uuidRole,
       });
 
       return await this.campusRepository.save(newCampus);
@@ -45,26 +45,26 @@ export class CampusesService {
     return this.campusRepository.find();
   }
 
-  findOne(uuid_campus: string) {
-    if (!uuid_campus) {
+  findOne(uuidCampus: string) {
+    if (!uuidCampus) {
       throw new NotFoundException('UUID du campus manquant');
     }
-    return this.campusRepository.findOneBy({ uuid_campus });
+    return this.campusRepository.findOneBy({ uuidCampus });
   }
 
-  async update(uuid_campus: string, updateCampusDto: UpdateCampusDto) {
-    const campus = await this.campusRepository.findOneBy({ uuid_campus : uuid_campus });
+  async update(uuidCampus: string, updateCampusDto: UpdateCampusDto) {
+    const campus = await this.campusRepository.findOneBy({ uuidCampus });
     if (!campus) {
-      throw new NotFoundException(`Campus with UUID "${uuid_campus}" not found`);
+      throw new NotFoundException(`Campus with UUID "${uuidCampus}" not found`);
     }
     Object.assign(campus, updateCampusDto);
     return this.campusRepository.save(campus);
   }
 
-  remove(uuid_campus: string) {
-    if (!uuid_campus) {
-      throw new NotFoundException(`Campus with UUID "${uuid_campus}" not found`);
+  remove(uuidCampus: string) {
+    if (!uuidCampus) {
+      throw new NotFoundException(`Campus with UUID "${uuidCampus}" not found`);
     }
-    return this.campusRepository.delete({ uuid_campus });
+    return this.campusRepository.delete({ uuidCampus });
   }
 }

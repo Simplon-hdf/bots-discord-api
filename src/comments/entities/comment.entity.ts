@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Member } from '../../members/entities/member.entity';
 import { Resource } from '../../resources/entities/resource.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Vote } from '../../votes/entities/vote.entity';
 
 @Entity('comments')
 export class Comment {
@@ -63,4 +64,11 @@ export class Comment {
   @ManyToOne(() => Resource, resource => resource.comments)
   @JoinColumn({ name: 'uuid_resource' })
   resource: Resource;
+
+  @ApiProperty({
+    description: 'Les votes du commentaire',
+    type: () => [Vote]
+  })
+  @OneToMany(() => Vote, vote => vote.comment)
+  votes: Vote[];
 }

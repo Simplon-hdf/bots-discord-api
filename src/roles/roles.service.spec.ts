@@ -13,14 +13,15 @@ describe('RolesService', () => {
   const mockRole: Role = {
     uuid: '123e4567-e89b-12d3-a456-426614174000',
     name: 'Test Role',
-    member_count: '10',
-    role_position: '1',
+    memberCount: '10',
+    rolePosition: '1',
     hoist: true,
     color: '#FF0000',
     createdAt: new Date(),
     updatedAt: new Date(),
-    uuid_guild: '123e4567-e89b-12d3-a456-426614174001',
-    guild: null
+    uuidGuild: '123e4567-e89b-12d3-a456-426614174001',
+    guild: null,
+    members: []
   };
 
   const mockRepository = {
@@ -49,12 +50,13 @@ describe('RolesService', () => {
   describe('create', () => {
     it('devrait créer un nouveau rôle', async () => {
       const createRoleDto = {
+        uuidRole: '123e4567-e89b-12d3-a456-426614174000',
         name: 'Test Role',
-        member_count: '10',
-        role_position: '1',
+        memberCount: '10',
+        rolePosition: '1',
         hoist: true,
         color: '#FF0000',
-        uuid_guild: '123e4567-e89b-12d3-a456-426614174001'
+        uuidGuild: '123e4567-e89b-12d3-a456-426614174001'
       };
 
       mockRepository.create.mockReturnValue(mockRole);
@@ -63,7 +65,10 @@ describe('RolesService', () => {
       const result = await service.create(createRoleDto);
 
       expect(result).toEqual(mockRole);
-      expect(mockRepository.create).toHaveBeenCalledWith(createRoleDto);
+      expect(mockRepository.create).toHaveBeenCalledWith({
+        ...createRoleDto,
+        uuid: createRoleDto.uuidRole
+      });
       expect(mockRepository.save).toHaveBeenCalledWith(mockRole);
     });
   });
@@ -102,6 +107,7 @@ describe('RolesService', () => {
   describe('update', () => {
     it('devrait mettre à jour un rôle', async () => {
       const updateRoleDto = {
+        uuidRole: '123e4567-e89b-12d3-a456-426614174000',
         name: 'Updated Role',
         color: '#00FF00'
       };

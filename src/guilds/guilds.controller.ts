@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, NotFoundException } from '@nestjs/common';
 import { GuildsService } from './guilds.service';
 import { CreateGuildDto } from './dto/create-guild.dto';
 import { UpdateGuildDto } from './dto/update-guild.dto';
@@ -33,7 +33,7 @@ export class GuildsController {
     return this.guildService.findOne(uuid);
   }
 
-  @Patch(':uuid')
+  @Put(':uuid')
   @ApiOperation({ summary: 'Mettre à jour un serveur Discord' })
   @ApiResponse({ status: 200, description: 'Le serveur a été mis à jour avec succès.', type: Guild })
   @ApiResponse({ status: 404, description: 'Serveur non trouvé' })

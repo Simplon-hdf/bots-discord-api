@@ -21,16 +21,17 @@ describe('MembersController', () => {
 
   const mockMember: Member = {
     uuid: '123e4567-e89b-12d3-a456-426614174000',
-    guild_username: 'TestUser',
+    guildUsername: 'TestUser',
     xp: '100.00',
     level: 1,
-    community_role: 'Member',
+    communityRole: 'Member',
     status: 'Active',
     createdAt: new Date(),
     updatedAt: new Date(),
-    uuid_guild: '123e4567-e89b-12d3-a456-426614174001',
-    uuid_discord: '123e4567-e89b-12d3-a456-426614174002',
-    guild: mockGuild
+    uuidGuild: '123e4567-e89b-12d3-a456-426614174001',
+    uuidDiscord: '123e4567-e89b-12d3-a456-426614174002',
+    guild: mockGuild,
+    roles: []
   };
 
   beforeEach(() => {
@@ -49,13 +50,13 @@ describe('MembersController', () => {
     it('devrait créer un nouveau membre', async () => {
       const createMemberDto: CreateMemberDto = {
         uuid: '123e4567-e89b-12d3-a456-426614174000',
-        guild_username: 'TestUser',
+        guildUsername: 'TestUser',
         xp: '100.00',
         level: 1,
-        community_role: 'Member',
+        communityRole: 'Member',
         status: 'Active',
-        uuid_guild: '123e4567-e89b-12d3-a456-426614174001',
-        uuid_discord: '123e4567-e89b-12d3-a456-426614174002'
+        uuidGuild: '123e4567-e89b-12d3-a456-426614174001',
+        uuidDiscord: '123e4567-e89b-12d3-a456-426614174002'
       };
 
       vi.mocked(membersService.create).mockResolvedValue(mockMember);
@@ -93,7 +94,7 @@ describe('MembersController', () => {
   describe('update', () => {
     it('devrait mettre à jour un membre', async () => {
       const updateMemberDto: UpdateMemberDto = {
-        guild_username: 'UpdatedUser',
+        guildUsername: 'UpdatedUser',
         status: 'Inactive'
       };
       const updatedMember = { ...mockMember, ...updateMemberDto };

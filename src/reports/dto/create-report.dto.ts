@@ -4,7 +4,7 @@ import { ReportCategory, ReportType } from '../entities/report.entity';
 import { PickableInternUUIDFields } from '../../utils/pickable-intern-uuid-fields';
 
 export class CreateReportDto extends PickType(PickableInternUUIDFields, [
-  'uuid_reporter'
+  'uuidReporter'
 ]) {
   @ApiProperty({
     description: 'Type de l\'élément signalé (ressource ou membre)',
@@ -45,7 +45,7 @@ export class CreateReportDto extends PickType(PickableInternUUIDFields, [
   @ValidateIf(o => o.type === ReportType.RESOURCE)
   @IsUUID()
   @IsNotEmpty()
-  uuid_resource?: string;
+  uuidResource?: string;
 
   @ApiProperty({
     description: 'UUID du membre signalé (requis uniquement si type = member)',
@@ -55,5 +55,5 @@ export class CreateReportDto extends PickType(PickableInternUUIDFields, [
   @ValidateIf(o => o.type === ReportType.MEMBER)
   @IsUUID()
   @IsNotEmpty()
-  uuid_reported_member?: string;
+  uuidReportedMember?: string;
 } 

@@ -15,8 +15,16 @@ export class RolesService {
   // Créer un nouveau rôle
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
     try {
-      const role = this.roleRepository.create(createRoleDto);
-      return await this.roleRepository.save(role);
+      // Convertir les valeurs en nombres
+      const roleData = {
+        ...createRoleDto,
+        memberCount: parseInt(createRoleDto.memberCount, 10),
+        rolePosition: parseInt(createRoleDto.rolePosition, 10)
+      };
+
+      const role = this.roleRepository.create(roleData);
+      const savedRole = await this.roleRepository.save(role);
+      return savedRole;
     } catch (error) {
       if (error.code === '23505') { // Code PostgreSQL pour violation de contrainte unique
         throw new BadRequestException('Un rôle avec cet UUID existe déjà');
@@ -35,11 +43,11 @@ export class RolesService {
   }
 
   // Récupérer un rôle par son uuid
-  async findOne(uuid_role: string): Promise<Role> {
+  async findOne(uuidRole: string): Promise<Role> {
     try {
-      const role = await this.roleRepository.findOneBy({ uuid_role });
+      const role = await this.roleRepository.findOneBy({ uuidRole });
       if (!role) {
-        throw new NotFoundException(`Rôle avec l'UUID ${uuid_role} non trouvé`);
+        throw new NotFoundException(`Rôle avec l'UUID ${uuidRole} non trouvé`);
       }
       return role;
     } catch (error) {
@@ -51,9 +59,9 @@ export class RolesService {
   }
 
   // Mettre à jour un rôle
-  async update(uuid_role: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
+  async update(uuidRole: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
     try {
-      const role = await this.findOne(uuid_role);
+      const role = await this.findOne(uuidRole);
       Object.assign(role, updateRoleDto);
       return await this.roleRepository.save(role);
     } catch (error) {
@@ -65,11 +73,11 @@ export class RolesService {
   }
 
   // Supprimer un rôle
-  async remove(uuid_role: string): Promise<void> {
+  async remove(uuidRole: string): Promise<void> {
     try {
-      const result = await this.roleRepository.delete({ uuid_role });
+      const result = await this.roleRepository.delete({ uuidRole });
       if (result.affected === 0) {
-        throw new NotFoundException(`Rôle avec l'UUID ${uuid_role} non trouvé`);
+        throw new NotFoundException(`Rôle avec l'UUID ${uuidRole} non trouvé`);
       }
     } catch (error) {
       if (error instanceof NotFoundException) {

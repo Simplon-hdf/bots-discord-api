@@ -29,29 +29,39 @@ export class CoursesService {
             }
     
             // Créer un rôle associé à la formation
-            const newRole = this.roleRepository.create({
-                uuid_guild: createCourseDto.uuid_guild,
-                uuid_role: createCourseDto.uuid_role,
+            const roleData = {
+                uuidRole: createCourseDto.uuidRole,
+                uuidGuild: createCourseDto.uuidGuild,
                 name: createCourseDto.name,
-                member_count: "0",
-                role_position: "0",
+                memberCount: 0,
+                rolePosition: 0,
                 hoist: false,
                 color: "#000000",
-            });
+            };
     
+            const newRole = this.roleRepository.create(roleData);
             const savedRole = await this.roleRepository.save(newRole);
     
-            if (!savedRole || !savedRole.uuid_role) {
-                throw new BadRequestException('Failed to create role before assigning to course.');
-            }
-    
-            // Créer la formation en associant le rôle
-            const newCourse = this.courseRepository.create({
+            // Créer la formation
+            const courseData = {
                 ...createCourseDto,
-                role: savedRole, 
-            });
+                uuidRole: savedRole.uuidRole
+            };
     
-            return await this.courseRepository.save(newCourse);
+            const newCourse = this.courseRepository.create(courseData);
+            const savedCourse = await this.courseRepository.save(newCourse);
+
+            // Charger le cours avec ses relations
+            const courseWithRelations = await this.courseRepository.findOne({
+                where: { uuid: savedCourse.uuid },
+                relations: ['role']
+            });
+
+            if (!courseWithRelations) {
+                throw new NotFoundException(`Course with UUID ${savedCourse.uuid} not found after creation`);
+            }
+
+            return courseWithRelations;
         } catch (error) {
             throw new BadRequestException('Erreur lors de la création du cours: ' + error.message);
         }

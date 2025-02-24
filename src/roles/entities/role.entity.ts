@@ -24,15 +24,15 @@ export class Role {
     description: 'Nombre de membres ayant ce rôle',
     example: '10'
   })
-  @Column({ type: 'varchar', length: 50, nullable: false })
-  member_count: string;
+  @Column({ type: 'varchar', length: 50, nullable: false, name: 'member_count' })
+  memberCount: string;
 
   @ApiProperty({
     description: 'Position du rôle dans la hiérarchie',
     example: '1'
   })
-  @Column({ type: 'varchar', length: 50, nullable: false })
-  role_position: string;
+  @Column({ type: 'varchar', length: 50, nullable: false, name: 'role_position' })
+  rolePosition: string;
 
   @ApiProperty({
     description: 'Indique si le rôle est affiché séparément dans la liste des membres',
@@ -66,8 +66,8 @@ export class Role {
     description: 'UUID de la guilde à laquelle appartient le rôle',
     example: '123e4567-e89b-12d3-a456-426614174001'
   })
-  @Column('uuid', { nullable: false })
-  uuid_guild: string;
+  @Column('uuid', { nullable: false, name: 'uuid_guild' })
+  uuidGuild: string;
 
   @ApiProperty({
     description: 'Relation avec la guilde',

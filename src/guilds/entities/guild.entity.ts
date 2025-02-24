@@ -8,11 +8,6 @@ import { GuildTemplate } from '../../guilds-templates/entities/guild-template.en
 import { Channel } from '../../channels/entities/channel.entity';
 import { Category } from '../../categories/entities/category.entity';
 import { Campus } from '../../campuses/entities/campus.entity';
-import { ApiProperty } from '@nestjs/swagger';
-import { Course } from '../../courses/entities/course.entity';
-import { Member } from '../../members/entities/member.entity';
-import { Campus } from 'src/campuses/entities/campus.entity';
-import { Promotion } from 'src/promotions/entities/promotion.entity';
 
 @Entity('Guilds')
 export class Guild {

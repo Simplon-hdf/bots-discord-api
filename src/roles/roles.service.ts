@@ -15,7 +15,10 @@ export class RolesService {
   // Créer un nouveau rôle
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
     try {
-      const role = this.roleRepository.create(createRoleDto);
+      const role = this.roleRepository.create({
+        ...createRoleDto,
+        uuid: createRoleDto.uuidRole
+      });
       return await this.roleRepository.save(role);
     } catch (error) {
       if (error.code === '23505') { // Code PostgreSQL pour violation de contrainte unique
@@ -54,7 +57,11 @@ export class RolesService {
   async update(uuid: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
     try {
       const role = await this.findOne(uuid);
-      Object.assign(role, updateRoleDto);
+      const updatedRole = {
+        ...updateRoleDto,
+        uuid: updateRoleDto.uuidRole
+      };
+      Object.assign(role, updatedRole);
       return await this.roleRepository.save(role);
     } catch (error) {
       if (error instanceof NotFoundException) {

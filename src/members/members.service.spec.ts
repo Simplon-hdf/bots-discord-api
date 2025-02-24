@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { Test } from '@nestjs/testing';
 import { MembersService } from './members.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { Member } from './entities/member.entity';
 import { Guild } from '../guilds/entities/guild.entity';
 import { Repository } from 'typeorm';
@@ -20,16 +22,17 @@ describe('MembersService', () => {
 
   const mockMember: Member = {
     uuid: '123e4567-e89b-12d3-a456-426614174000',
-    guild_username: 'TestUser',
+    guildUsername: 'TestUser',
     xp: '100.00',
     level: 1,
-    community_role: 'Member',
+    communityRole: 'Member',
     status: 'Active',
     createdAt: new Date(),
     updatedAt: new Date(),
-    uuid_guild: '123e4567-e89b-12d3-a456-426614174001',
-    uuid_discord: '123e4567-e89b-12d3-a456-426614174002',
-    guild: mockGuild
+    uuidGuild: '123e4567-e89b-12d3-a456-426614174001',
+    uuidDiscord: '123e4567-e89b-12d3-a456-426614174002',
+    guild: null,
+    roles: []
   };
 
   const mockRepository = {
@@ -40,23 +43,32 @@ describe('MembersService', () => {
     delete: vi.fn(),
   };
 
-  beforeEach(() => {
-    repository = mockRepository as unknown as Repository<Member>;
-    service = new MembersService(repository);
-    vi.clearAllMocks();
+  beforeEach(async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        MembersService,
+        {
+          provide: getRepositoryToken(Member),
+          useValue: mockRepository,
+        },
+      ],
+    }).compile();
+
+    service = module.get<MembersService>(MembersService);
+    repository = module.get<Repository<Member>>(getRepositoryToken(Member));
   });
 
   describe('create', () => {
     it('devrait créer un nouveau membre', async () => {
       const createMemberDto = {
         uuid: '123e4567-e89b-12d3-a456-426614174000',
-        guild_username: 'TestUser',
+        guildUsername: 'TestUser',
         xp: '100.00',
         level: 1,
-        community_role: 'Member',
+        communityRole: 'Member',
         status: 'Active',
-        uuid_guild: '123e4567-e89b-12d3-a456-426614174001',
-        uuid_discord: '123e4567-e89b-12d3-a456-426614174002'
+        uuidGuild: '123e4567-e89b-12d3-a456-426614174001',
+        uuidDiscord: '123e4567-e89b-12d3-a456-426614174002'
       };
 
       mockRepository.create.mockReturnValue(mockMember);
@@ -65,7 +77,13 @@ describe('MembersService', () => {
       const result = await service.create(createMemberDto);
 
       expect(result).toEqual(mockMember);
-      expect(mockRepository.create).toHaveBeenCalledWith(createMemberDto);
+      expect(mockRepository.create).toHaveBeenCalledWith({
+        ...createMemberDto,
+        guild_username: createMemberDto.guildUsername,
+        community_role: createMemberDto.communityRole,
+        uuid_guild: createMemberDto.uuidGuild,
+        uuid_discord: createMemberDto.uuidDiscord
+      });
       expect(mockRepository.save).toHaveBeenCalledWith(mockMember);
     });
   });
@@ -104,7 +122,7 @@ describe('MembersService', () => {
   describe('update', () => {
     it('devrait mettre à jour un membre', async () => {
       const updateMemberDto = {
-        guild_username: 'UpdatedUser',
+        guildUsername: 'UpdatedUser',
         status: 'Inactive'
       };
       const updatedMember = { ...mockMember, ...updateMemberDto };

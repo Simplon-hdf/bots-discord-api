@@ -8,91 +8,91 @@ export class PickableInternUUIDFields {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })  
   @IsUUID()
-  uuid_member: string;
+  uuidMember: string;
 
   @ApiProperty({
     description: 'Identifiant unique des informations du membre',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_member_infos: string;
+  uuidMemberInfos: string;
 
   @ApiProperty({
     description: 'Identifiant unique du compte du dashboard',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_dashboard_account: string;
+  uuidDashboardAccount: string;
 
   @ApiProperty({
     description: 'Identifiant unique de la demande d\'identification',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_identification_request: string;
+  uuidIdentificationRequest: string;
 
   @ApiProperty({
     description: 'Identifiant unique du template de serveur',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_guild_template: string;
+  uuidGuildTemplate: string;
 
   @ApiProperty({
     description: 'Identifiant unique du campus',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_campus: string;
+  uuidCampus: string;
 
   @ApiProperty({
     description: 'Identifiant unique de la formation',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_course: string;
+  uuidCourse: string;
 
   @ApiProperty({
     description: 'Identifiant unique de la promotion',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_promotion: string;
+  uuidPromotion: string;
 
   @ApiProperty({
     description: 'Identifiant unique de la ressource',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_resource: string;
+  uuidResource: string;
 
   @ApiProperty({
     description: 'Identifiant unique du commentaire',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_comment: string;
+  uuidComment: string;
 
   @ApiProperty({
     description: 'Identifiant unique de la transaction',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_xp_transaction: string;
+  uuidXpTransaction: string;
 
   @ApiProperty({
     description: 'Identifiant unique du vote',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_vote: string;
+  uuidVote: string;
 
   @ApiProperty({
     description: 'Identifiant unique du rapport',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_report: string;
+  uuidReport: string;
 
   @ApiProperty({
     description: 'Identifiant unique du membre qui a fait le signalement',
@@ -113,34 +113,34 @@ export class PickableInternUUIDFields {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_moderation_action: string;
+  uuidModerationAction: string;
 
   @ApiProperty({
     description: 'Identifiant unique de la question',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_question: string;
+  uuidQuestion: string;
 
   @ApiProperty({
     description: 'Identifiant unique de la résponse',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_answer: string;
+  uuidAnswer: string;
 
   @ApiProperty({
     description: 'Identifiant unique du sondage',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_poll: string;
+  uuidPoll: string;
 
   @ApiProperty({
     description: 'Identifiant unique du template du sondage',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_poll_template: string;
+  uuidPollTemplate: string;
 
 }

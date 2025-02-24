@@ -10,7 +10,7 @@ export class Promotion {
     description: 'UUID unique de la promotion',
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('uuid', { name: 'uuid_promotion' })
   uuid: string;
 
   @ApiProperty({
@@ -61,13 +61,16 @@ export class Promotion {
   })
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
-
+  
   @ApiProperty({
     description: 'UUID unique de la formation',
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
   @Column({ name: 'uuid_course', type: 'uuid' })
-  uuid_course: string;
+  uuidCourse: string;
+
+  @Column({ type: 'uuid', name: 'uuid_guild' })
+  uuidGuild: string;
 
   @ApiProperty({
     description: 'Formation associées aux promotions',
@@ -81,12 +84,12 @@ export class Promotion {
   @Column({ name: 'uuid_guild', type: 'varchar', length: 19, nullable: true })
   uuid_guild: string;
 
-  @ManyToOne(() => Guild, guild => guild.promotions)
+ @ManyToOne(() => Guild, guild => guild.promotions)
   @JoinColumn({ name: 'uuid_guild' })
   guild: Guild;
 
   @Column({ name: 'uuid_role', type: 'varchar', length: 19, nullable: true })
-  uuid_role: string;
+  uuidRole: string;
 
   @OneToOne(() => Role, role => role.promotion)
   @JoinColumn({ name: 'uuid_role' })

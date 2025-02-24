@@ -35,8 +35,8 @@ export class IdentificationRequestsService {
   
     Object.assign(identificationRequest, updateIdentificationRequestDto);
   
-    if (updateIdentificationRequestDto.uuid_member !== undefined) {
-      identificationRequest.uuid_member = updateIdentificationRequestDto.uuid_member;
+    if (updateIdentificationRequestDto.uuidMember !== undefined) {
+      identificationRequest.uuidMember = updateIdentificationRequestDto.uuidMember;
     }
   
     return this.identificationRequestsRepository.save(identificationRequest);

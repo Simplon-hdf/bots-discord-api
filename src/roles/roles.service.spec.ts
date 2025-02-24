@@ -19,7 +19,7 @@ describe('RolesService', () => {
     color: '#FF0000',
     createdAt: new Date(),
     updatedAt: new Date(),
-    uuid_guild: '123e4567-e89b-12d3-a456-426614174001',
+    uuidGuild: '123e4567-e89b-12d3-a456-426614174001',
     guild: null
   };
 
@@ -54,7 +54,7 @@ describe('RolesService', () => {
         role_position: '1',
         hoist: true,
         color: '#FF0000',
-        uuid_guild: '123e4567-e89b-12d3-a456-426614174001'
+        uuidGuild: '123e4567-e89b-12d3-a456-426614174001'
       };
 
       mockRepository.create.mockReturnValue(mockRole);

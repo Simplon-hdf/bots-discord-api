@@ -32,29 +32,30 @@ export class MembersService {
   }
 
   // Récupérer un membre par son uuid
-  async findOne(uuid_member: string): Promise<Member> {
+  async findOne(uuid: string): Promise<Member> {
     const member = await this.membersRepository.findOne({
-      where: { uuid_member },
+      where: { uuid },
       relations: ['resources']
     });
+
     if (!member) {
-      throw new NotFoundException(`Member with UUID ${uuid_member} not found`);
+      throw new NotFoundException(`Member with UUID ${uuid} not found`);
     }
     return member;
   }
 
   // Mettre à jour un membre
-  async update(uuid_member: string, updateMemberDto: UpdateMemberDto): Promise<Member> {
-    const member = await this.findOne(uuid_member);
+  async update(uuid: string, updateMemberDto: UpdateMemberDto): Promise<Member> {
+    const member = await this.findOne(uuid);
     Object.assign(member, updateMemberDto);
     return await this.membersRepository.save(member);
   }
 
   // Supprimer un membre
-  async remove(uuid_member: string): Promise<DeleteResult> {
-    const result = await this.membersRepository.delete({ uuid_member });
+  async remove(uuid: string): Promise<DeleteResult> {
+    const result = await this.membersRepository.delete({ uuid });
     if (result.affected === 0) {
-      throw new NotFoundException(`Member with UUID ${uuid_member} not found`);
+      throw new NotFoundException(`Member with UUID ${uuid} not found`);
     }
     return result;
   }

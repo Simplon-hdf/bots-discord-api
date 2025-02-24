@@ -26,7 +26,7 @@ describe('DiscordUsersController', () => {
 
   it('should create a new discord user', async () => {
     const dto: CreateDiscordUserDto = {
-      uuid_discord: '123456789012345678',
+      uuidDiscord: '123456789012345678',
       discordUsername: 'JohnDoe#1234',
       discriminator: '1234',
     };
@@ -36,14 +36,14 @@ describe('DiscordUsersController', () => {
   });
 
   it('should return an array of discord users', async () => {
-    const result = [{ uuid_discord: '123456789012345678', discordUsername: 'JohnDoe#1234', discriminator: '1234' }];
+    const result = [{ uuidDiscord: '123456789012345678', discordUsername: 'JohnDoe#1234', discriminator: '1234' }];
     mockDiscordUsersService.findAll.mockResolvedValue(result);
     expect(await controller.findAll()).toEqual(result);
     expect(mockDiscordUsersService.findAll).toHaveBeenCalled();
   });
 
   it('should return a single discord user', async () => {
-    const result = { uuid_discord: '123456789012345678', discordUsername: 'JohnDoe#1234', discriminator: '1234' };
+    const result = { uuidDiscord: '123456789012345678', discordUsername: 'JohnDoe#1234', discriminator: '1234' };
     mockDiscordUsersService.findOne.mockResolvedValue(result);
     expect(await controller.findOne('123456789012345678')).toEqual(result);
     expect(mockDiscordUsersService.findOne).toHaveBeenCalledWith('123456789012345678');
@@ -55,7 +55,7 @@ describe('DiscordUsersController', () => {
       discriminator: '4321',
     };
     const result = {
-      uuid_discord: '123456789012345678',
+      uuidDiscord: '123456789012345678',
       ...dto,
     };
     mockDiscordUsersService.update.mockResolvedValue(result);

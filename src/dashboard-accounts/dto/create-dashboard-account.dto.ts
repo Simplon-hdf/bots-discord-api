@@ -3,7 +3,7 @@ import { ApiProperty, PickType } from '@nestjs/swagger';
 import { PickableDiscordUUIDFields } from 'src/utils/pickable-discord-uuid-fields';
 
 export class CreateDashboardAccountDto extends PickType(PickableDiscordUUIDFields, [
-    'uuid_discord'
+    'uuidDiscord'
 ]) {
 
     @ApiProperty({
@@ -25,5 +25,5 @@ export class CreateDashboardAccountDto extends PickType(PickableDiscordUUIDField
     @MinLength(8)
     password: string;
 
-    uuid_discord: string;
+    uuidDiscord: string;
 }

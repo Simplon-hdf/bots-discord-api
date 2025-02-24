@@ -46,7 +46,7 @@ describe('CommentsService', () => {
       const createCommentDto: CreateCommentDto = {
         content: 'Test comment',
         comment_status: 'active',
-        uuid_member: '123',
+        uuidMember: '123',
         resource_uuid: '123e4567-e89b-12d3-a456-426614174000',
         user_uuid: '123e4567-e89b-12d3-a456-426614174000'
       };

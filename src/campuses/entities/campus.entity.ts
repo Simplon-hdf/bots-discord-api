@@ -1,8 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, ManyToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-
+import { Guild } from '../../guilds/entities/guild.entity';
 import { Role } from 'src/roles/entities/role.entity';
-import { Guild } from 'src/guilds/entities/guild.entity';
+
 
 @Entity('Campuses')
 export class Campus {
@@ -11,42 +11,47 @@ export class Campus {
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
   @PrimaryGeneratedColumn('uuid', { name: 'uuid_campus' })
-  uuid_campus: string;
+  uuid: string;
 
   @ApiProperty({
-    description: 'Le nom du campus',
-    example: 'Campus de Lille',
+    description: 'Nom du campus',
+    example: 'Simplon Paris',
     maxLength: 50
   })
   @Column({ type: 'varchar', length: 50 })
   name: string;
 
   @ApiProperty({
-    description: 'Date de création',
-    example: '2024-02-17T12:00:00Z'
+    description: 'UUID Discord du serveur associé',
+    example: '123456789012345678'
+  })
+  @Column({ name: 'uuid_guild', type: 'varchar', length: 19 })
+  uuidGuild: string;
+
+  @ApiProperty({
+    description: 'Date de création'
   })
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @ApiProperty({
-    description: 'Date de dernière mise à jour',
-    example: '2024-02-17T12:00:00Z'
+    description: 'Date de dernière mise à jour'
   })
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
+  @ApiProperty({
+    description: 'Le serveur Discord associé au campus',
+    type: () => Guild
+  })
+  @ManyToOne(() => Guild, guild => guild.campuses)
+  @JoinColumn({ name: 'uuid_guild' })
+  guild: Guild;
+
   @Column({ type: 'varchar', name: 'uuid_role' })
-  uuid_role: string;
+  uuidRole: string;
 
   @OneToOne(() => Role, role => role.campus)
   @JoinColumn({ name: 'uuid_role' })
   role: Role
-
-  @Column({ type: 'varchar', name: 'uuid_guild' })
-  uuid_guild: string
-
-  @ManyToOne(() => Guild, guild => guild.campuses)
-  @JoinColumn({ name: 'uuid_guild' })
-  guild: Guild
-
 }

@@ -1,5 +1,6 @@
 import { IsString, IsInt, IsEnum, MaxLength, Min, Length } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
+import { PickableDiscordUUIDFields } from 'src/utils/pickable-discord-uuid-fields';
 
 enum ChannelType {
   TEXT = 'text',
@@ -7,7 +8,10 @@ enum ChannelType {
   ANNOUNCEMENT = 'announcement'
 }
 
-export class CreateChannelDto {
+export class CreateChannelDto extends PickType(PickableDiscordUUIDFields, [
+  'uuidGuild',
+  'uuidCategory'
+]) {
   @ApiProperty({
     description: 'ID Discord du channel',
     example: '123456789012345678'
@@ -43,12 +47,6 @@ export class CreateChannelDto {
   @Min(0)
   channelPosition: number;
 
-  @ApiProperty({
-    description: 'ID Discord de la catégorie associée',
-    example: '123456789012345678',
-    required: false
-  })
-  @IsString()
-  @Length(17, 19)
-  categoryId?: string;
+  uuidGuild: string;
+  uuidCategory: string;
 } 

@@ -16,12 +16,13 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('courses')
 export class Course {
+
   @ApiProperty({
     description: 'UUID unique de la formation',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @PrimaryGeneratedColumn('uuid', { name: 'uuid_course' })
-  uuid_course: string;
+    uuid: string;
 
   @ApiProperty({
     description: 'Nom de la formation',
@@ -72,8 +73,9 @@ export class Course {
     description: 'UUID unique de la guilde',
     example: '123456789012345678',
   })
-  @Column({ name: 'uuid_guild', type: 'varchar', length: 19 })
-  uuid_guild: string;
+  @Column({ name: 'uuid_guild', type: 'varchar', length: 19, nullable: true})
+    uuidGuild: string;
+  
 
   @ApiProperty({
     description: 'Catégorie associée à la formation',
@@ -107,7 +109,7 @@ export class Course {
     },
   })
   @Column({ name: 'uuid_role', type: 'varchar', length: 19, nullable: true })
-  uuid_role: string;
+  uuidRole: string;
 
   @OneToOne(() => Role, (role) => role.course)
   @JoinColumn({ name: 'uuid_role' })

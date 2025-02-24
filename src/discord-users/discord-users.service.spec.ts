@@ -26,7 +26,7 @@ describe('DiscordUsersService', () => {
 
   it('should create a new discord user', async () => {
     const dto: CreateDiscordUserDto = {
-      uuid_discord: '123456789012345678',
+      uuidDiscord: '123456789012345678',
       discordUsername: 'JohnDoe#1234',
       discriminator: '1234',
     };
@@ -40,17 +40,17 @@ describe('DiscordUsersService', () => {
   });
 
   it('should return an array of discord users', async () => {
-    const result = [{ uuid_discord: '123456789012345678', discordUsername: 'JohnDoe#1234', discriminator: '1234' }];
+    const result = [{ uuidDiscord: '123456789012345678', discordUsername: 'JohnDoe#1234', discriminator: '1234' }];
     mockRepository.find.mockResolvedValue(result);
     expect(await service.findAll()).toEqual(result);
     expect(mockRepository.find).toHaveBeenCalled();
   });
 
   it('should return a single discord user', async () => {
-    const result = { uuid_discord: '123456789012345678', discordUsername: 'JohnDoe#1234', discriminator: '1234' };
+    const result = { uuidDiscord: '123456789012345678', discordUsername: 'JohnDoe#1234', discriminator: '1234' };
     mockRepository.findOneBy.mockResolvedValue(result);
     expect(await service.findOne('123456789012345678')).toEqual(result);
-    expect(mockRepository.findOneBy).toHaveBeenCalledWith({ uuid_discord: '123456789012345678' });
+    expect(mockRepository.findOneBy).toHaveBeenCalledWith({ uuidDiscord: '123456789012345678' });
   });
 
   it('should update a discord user', async () => {
@@ -59,7 +59,7 @@ describe('DiscordUsersService', () => {
       discriminator: '4321',
     };
     const existingUser = {
-      uuid_discord: '123456789012345678',
+      uuidDiscord: '123456789012345678',
       discordUsername: 'JohnDoe#1234',
       discriminator: '1234',
       updatedAt: new Date(),
@@ -69,13 +69,13 @@ describe('DiscordUsersService', () => {
     mockRepository.save.mockResolvedValue(updatedUser);
 
     expect(await service.update('123456789012345678', dto)).toEqual(updatedUser);
-    expect(mockRepository.findOneBy).toHaveBeenCalledWith({ uuid_discord: '123456789012345678' });
+    expect(mockRepository.findOneBy).toHaveBeenCalledWith({ uuidDiscord: '123456789012345678' });
     expect(mockRepository.save).toHaveBeenCalled();
   });
 
   it('should delete a discord user', async () => {
     mockRepository.delete.mockResolvedValue({ affected: 1 });
     expect(await service.remove('123456789012345678')).toEqual({ affected: 1 });
-    expect(mockRepository.delete).toHaveBeenCalledWith({ uuid_discord: '123456789012345678' });
+    expect(mockRepository.delete).toHaveBeenCalledWith({ uuidDiscord: '123456789012345678' });
   });
 }); 

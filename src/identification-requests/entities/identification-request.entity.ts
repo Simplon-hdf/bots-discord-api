@@ -19,11 +19,11 @@ export class IdentificationRequest {
     @Column({type: 'varchar', length: 50})
     email: string
 
-    @Column({ type: 'uuid', name: 'uuid_member' })
-    uuid_member: string;
+    @Column({ type: 'uuid', name: 'uuidMember' })
+    uuidMember: string;
 
     @OneToOne(() => Member, (member) => member.identificationRequest)
-    @JoinColumn({ name: 'uuid_member' })
+    @JoinColumn({ name: 'uuidMember' })
     member: Member
 
 }

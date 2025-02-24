@@ -1,15 +1,16 @@
-import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn, OneToMany, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Channel } from '../../channels/entities/channel.entity';
-import { Guild } from 'src/guilds/entities/guild.entity';
-import { Course } from 'src/courses/entities/course.entity';
+import { Guild } from '../../guilds/entities/guild.entity';
+import { Course } from '../../courses/entities/course.entity';
+
 @Entity('categories')
 export class Category {
   @ApiProperty({
     description: 'ID Discord de la catégorie',
     example: '123456789012345678'
   })
-  @PrimaryColumn({ type: 'varchar', length: 19 })
+  @PrimaryColumn({ type: 'varchar', length: 19, name: 'uuid_category' })
   uuid: string;
 
   @ApiProperty({
@@ -31,16 +32,8 @@ export class Category {
     description: 'ID Discord du serveur associé',
     example: '123456789012345678'
   })
-  @Column({ name: 'guild_id', type: 'varchar', length: 19 })
-  guildId: string;
-
-  @ApiProperty({
-    description: 'Liste des channels dans cette catégorie',
-    type: () => Channel,
-    isArray: true
-  })
-  @OneToMany(() => Channel, channel => channel.category)
-  channels: Channel[];
+  @Column({ name: 'uuidGuild', type: 'varchar', length: 19 })
+  uuidGuild: string;
 
   @ApiProperty({
     description: 'Date de création'
@@ -61,9 +54,13 @@ export class Category {
   })
   updatedAt: Date;
 
-  @OneToOne(() => Guild)
-  @JoinColumn({ name: 'uuid_guild' })
-  guild: Guild;
+  @ApiProperty({
+    description: 'Liste des channels dans cette catégorie',
+    type: () => Channel,
+    isArray: true
+  })
+  @OneToMany(() => Channel, channel => channel.category)
+  channels: Channel[];
 
   @ApiProperty({
     description: 'Formation associée à la catégorie',
@@ -71,6 +68,14 @@ export class Category {
     isArray: true
   })
   @OneToOne(() => Course, course => course.category)
-  @JoinColumn({ name: 'uuid_course' })
+  @JoinColumn({ name: 'uuidCourse' })
   course: Course;
+
+  @ApiProperty({
+    description: 'Le serveur Discord associé à cette catégorie',
+    type: () => Guild
+  })
+  @ManyToOne(() => Guild, guild => guild.categories)
+  @JoinColumn({ name: 'uuidGuild' })
+  guild: Guild;
 }

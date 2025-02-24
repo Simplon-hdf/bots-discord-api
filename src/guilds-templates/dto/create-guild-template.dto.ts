@@ -1,7 +1,10 @@
 import { IsString, MaxLength, Length, IsOptional, IsJSON } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
+import { PickableDiscordUUIDFields } from 'src/utils/pickable-discord-uuid-fields';
 
-export class CreateGuildTemplateDto {
+export class CreateGuildTemplateDto extends PickType(PickableDiscordUUIDFields, [
+  'uuidGuild'
+]) {
   @ApiProperty({
     description: 'ID Discord du template',
     example: '123456789012345678'
@@ -40,4 +43,6 @@ export class CreateGuildTemplateDto {
   @IsJSON()
   @IsOptional()
   configuration?: Record<string, any>;
+
+  uuidGuild: string;
 }

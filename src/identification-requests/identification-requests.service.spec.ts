@@ -26,7 +26,7 @@ describe('IdentificationRequestsService', () => {
 
   it('should create a new identification request', async () => {
     const dto: CreateIdentificationRequestDto = {
-      uuid_member: '123e4567-e89b-12d3-a456-426614174000',
+      uuidMember: '123e4567-e89b-12d3-a456-426614174000',
       firstname: 'John',
       lastname: 'Doe',
       email: 'john.doe@example.com',
@@ -41,14 +41,14 @@ describe('IdentificationRequestsService', () => {
   });
 
   it('should return an array of identification requests', async () => {
-    const result = [{ uuid: '123e4567-e89b-12d3-a456-426614174000', uuid_member: '123e4567-e89b-12d3-a456-426614174000', firstname: 'John', lastname: 'Doe', email: 'john.doe@example.com' }];
+    const result = [{ uuid: '123e4567-e89b-12d3-a456-426614174000', uuidMember: '123e4567-e89b-12d3-a456-426614174000', firstname: 'John', lastname: 'Doe', email: 'john.doe@example.com' }];
     mockRepository.find.mockResolvedValue(result);
     expect(await service.findAll()).toEqual(result);
     expect(mockRepository.find).toHaveBeenCalled();
   });
 
   it('should return a single identification request', async () => {
-    const result = { uuid: '123e4567-e89b-12d3-a456-426614174000', uuid_member: '123e4567-e89b-12d3-a456-426614174000', firstname: 'John', lastname: 'Doe', email: 'john.doe@example.com' };
+    const result = { uuid: '123e4567-e89b-12d3-a456-426614174000', uuidMember: '123e4567-e89b-12d3-a456-426614174000', firstname: 'John', lastname: 'Doe', email: 'john.doe@example.com' };
     mockRepository.findOneBy.mockResolvedValue(result);
     expect(await service.findOne('123e4567-e89b-12d3-a456-426614174000')).toEqual(result);
     expect(mockRepository.findOneBy).toHaveBeenCalledWith({ uuid: '123e4567-e89b-12d3-a456-426614174000' });
@@ -56,7 +56,7 @@ describe('IdentificationRequestsService', () => {
 
   it('should update an identification request', async () => {
     const dto: UpdateIdentificationRequestDto = { firstname: 'Jane' };
-    const result = { uuid: '123e4567-e89b-12d3-a456-426614174000', uuid_member: '123e4567-e89b-12d3-a456-426614174000', firstname: 'Jane', lastname: 'Doe', email: 'john.doe@example.com' };
+    const result = { uuid: '123e4567-e89b-12d3-a456-426614174000', uuidMember: '123e4567-e89b-12d3-a456-426614174000', firstname: 'Jane', lastname: 'Doe', email: 'john.doe@example.com' };
     mockRepository.findOneBy.mockResolvedValue(result);
     mockRepository.save.mockResolvedValue(result);
 

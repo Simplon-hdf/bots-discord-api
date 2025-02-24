@@ -32,8 +32,8 @@ describe('CommentsController', () => {
     status: 'Active',
     createdAt: new Date(),
     updatedAt: new Date(),
-    uuid_guild: '123e4567-e89b-12d3-a456-426614174002',
-    uuid_discord: '123456789',
+    uuidGuild: '123e4567-e89b-12d3-a456-426614174002',
+    uuidDiscord: '123456789',
     guild: mockGuild
   };
 
@@ -42,7 +42,7 @@ describe('CommentsController', () => {
     content: 'Test comment',
     comment_status: 'active',
     createdAt: new Date(),
-    uuid_member: '123e4567-e89b-12d3-a456-426614174001',
+    uuidMember: '123e4567-e89b-12d3-a456-426614174001',
     resource_uuid: '123e4567-e89b-12d3-a456-426614174002',
     user_uuid: '123e4567-e89b-12d3-a456-426614174003',
     member: mockMember
@@ -51,7 +51,7 @@ describe('CommentsController', () => {
   const mockCreateDto: CreateCommentDto = {
     content: 'Test comment',
     comment_status: 'active',
-    uuid_member: '123e4567-e89b-12d3-a456-426614174001',
+    uuidMember: '123e4567-e89b-12d3-a456-426614174001',
     resource_uuid: '123e4567-e89b-12d3-a456-426614174002',
     user_uuid: '123e4567-e89b-12d3-a456-426614174003'
   };

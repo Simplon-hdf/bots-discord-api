@@ -4,7 +4,7 @@ import { DiscordUser } from '../../discord-users/entities/discord-user.entity';
 @Entity('dashboard_accounts')
 export class DashboardAccount {
     @PrimaryGeneratedColumn('uuid', { name: 'uuid_dashboard_account' })
-    uuid_dashboard_account: string;
+    uuid: string;
 
     @Column({ type: 'varchar', unique: true })
     email: string;
@@ -27,9 +27,9 @@ export class DashboardAccount {
     updatedAt: Date;
 
     @Column({ type: 'uuid', name: 'uuid_discord' })
-    uuid_discord: string;
+    uuidDiscord: string;
 
     @OneToOne(() => DiscordUser, discordUser => discordUser.dashboardAccount)
-    @JoinColumn({ name: 'uuid_discord' })
+    @JoinColumn({ name: 'uuidDiscord' })
     discordUser: DiscordUser;
 }

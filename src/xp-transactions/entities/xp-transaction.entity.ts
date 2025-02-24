@@ -109,13 +109,14 @@ export class XpTransaction {
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 
-  @Column({ type: 'uuid', name: 'uuid_member' })
-  uuid_member: string;
-
   @ApiProperty({
     description: 'Le membre concerné par la transaction',
     type: () => Member
   })
+  
+  @Column('uuid', { name: 'uuid_member' })
+  uuidMember: string;
+  
   @ManyToOne(() => Member, member => member.xp_transactions)
   @JoinColumn({ name: 'uuid_member' })
   member: Member;

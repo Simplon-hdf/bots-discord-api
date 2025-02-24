@@ -16,7 +16,7 @@ export class Member {
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
   @PrimaryGeneratedColumn('uuid', { name: 'uuid_member' })
-  uuid_member: string;
+  uuid: string;
 
   @ApiProperty({
     description: 'Nom d\'utilisateur du membre dans la guilde',
@@ -70,7 +70,7 @@ export class Member {
   updatedAt: Date;
 
   @Column({ type: 'uuid', name: 'uuid_guild' })
-  uuid_guild: string;
+  uuidGuild: string;
 
   @ApiProperty({
     description: 'Relation avec la guilde',
@@ -81,7 +81,7 @@ export class Member {
   guild: Guild;  
 
   @Column({ type: 'uuid', name: 'uuid_discord' }) 
-  uuid_discord: string;
+  uuidDiscord: string;
 
   @OneToOne(() => DiscordUser, (discordUser) => discordUser.member)
   @JoinColumn({ name: 'uuid_discord' })

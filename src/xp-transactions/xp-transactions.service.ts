@@ -17,10 +17,13 @@ export class XpTransactionsService {
     private memberRepository: Repository<Member>
   ) {}
 
-  async create(createXpTransactionDto: CreateXpTransactionDto): Promise<XpTransactionResponseDto> {
-    // Vérifier que le membre existe
-    const member = await this.memberRepository.findOne({
-      where: { uuid_member: createXpTransactionDto.uuid_member },
+  async create(createXpTransactionDto: CreateXpTransactionDto): Promise<XpTransaction> {
+    const xpTransaction = this.xpTransactionRepository.create({
+      transaction_type: createXpTransactionDto.amount >= 0 ? 'GAIN' : 'LOSS',
+      transaction_value: Math.abs(createXpTransactionDto.amount),
+      uuidMember: createXpTransactionDto.userId,
+      reason: createXpTransactionDto.reason,
+      notes: createXpTransactionDto.notes
     });
 
     if (!member) {
@@ -88,6 +91,25 @@ export class XpTransactionsService {
       plainToInstance(XpTransactionResponseDto, transaction, { excludeExtraneousValues: true })
     );
   }
+
+  async update(id: string, updateXpTransactionDto: UpdateXpTransactionDto): Promise<XpTransaction> {
+    const xpTransaction = await this.findOne(id);
+    
+    if (updateXpTransactionDto.userId) {
+      xpTransaction.uuidMember = updateXpTransactionDto.userId;
+    }
+    
+    if (updateXpTransactionDto.amount !== undefined) {
+      xpTransaction.transaction_type = updateXpTransactionDto.amount >= 0 ? 'GAIN' : 'LOSS';
+      xpTransaction.transaction_value = Math.abs(updateXpTransactionDto.amount);
+    }
+    
+    if (updateXpTransactionDto.reason) {
+      xpTransaction.reason = updateXpTransactionDto.reason;
+    }
+    
+    if (updateXpTransactionDto.notes !== undefined) {
+      xpTransaction.notes = updateXpTransactionDto.notes;
 
   async findOne(uuid: string): Promise<XpTransactionResponseDto> {
     const transaction = await this.xpTransactionRepository.findOne({

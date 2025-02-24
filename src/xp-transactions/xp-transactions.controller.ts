@@ -17,8 +17,27 @@ export class XpTransactionsController {
   })
   @ApiResponse({ 
     status: 201, 
-    description: 'La transaction XP a été créée avec succès.',
-    type: XpTransactionResponseDto 
+    description: 'Transaction XP créée avec succès',
+    type: XpTransaction,
+    content: {
+      'application/json': {
+        example: {
+          uuid: '550e8400-e29b-41d4-a716-446655440000',
+          transaction_type: 'GAIN',
+          transaction_value: 100,
+          createdAt: '2024-03-14T12:00:00Z',
+          uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+          member: {
+            uuid: '123e4567-e89b-12d3-a456-426614174000',
+            guild_username: 'JohnDoe',
+            xp: '100.00',
+            level: 1,
+            community_role: 'Member',
+            status: 'Active'
+          }
+        }
+      }
+    }
   })
   @ApiResponse({ status: 400, description: 'Données invalides' })
   @ApiResponse({ status: 404, description: 'Membre non trouvé' })

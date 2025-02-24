@@ -3,7 +3,7 @@ import { IsString, IsEmail, Length } from 'class-validator';
 import { PickableInternUUIDFields } from 'src/utils/pickable-intern-uuid-fields';
 
 export class CreateIdentificationRequestDto extends PickType(PickableInternUUIDFields, [
-    'uuid_member'
+    'uuidMember'
 ]) {
 
   @IsString()
@@ -17,6 +17,6 @@ export class CreateIdentificationRequestDto extends PickType(PickableInternUUIDF
   @IsEmail()
   email: string;
 
-  uuid_member: string; 
+  uuidMember: string; 
 
 }

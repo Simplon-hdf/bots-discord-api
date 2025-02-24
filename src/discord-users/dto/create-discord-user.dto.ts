@@ -3,10 +3,10 @@ import { ApiProperty, PickType } from '@nestjs/swagger';
 import { PickableDiscordUUIDFields } from 'src/utils/pickable-discord-uuid-fields';
 
 export class CreateDiscordUserDto extends PickType(PickableDiscordUUIDFields, [
-  'uuid_discord'
+  'uuidDiscord'
 ]) {
   
-  uuid_discord: string;
+  uuidDiscord: string;
 
   @ApiProperty({
     description: 'Nom d\'utilisateur Discord',

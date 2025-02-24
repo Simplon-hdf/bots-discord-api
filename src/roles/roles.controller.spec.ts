@@ -28,7 +28,7 @@ describe('RolesController', () => {
     color: '#FF0000',
     createdAt: new Date(),
     updatedAt: new Date(),
-    uuid_guild: '123e4567-e89b-12d3-a456-426614174001',
+    uuidGuild: '123e4567-e89b-12d3-a456-426614174001',
     guild: mockGuild
   };
 
@@ -47,13 +47,13 @@ describe('RolesController', () => {
   describe('create', () => {
     it('devrait créer un nouveau rôle', async () => {
       const createRoleDto: CreateRoleDto = {
-        uuid_role: '123e4567-e89b-12d3-a456-426614174000',
+        uuidRole: '123e4567-e89b-12d3-a456-426614174000',
         name: 'Test Role',
         member_count: '10',
         role_position: '1',
         hoist: true,
         color: '#FF0000',
-        uuid_guild: '123e4567-e89b-12d3-a456-426614174001'
+        uuidGuild: '123e4567-e89b-12d3-a456-426614174001'
       };
 
       vi.mocked(rolesService.create).mockResolvedValue(mockRole);

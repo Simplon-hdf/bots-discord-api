@@ -16,7 +16,7 @@ export class CreateCategoryDto {
     })
     @IsString()
     @Length(17, 19)
-    guildId: string;
+    uuidGuild: string;
 
     @ApiProperty({
         description: 'Nom de la catégorie',

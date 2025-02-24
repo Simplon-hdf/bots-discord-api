@@ -21,7 +21,7 @@ export class Comment {
   createdAt: Date;
 
   @Column('uuid')
-  uuid_member: string;
+  uuidMember: string;
 
   @Column('uuid')
   resource_uuid: string;
@@ -30,6 +30,6 @@ export class Comment {
   user_uuid: string;
 
   @ManyToOne(() => Member)
-  @JoinColumn({ name: 'uuid_member' })
+  @JoinColumn({ name: 'uuidMember' })
   member: Member;
 }

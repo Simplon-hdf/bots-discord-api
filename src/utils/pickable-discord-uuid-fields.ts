@@ -13,7 +13,7 @@ export class PickableDiscordUUIDFields {
   @IsString()
   @Matches(/^\d+$/)
   @Length(17, 19)
-  uuid_discord: string;
+  uuidDiscord: string;
 
   @ApiProperty({
     description: 'Identifiant unique du serveur (Snowflake)',
@@ -24,7 +24,7 @@ export class PickableDiscordUUIDFields {
   @IsString()
   @Matches(/^\d+$/)
   @Length(17, 19)
-  uuid_guild: string;
+  uuidGuild: string;
 
   @ApiProperty({
     description: 'Identifiant unique de category (Snowflake)',
@@ -35,7 +35,7 @@ export class PickableDiscordUUIDFields {
   @IsString()
   @Matches(/^\d+$/)
   @Length(17, 19)
-  uuid_category: string;
+  uuidCategory: string;
 
   @ApiProperty({
     description: 'Identifiant unique de channel (Snowflake)',
@@ -46,7 +46,7 @@ export class PickableDiscordUUIDFields {
   @IsString()
   @Matches(/^\d+$/)
   @Length(17, 19)
-  uuid_channel: string;
+  uuidChannel: string;
 
   @ApiProperty({
     description: 'Identifiant unique de rôle (Snowflake)',
@@ -57,7 +57,7 @@ export class PickableDiscordUUIDFields {
   @IsString()
   @Matches(/^\d+$/)
   @Length(17, 19)
-  uuid_role: string;
+  uuidRole: string;
 
   @ApiProperty({
     description: 'Identifiant unique du tag (Snowflake)',
@@ -68,6 +68,6 @@ export class PickableDiscordUUIDFields {
   @IsString()
   @Matches(/^\d+$/)
   @Length(17, 19)
-  uuid_tag: string;
+  uuidTag: string;
 
 }

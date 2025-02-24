@@ -18,29 +18,29 @@ export class DashboardAccountService {
         return await this.dashboardAccountRepository.save(dashboardAccount);
     }
 
-    async getByUUID(uuid_dashboard_account: string): Promise<DashboardAccount> {
-        const dashboardAccount = await this.dashboardAccountRepository.findOne({ where: { uuid_dashboard_account } });
+    async getByUUID(uuid: string): Promise<DashboardAccount> {
+        const dashboardAccount = await this.dashboardAccountRepository.findOne({ where: { uuid } });
         if (!dashboardAccount) {
-            throw new NotFoundException(`Dashboard account with UUID ${uuid_dashboard_account} not found`);
+            throw new NotFoundException(`Dashboard account with UUID ${uuid} not found`);
         }
         return dashboardAccount;
     }
 
-    async updateByUUID(uuid_dashboard_account: string, updateDashboardAccountDto: UpdateDashboardAccountDto): Promise<DashboardAccount> {
-        const dashboardAccount = await this.getByUUID(uuid_dashboard_account); // Vérifie si l'entité existe
+    async updateByUUID(uuid: string, updateDashboardAccountDto: UpdateDashboardAccountDto): Promise<DashboardAccount> {
+        const dashboardAccount = await this.getByUUID(uuid); // Vérifie si l'entité existe
         Object.assign(dashboardAccount, updateDashboardAccountDto); // Met à jour les propriétés
         return await this.dashboardAccountRepository.save(dashboardAccount);
     }
 
-    async deleteByUUID(uuid_dashboard_account: string): Promise<void> {
+    async deleteByUUID(uuid: string): Promise<void> {
         const dashboardAccount = await this.dashboardAccountRepository.findOne({ 
-            where: { uuid_dashboard_account } 
+            where: { uuid } 
         });
         
         if (!dashboardAccount) {
-            throw new NotFoundException(`Dashboard account with UUID ${uuid_dashboard_account} not found`);
+            throw new NotFoundException(`Dashboard account with UUID ${uuid} not found`);
         }
         
-        await this.dashboardAccountRepository.delete({ uuid_dashboard_account });
+        await this.dashboardAccountRepository.delete({ uuid });
     }
 }

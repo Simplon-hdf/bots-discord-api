@@ -1,6 +1,4 @@
-import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToOne, JoinColumn, ManyToMany } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
-
+import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToOne, JoinColumn, ManyToMany } from 'typeorm';import { ApiProperty } from '@nestjs/swagger';
 import { Guild } from '../../guilds/entities/guild.entity';
 import { Member } from '../../members/entities/member.entity';
 import { Course } from '../../courses/entities/course.entity';
@@ -14,8 +12,7 @@ export class Role {
     example: '172653890987364567'
   })
   @PrimaryColumn('varchar', { name: 'uuid_role' })
-  uuid_role: string;
-
+  uuid: string;
 
   @ApiProperty({
     description: 'Nom du rôle',
@@ -27,17 +24,17 @@ export class Role {
 
   @ApiProperty({
     description: 'Nombre de membres ayant ce rôle',
-    example: '10'
+    example: 10
   })
-  @Column({ type: 'varchar', length: 50, nullable: false })
-  member_count: string;
+  @Column({ type: 'int', nullable: false })
+  member_count: number;
 
   @ApiProperty({
     description: 'Position du rôle dans la hiérarchie',
-    example: '1'
+    example: 1
   })
-  @Column({ type: 'varchar', length: 50, nullable: false })
-  role_position: string;
+  @Column({ type: 'int', nullable: false })
+  role_position: number;
 
   @ApiProperty({
     description: 'Indique si le rôle est affiché séparément dans la liste des membres',
@@ -50,7 +47,7 @@ export class Role {
     description: 'Couleur du rôle en format hexadécimal',
     example: '#FF0000'
   })
-  @Column({ type: 'varchar', length: 50, nullable: false })
+  @Column({ type: 'varchar', length: 7, nullable: false })
   color: string;
 
   @ApiProperty({
@@ -71,14 +68,14 @@ export class Role {
     description: 'UUID de la guilde à laquelle appartient le rôle',
     example: '123456789012345678'
   })
-  @Column('varchar', { nullable: false })
-  uuid_guild: string;
+  @Column('uuid', { name: 'uuid_guild', nullable: false })
+  uuidGuild: string;
 
   @ApiProperty({
     description: 'Relation avec la guilde',
     type: () => Guild
   })
-  @ManyToOne(() => Guild, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Guild, guild => guild.roles, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'uuid_guild' })
   guild: Guild;
 
@@ -102,5 +99,4 @@ export class Role {
 
   @OneToOne(() => Promotion, promotion => promotion.role)
   promotion: Promotion;
-
 }

@@ -27,7 +27,7 @@ export class CreateGuildDto {
   memberCount: number;
 
   @ApiProperty({
-    description: 'Configuration JSON du serveur',
+    description: 'Configuration du serveur',
     example: { welcomeChannel: '123456789012345678', prefix: '!' },
     required: false
   })

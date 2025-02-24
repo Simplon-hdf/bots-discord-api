@@ -29,7 +29,7 @@ describe('MembersInformationsController', () => {
 
   it('should create a new member information', async () => {
     const dto: CreateMemberInformationsDto = {
-      uuid_member: '123e4567-e89b-12d3-a456-4266141740000000',
+      uuidMember: '123e4567-e89b-12d3-a456-4266141740000000',
       firstName: 'John',
       lastName: 'Doe',
       email: 'john.doe@example.com',

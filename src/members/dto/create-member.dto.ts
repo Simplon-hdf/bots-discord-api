@@ -4,8 +4,8 @@ import { ApiProperty, PickType } from '@nestjs/swagger';
 import { PickableDiscordUUIDFields } from 'src/utils/pickable-discord-uuid-fields';
 
 export class CreateMemberDto extends PickType(PickableDiscordUUIDFields, [
-  'uuid_discord', 
-  'uuid_guild',
+  'uuidDiscord', 
+  'uuidGuild',
 ]) {
 
   @ApiProperty({
@@ -53,6 +53,6 @@ export class CreateMemberDto extends PickType(PickableDiscordUUIDFields, [
   @IsIn(['Active', 'Inactive', 'Banned'], { message: 'status doit être Active, Inactive ou Banned' })
   status: string;
 
-  uuid_guild: string;
-  uuid_discord: string;
+  uuidGuild: string;
+  uuidDiscord: string;
 }

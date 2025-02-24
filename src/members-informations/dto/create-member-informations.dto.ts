@@ -3,7 +3,7 @@ import { ApiProperty, PickType } from '@nestjs/swagger';
 import { PickableInternUUIDFields } from 'src/utils/pickable-intern-uuid-fields';
 
 export class CreateMemberInformationsDto extends PickType(PickableInternUUIDFields, [
-    'uuid_member'
+    'uuidMember'
 ]) {
 
     @ApiProperty({
@@ -30,5 +30,5 @@ export class CreateMemberInformationsDto extends PickType(PickableInternUUIDFiel
     @MaxLength(100)
     email: string;
 
-    uuid_member: string;
+    uuidMember: string;
 }

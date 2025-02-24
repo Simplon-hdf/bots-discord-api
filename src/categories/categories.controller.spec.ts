@@ -26,7 +26,7 @@ describe('CategoriesController', () => {
   it('should create a new category', async () => {
     const dto: CreateCategoryDto = {
       uuid: '123456789012345678',
-      uuid_guild: '987654321098765432',
+      uuidGuild: '987654321098765432',
       name: 'Test Category',
       position: 1,
     };
@@ -37,14 +37,14 @@ describe('CategoriesController', () => {
   });
 
   it('should return an array of categories', async () => {
-    const result = [{ uuid: '123456789012345678', uuid_guild: '987654321098765432', name: 'Test Category', position: 1 }];
+    const result = [{ uuid: '123456789012345678', uuidGuild: '987654321098765432', name: 'Test Category', position: 1 }];
     mockCategoriesService.findAll.mockResolvedValue(result);
     expect(await controller.findAll()).toEqual(result);
     expect(mockCategoriesService.findAll).toHaveBeenCalled();
   });
 
   it('should return a single category', async () => {
-    const result = { uuid: '123456789012345678', uuid_guild: '987654321098765432', name: 'Test Category', position: 1 };
+    const result = { uuid: '123456789012345678', uuidGuild: '987654321098765432', name: 'Test Category', position: 1 };
     mockCategoriesService.findOne.mockResolvedValue(result);
     expect(await controller.findOne('123456789012345678')).toEqual(result);
     expect(mockCategoriesService.findOne).toHaveBeenCalledWith('123456789012345678');
@@ -52,7 +52,7 @@ describe('CategoriesController', () => {
 
   it('should update a category', async () => {
     const dto: UpdateCategoryDto = { name: 'Updated Category', position: 2 };
-    const result = { uuid: '123456789012345678', uuid_guild: '987654321098765432', name: 'Updated Category', position: 2 };
+    const result = { uuid: '123456789012345678', uuidGuild: '987654321098765432', name: 'Updated Category', position: 2 };
     mockCategoriesService.update.mockResolvedValue(result);
     expect(await controller.update('123456789012345678', dto)).toEqual(result);
     expect(mockCategoriesService.update).toHaveBeenCalledWith('123456789012345678', dto);

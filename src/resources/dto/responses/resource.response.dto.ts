@@ -8,21 +8,21 @@ export class ResourceCreatorResponseDto {
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
   @Expose()
-  uuid_member: string;
+  uuidMember: string;
 
   @ApiProperty({
     description: 'Nom d\'utilisateur sur le serveur',
     example: 'User2'
   })
   @Expose()
-  guild_username: string;
+  guildUsername: string;
 
   @ApiProperty({
     description: 'Rôle dans la communauté',
     example: 'Member'
   })
   @Expose()
-  community_role: string;
+  communityRole: string;
 
   // On exclut les autres champs du membre
   @Exclude()
@@ -38,10 +38,10 @@ export class ResourceCreatorResponseDto {
   status: string;
 
   @Exclude()
-  uuid_discord: string;
+  uuidDiscord: string;
 
   @Exclude()
-  uuid_guild: string;
+  uuidGuild: string;
 
   @Exclude()
   xp: string;
@@ -52,8 +52,8 @@ export class ResourceReportResponseDto {
     description: 'UUID du signalement',
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
-  @Expose()
-  uuid_report: string;
+  @Expose({ name: 'uuid_report' })
+  uuidReport: string;
 
   @ApiProperty({
     description: 'Type de signalement',
@@ -89,8 +89,8 @@ export class ResourceReportResponseDto {
     description: 'Date de création',
     example: '2024-02-22T12:00:00Z'
   })
-  @Expose()
-  created_at: Date;
+  @Expose({ name: 'created_at' })
+  createdAt: Date;
 
   @ApiProperty({
     description: 'Membre qui a fait le signalement',
@@ -107,7 +107,7 @@ export class ResourceResponseDto {
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
   @Expose()
-  uuid_resource: string;
+  uuidResource: string;
 
   @ApiProperty({
     description: 'Titre de la ressource',
@@ -138,11 +138,25 @@ export class ResourceResponseDto {
   status: string;
 
   @ApiProperty({
+    description: 'UUID du créateur',
+    example: '123e4567-e89b-12d3-a456-426614174000'
+  })
+  @Expose()
+  creatorUuid: string;
+
+  @ApiProperty({
     description: 'Date de création',
     example: '2024-02-22T12:00:00Z'
   })
   @Expose()
-  created_at: Date;
+  createdAt: Date;
+
+  @ApiProperty({
+    description: 'Date de mise à jour',
+    example: '2024-02-22T12:00:00Z'
+  })
+  @Expose()
+  updatedAt: Date;
 
   @ApiProperty({
     description: 'Créateur de la ressource',
@@ -159,8 +173,4 @@ export class ResourceResponseDto {
   @Expose()
   @Type(() => ResourceReportResponseDto)
   reports: ResourceReportResponseDto[];
-
-  // On exclut les champs non nécessaires
-  @Exclude()
-  updated_at: Date;
 } 

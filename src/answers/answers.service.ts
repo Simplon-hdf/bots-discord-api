@@ -21,14 +21,22 @@ export class AnswersService {
   }
 
   async findAll() {
-    return this.answersRepository.find();
+    const answers = await this.answersRepository.find();
+    if (!answers.length) {
+      throw new NotFoundException('No answers found');
+    }
+    return answers;
   }
 
   async findOne(uuid: string) {
     if (!uuid) {
       throw new BadRequestException('UUID is required');
     }
-    return this.answersRepository.findOneBy({ uuid });
+    const answer = await this.answersRepository.findOneBy({ uuid });
+    if (!answer) {
+      throw new NotFoundException(`Answer with UUID "${uuid}" not found`);
+    }
+    return answer;
   }
 
   async update(uuid: string, updateAnswerDto: UpdateAnswerDto) {
@@ -40,7 +48,7 @@ export class AnswersService {
     }
     const answer = await this.answersRepository.findOneBy({ uuid });
     if (!answer) {
-      return null;
+      throw new NotFoundException(`Answer with UUID "${uuid}" not found`);
     }
     Object.assign(answer, updateAnswerDto);
     return this.answersRepository.save(answer);
@@ -50,6 +58,10 @@ export class AnswersService {
     if (!uuid) {
       throw new BadRequestException('UUID is required');
     }
-    return this.answersRepository.delete({ uuid });
+    const result = await this.answersRepository.delete({ uuid });
+    if (result.affected === 0) {
+      throw new NotFoundException(`Answer with UUID "${uuid}" not found`);
+    }
+    return { deleted: true };
   }
 }

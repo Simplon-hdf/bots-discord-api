@@ -12,16 +12,16 @@ export class AnswersService {
     private answersRepository: Repository<Answer>,
   ) {}
 
-  create(createAnswerQuestionDto: CreateAnswerQuestionDto) {
+  async create(createAnswerQuestionDto: CreateAnswerQuestionDto) {
     const answer = this.answersRepository.create(createAnswerQuestionDto);
     return this.answersRepository.save(answer);
   }
 
-  findAll() {
+  async findAll() {
     return this.answersRepository.find();
   }
 
-  findOne(uuid: string) {
+  async findOne(uuid: string) {
     return this.answersRepository.findOneBy({ uuid });
   }
 
@@ -34,7 +34,7 @@ export class AnswersService {
     return this.answersRepository.save(answer);
   }
 
-  remove(uuid: string) {
+  async remove(uuid: string) {
     return this.answersRepository.delete({ uuid });
   }
 }

@@ -5,9 +5,6 @@ import { PickableDiscordUUIDFields } from 'src/utils/pickable-discord-uuid-field
 export class CreateDiscordUserDto extends PickType(PickableDiscordUUIDFields, [
   'uuidDiscord'
 ]) {
-  
-  uuidDiscord: string;
-
   @ApiProperty({
     description: 'Nom d\'utilisateur Discord',
     example: 'JohnDoe#1234'

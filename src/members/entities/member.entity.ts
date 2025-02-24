@@ -17,8 +17,8 @@ export class Member {
     example: 'JohnDoe',
     maxLength: 50
   })
-  @Column({ type: 'varchar', length: 50 })
-  guild_username: string;
+  @Column({ type: 'varchar', length: 50, name: 'guild_username' })
+  guildUsername: string;
 
   @ApiProperty({
     description: 'Points d\'expérience du membre',
@@ -38,8 +38,8 @@ export class Member {
     description: 'Rôle communautaire du membre',
     example: 'Member'
   })
-  @Column({ type: 'varchar', length: 50 })
-  community_role: string;
+  @Column({ type: 'varchar', length: 50, name: 'community_role' })
+  communityRole: string;
 
   @ApiProperty({
     description: 'Statut du membre',
@@ -67,15 +67,15 @@ export class Member {
     description: 'UUID de la guilde à laquelle appartient le membre',
     example: '123e4567-e89b-12d3-a456-426614174001'
   })
-  @Column('uuid')
-  uuid_guild: string;
+  @Column('uuid', { name: 'uuid_guild' })
+  uuidGuild: string;
 
   @ApiProperty({
     description: 'UUID Discord du membre',
     example: '123e4567-e89b-12d3-a456-426614174002'
   })
-  @Column('uuid')
-  uuid_discord: string;
+  @Column('uuid', { name: 'uuid_discord' })
+  uuidDiscord: string;
 
   @ApiProperty({
     description: 'Relation avec la guilde',

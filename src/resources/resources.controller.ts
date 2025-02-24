@@ -5,6 +5,7 @@ import { UpdateResourceDto } from './dto/update-resource.dto';
 import { Resource } from './entities/resource.entity';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { ResourceResponseDto } from './dto/responses/resource.response.dto';
+import { Comment } from '../comments/entities/comment.entity';
 
 @ApiTags('resources')
 @Controller('resources')
@@ -59,6 +60,26 @@ export class ResourcesController {
   @ApiResponse({ status: 404, description: 'Ressource non trouvée' })
   findOne(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<ResourceResponseDto> {
     return this.resourcesService.findOne(uuid);
+  }
+
+  @Get(':uuid/comments')
+  @ApiOperation({ 
+    summary: 'Récupérer tous les commentaires d\'une ressource',
+    description: 'Retourne la liste de tous les commentaires associés à une ressource spécifique.'
+  })
+  @ApiParam({ 
+    name: 'uuid',
+    description: 'UUID de la ressource',
+    example: '123e4567-e89b-12d3-a456-426614174000'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Liste des commentaires récupérée avec succès.',
+    type: [Comment] 
+  })
+  @ApiResponse({ status: 404, description: 'Ressource non trouvée' })
+  findComments(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<Comment[]> {
+    return this.resourcesService.findComments(uuid);
   }
 
   @Put(':uuid')

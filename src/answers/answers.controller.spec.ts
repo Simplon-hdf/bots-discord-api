@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AnswersController } from './answers.controller';
 import { AnswersService } from './answers.service';
-import { CreateAnswerDto } from './dto/create-answer.dto';
+import { CreateAnswerQuestionDto } from './dto/create-answer-question.dto';
 import { UpdateAnswerDto } from './dto/update-answer.dto';
 import { NotFoundException } from '@nestjs/common';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -39,18 +39,18 @@ describe('AnswersController', () => {
 
   describe('create', () => {
     it('should create a new answer', async () => {
-      const createAnswerDto: CreateAnswerDto = {
+      const createAnswerQuestionDto: CreateAnswerQuestionDto = {
         content: 'Test answer',
         uuidQuestion: 'test-question-uuid'
       };
-      const expectedResult = { uuid: 'test-uuid', ...createAnswerDto };
+      const expectedResult = { uuid: 'test-uuid', ...createAnswerQuestionDto };
 
       mockAnswersService.create.mockResolvedValue(expectedResult);
 
-      const result = await controller.create(createAnswerDto);
+      const result = await controller.create(createAnswerQuestionDto);
 
       expect(result).toEqual(expectedResult);
-      expect(service.create).toHaveBeenCalledWith(createAnswerDto);
+      expect(service.create).toHaveBeenCalledWith(createAnswerQuestionDto);
     });
   });
 

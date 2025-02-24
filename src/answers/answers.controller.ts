@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Put, Param, Delete, NotFoundException, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { AnswersService } from './answers.service';
-import { CreateAnswerDto } from './dto/create-answer.dto';
+import { CreateAnswerQuestionDto } from './dto/create-answer-question.dto';  
 import { UpdateAnswerDto } from './dto/update-answer.dto';
 import { Answer } from './entities/answer.entity';
 
@@ -15,7 +15,7 @@ export class AnswersController {
     summary: 'Create a new answer',
     description: 'Creates a new answer in the database with the provided information.'
   })
-  @ApiBody({ type: CreateAnswerDto })
+  @ApiBody({ type: CreateAnswerQuestionDto })
   @ApiResponse({ 
     status: HttpStatus.CREATED, 
     description: 'Answer successfully created.',
@@ -25,8 +25,8 @@ export class AnswersController {
     status: HttpStatus.BAD_REQUEST, 
     description: 'Invalid data provided in the request.' 
   })
-  create(@Body() createAnswerDto: CreateAnswerDto) {
-    return this.answersService.create(createAnswerDto);
+  create(@Body() createAnswerQuestionDto: CreateAnswerQuestionDto) {
+    return this.answersService.create(createAnswerQuestionDto);
   }
 
   @Get()

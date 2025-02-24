@@ -15,7 +15,7 @@ export class CreateMemberDto extends PickType(PickableDiscordUUIDFields, [
   })
   @IsString()
   @MaxLength(50)
-  guild_username: string;
+  guildUsername: string;
 
   @ApiProperty({
     description: 'Points d\'expérience du membre (format: nombre décimal avec 2 décimales)',
@@ -41,7 +41,7 @@ export class CreateMemberDto extends PickType(PickableDiscordUUIDFields, [
   })
   @IsString()
   @MaxLength(50)
-  community_role: string;
+  communityRole: string;
 
   @ApiProperty({
     description: 'Statut du membre',

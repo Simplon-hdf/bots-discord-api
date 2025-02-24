@@ -8,7 +8,7 @@ export class CreateGuildDto {
   })
   @IsString()
   @Length(17, 19)
-  uuidGuild: string;
+  uuid: string;
 
   @ApiProperty({
     description: 'Nom du serveur',

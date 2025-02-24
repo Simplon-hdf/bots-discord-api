@@ -4,7 +4,7 @@ import { PickableInternUUIDFields } from '../../utils/pickable-intern-uuid-field
 import { PickableDtoFields } from '../../utils/pickable-dto-fields';
 
 export class CreateResourceDto extends PickType(PickableInternUUIDFields, [
-  'uuid_member' // Pour le créateur
+  'uuidMember' // Pour le créateur
 ]) {
   @ApiProperty({
     description: 'Le titre de la ressource',

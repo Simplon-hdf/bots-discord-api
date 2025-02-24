@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, NotFoundException } from '@nestjs/common';
 import { DiscordUsersService } from './discord-users.service';
 import { CreateDiscordUserDto } from './dto/create-discord-user.dto';
 import { UpdateDiscordUserDto } from './dto/update-discord-user.dto';
@@ -33,7 +33,7 @@ export class DiscordUsersController {
     return this.discordUsersService.findOne(uuidDiscord);
   }
 
-  @Patch(':uuidDiscord')
+  @Put(':uuidDiscord')
   @ApiOperation({ summary: 'Mettre à jour un utilisateur Discord' })
   @ApiResponse({ status: 200, description: 'L\'utilisateur a été mis à jour avec succès.', type: DiscordUser })
   @ApiResponse({ status: 404, description: 'Utilisateur non trouvé' })

@@ -16,15 +16,15 @@ export class Member {
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
   @PrimaryGeneratedColumn('uuid', { name: 'uuid_member' })
-  uuid: string;
+  uuidMember: string;
 
   @ApiProperty({
     description: 'Nom d\'utilisateur du membre dans la guilde',
     example: 'JohnDoe',
     maxLength: 50
   })
-  @Column({ type: 'varchar', length: 50 })
-  guild_username: string;
+  @Column({ type: 'varchar', length: 50, name: 'guild_username' })
+  guildUsername: string;
 
   @ApiProperty({
     description: 'Points d\'expérience du membre',
@@ -44,8 +44,8 @@ export class Member {
     description: 'Rôle communautaire du membre',
     example: 'Member'
   })
-  @Column({ type: 'varchar', length: 50 })
-  community_role: string;
+  @Column({ type: 'varchar', length: 50, name: 'community_role' })
+  communityRole: string;
 
   @ApiProperty({
     description: 'Statut du membre',
@@ -88,7 +88,7 @@ export class Member {
   discordUser: DiscordUser;
 
   @OneToOne(() => MemberInformation, (memberInformation) => memberInformation.member)
-  memberInformations: MemberInformation;
+  memberInformation: MemberInformation;
 
   @OneToOne(() => IdentificationRequest, (identificationRequest) => identificationRequest.member)
   identificationRequest: IdentificationRequest;
@@ -105,7 +105,7 @@ export class Member {
     type: () => [XpTransaction]
   })
   @OneToMany(() => XpTransaction, transaction => transaction.member)
-  xp_transactions: XpTransaction[];
+  xpTransactions: XpTransaction[];
 
   @ApiProperty({
     description: 'Rôles du membre',

@@ -88,7 +88,7 @@ export class MembersController {
     return this.membersService.findOne(uuid);
   }
 
-  @Patch(':uuid')
+  @Put(':uuid')
   @ApiOperation({
     summary: 'Mettre à jour un membre',
     description:

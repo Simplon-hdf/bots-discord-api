@@ -623,4 +623,127 @@ describe('ResourcesService', () => {
       // La suppression en cascade est gérée par TypeORM via les décorateurs @OneToMany
     });
   });
+
+  describe('findComments', () => {
+    it('should return all comments for a resource with their relations', async () => {
+      // Arrange
+      const mockMember = {
+        uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+        username: 'testuser',
+        status: 'active',
+      };
+
+      const mockResource = {
+        uuidResource: '123e4567-e89b-12d3-a456-426614174001',
+        title: 'Test Resource',
+        description: 'Test Description',
+        content: 'Test Content',
+        status: 'active',
+        creator: mockMember,
+        creatorUuid: mockMember.uuidMember,
+      };
+
+      const mockComments = [
+        {
+          uuidComment: '123e4567-e89b-12d3-a456-426614174002',
+          content: 'First Comment',
+          member: mockMember,
+          resource: mockResource,
+          votes: [
+            {
+              uuidVote: '123e4567-e89b-12d3-a456-426614174003',
+              voteType: 'upvote',
+              member: mockMember,
+            },
+          ],
+          createdAt: new Date('2024-03-15'),
+          updatedAt: new Date('2024-03-15'),
+        },
+        {
+          uuidComment: '123e4567-e89b-12d3-a456-426614174004',
+          content: 'Second Comment',
+          member: mockMember,
+          resource: mockResource,
+          votes: [],
+          createdAt: new Date('2024-03-14'),
+          updatedAt: new Date('2024-03-14'),
+        },
+      ];
+
+      mockResourceRepository.findOne.mockResolvedValue(mockResource);
+      mockCommentRepository.find.mockResolvedValue(mockComments);
+
+      // Act
+      const result = await service.findComments(mockResource.uuidResource);
+
+      // Assert
+      expect(mockResourceRepository.findOne).toHaveBeenCalledWith({
+        where: { uuidResource: mockResource.uuidResource }
+      });
+      expect(mockCommentRepository.find).toHaveBeenCalledWith({
+        where: { uuidResource: mockResource.uuidResource },
+        relations: ['member', 'resource', 'votes', 'votes.member'],
+        order: { createdAt: 'DESC' }
+      });
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(2);
+      expect(result[0].content).toBe('First Comment');
+      expect(result[0].votes).toHaveLength(1);
+      expect(result[1].content).toBe('Second Comment');
+      expect(result[1].votes).toHaveLength(0);
+    });
+
+    it('should throw NotFoundException when resource does not exist', async () => {
+      // Arrange
+      const uuid = '123e4567-e89b-12d3-a456-426614174001';
+      mockResourceRepository.findOne.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(service.findComments(uuid)).rejects.toThrow(
+        new NotFoundException(`Resource with UUID ${uuid} not found`)
+      );
+      expect(mockResourceRepository.findOne).toHaveBeenCalledWith({
+        where: { uuidResource: uuid }
+      });
+      expect(mockCommentRepository.find).not.toHaveBeenCalled();
+    });
+
+    it('should return empty array when resource has no comments', async () => {
+      // Arrange
+      const mockMember = {
+        uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+        username: 'testuser',
+        status: 'active',
+      };
+
+      const mockResource = {
+        uuidResource: '123e4567-e89b-12d3-a456-426614174001',
+        title: 'Test Resource',
+        description: 'Test Description',
+        content: 'Test Content',
+        status: 'active',
+        creator: mockMember,
+        creatorUuid: mockMember.uuidMember,
+      };
+
+      mockResourceRepository.findOne.mockResolvedValue(mockResource);
+      mockCommentRepository.find.mockResolvedValue([]);
+
+      // Act
+      const result = await service.findComments(mockResource.uuidResource);
+
+      // Assert
+      expect(mockResourceRepository.findOne).toHaveBeenCalledWith({
+        where: { uuidResource: mockResource.uuidResource }
+      });
+      expect(mockCommentRepository.find).toHaveBeenCalledWith({
+        where: { uuidResource: mockResource.uuidResource },
+        relations: ['member', 'resource', 'votes', 'votes.member'],
+        order: { createdAt: 'DESC' }
+      });
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(0);
+      expect(Array.isArray(result)).toBe(true);
+    });
+  });
 }); 

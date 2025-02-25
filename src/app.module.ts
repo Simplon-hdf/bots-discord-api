@@ -27,6 +27,7 @@ import { CoursesModule } from './courses/courses.module';
 import { TagsModule } from './tags/tags.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { AppController } from './app.controller';
 
 /**
  * Module principal de l'application
@@ -71,7 +72,7 @@ import { AuthModule } from './auth/auth.module';
     CommentsModule,
     TagsModule
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule implements OnModuleInit {

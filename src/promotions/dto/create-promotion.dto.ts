@@ -1,5 +1,6 @@
 import { ApiProperty, IntersectionType, PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { IsDate } from 'class-validator';
 import { PickableDtoFields } from 'src/utils/pickable-dto-fields';
 import { PickableDiscordUUIDFields } from 'src/utils/pickable-discord-uuid-fields';
 import { PickableInternUUIDFields } from 'src/utils/pickable-intern-uuid-fields';

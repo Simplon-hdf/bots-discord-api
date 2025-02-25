@@ -1,13 +1,11 @@
 import { IsString, MaxLength, IsInt, Min, Matches, IsIn } from 'class-validator';
 import { ApiProperty, PickType } from '@nestjs/swagger';
-
 import { PickableDiscordUUIDFields } from 'src/utils/pickable-discord-uuid-fields';
 
 export class CreateMemberDto extends PickType(PickableDiscordUUIDFields, [
-  'uuidDiscord', 
-  'uuidGuild',
+  'uuidDiscord',
+  'uuidGuild'
 ]) {
-
   @ApiProperty({
     description: 'Nom d\'utilisateur du membre dans la guilde',
     example: 'JohnDoe',
@@ -15,10 +13,10 @@ export class CreateMemberDto extends PickType(PickableDiscordUUIDFields, [
   })
   @IsString()
   @MaxLength(50)
-  guild_username: string;
+  guildUsername: string;
 
   @ApiProperty({
-    description: 'Points d\'expérience du membre (format: nombre décimal avec 2 décimales)',
+    description: 'Points d\'expérience du membre',
     example: '100.00'
   })
   @IsString()
@@ -41,7 +39,7 @@ export class CreateMemberDto extends PickType(PickableDiscordUUIDFields, [
   })
   @IsString()
   @MaxLength(50)
-  community_role: string;
+  communityRole: string;
 
   @ApiProperty({
     description: 'Statut du membre',
@@ -49,10 +47,6 @@ export class CreateMemberDto extends PickType(PickableDiscordUUIDFields, [
     enum: ['Active', 'Inactive', 'Banned']
   })
   @IsString()
-  @MaxLength(50)
-  @IsIn(['Active', 'Inactive', 'Banned'], { message: 'status doit être Active, Inactive ou Banned' })
+  @IsIn(['Active', 'Inactive', 'Banned'])
   status: string;
-
-  uuidGuild: string;
-  uuidDiscord: string;
 }

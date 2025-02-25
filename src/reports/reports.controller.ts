@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ForbiddenException, Headers } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { CreateReportDto } from './dto/create-report.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
@@ -100,9 +100,7 @@ export class ReportsController {
   })
   @ApiResponse({ status: 403, description: 'Action non autorisée' })
   @ApiResponse({ status: 404, description: 'Signalement non trouvé' })
-  remove(@Param('uuid_report') uuid_report: string): Promise<void> {
-    // Pour le test, on utilise un ID fixe, mais plus tard il viendra du token d'authentification
-    const currentUserId = "323b07a1-7cea-4916-82a5-76ff201fa0e2";
+  remove(@Param('uuid_report') uuid_report: string, @Headers('X-Member-UUID') currentUserId: string): Promise<void> {
     return this.reportsService.remove(uuid_report, currentUserId);
   }
 } 

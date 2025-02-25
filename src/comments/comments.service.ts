@@ -4,7 +4,6 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Comment } from './entities/comment.entity';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class CommentsService {
@@ -14,23 +13,23 @@ export class CommentsService {
   ) {}
 
   async create(createCommentDto: CreateCommentDto): Promise<Comment> {
-    const comment = this.commentsRepository.create({
-      uuid: uuidv4(),
-      ...createCommentDto
-    });
+    const comment = this.commentsRepository.create(createCommentDto);
     return await this.commentsRepository.save(comment);
   }
 
   async findAll(): Promise<Comment[]> {
     return await this.commentsRepository.find({
-      relations: ['member']
+      relations: ['member', 'resource'],
+      order: {
+        createdAt: 'DESC'
+      }
     });
   }
 
   async findOne(uuid: string): Promise<Comment> {
     const comment = await this.commentsRepository.findOne({
-      where: { uuid },
-      relations: ['member']
+      where: { uuidComment: uuid },
+      relations: ['member', 'resource']
     });
     
     if (!comment) {
@@ -38,6 +37,18 @@ export class CommentsService {
     }
     
     return comment;
+  }
+
+  async findByResource(uuidResource: string): Promise<Comment[]> {
+    const comments = await this.commentsRepository.find({
+      where: { uuidResource },
+      relations: ['member', 'resource'],
+      order: {
+        createdAt: 'DESC'
+      }
+    });
+
+    return comments;
   }
 
   async update(uuid: string, updateCommentDto: UpdateCommentDto): Promise<Comment> {
@@ -49,7 +60,7 @@ export class CommentsService {
   }
 
   async remove(uuid: string): Promise<void> {
-    const result = await this.commentsRepository.delete(uuid);
+    const result = await this.commentsRepository.delete({ uuidComment: uuid });
     
     if (result.affected === 0) {
       throw new NotFoundException(`Commentaire avec l'UUID ${uuid} non trouvé`);

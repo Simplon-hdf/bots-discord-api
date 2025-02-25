@@ -27,7 +27,7 @@ describe('GuildController', () => {
     const dto: CreateGuildDto = {
       uuid: '123456789012345678',
       name: 'Test Guild',
-      memberCount: 10,
+      memberCount: '10',
       configuration: {},
     };
     mockGuildService.create.mockResolvedValue(dto);
@@ -36,14 +36,14 @@ describe('GuildController', () => {
   });
 
   it('should return an array of guilds', async () => {
-    const result = [{ uuid: '123456789012345678', name: 'Test Guild', memberCount: 10, configuration: {} }];
+    const result = [{ uuid: '123456789012345678', name: 'Test Guild', memberCount: '10', configuration: {} }];
     mockGuildService.findAll.mockResolvedValue(result);
     expect(await controller.findAll()).toEqual(result);
     expect(mockGuildService.findAll).toHaveBeenCalled();
   });
 
   it('should return a single guild', async () => {
-    const result = { uuid: '123456789012345678', name: 'Test Guild', memberCount: 10, configuration: {} };
+    const result = { uuid: '123456789012345678', name: 'Test Guild', memberCount: '10', configuration: {} };
     mockGuildService.findOne.mockResolvedValue(result);
     expect(await controller.findOne('123456789012345678')).toEqual(result);
     expect(mockGuildService.findOne).toHaveBeenCalledWith('123456789012345678');
@@ -51,12 +51,11 @@ describe('GuildController', () => {
 
   it('should update a guild', async () => {
     const dto: UpdateGuildDto = {
-      uuid: '123456789012345678',
       name: 'Updated Guild',
-      memberCount: 15,
+      memberCount: '15',
       configuration: { setting: true },
     };
-    const result = { uuid: '123456789012345678', name: 'Updated Guild', memberCount: 15, configuration: { setting: true } };
+    const result = { uuid: '123456789012345678', name: 'Updated Guild', memberCount: '15', configuration: { setting: true } };
     mockGuildService.update.mockResolvedValue(result);
     expect(await controller.update('123456789012345678', dto)).toEqual(result);
     expect(mockGuildService.update).toHaveBeenCalledWith('123456789012345678', dto);

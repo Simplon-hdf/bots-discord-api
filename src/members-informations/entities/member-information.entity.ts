@@ -45,7 +45,7 @@ export class MemberInformation {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @OneToOne(() => Member, (member) => member.memberInformations)
+  @OneToOne(() => Member, (member) => member.memberInformation)
   @JoinColumn({ name: 'uuidMember' })
   member: Member;
 

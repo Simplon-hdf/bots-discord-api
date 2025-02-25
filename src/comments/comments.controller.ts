@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, HttpCode, HttpStatus, ParseUUIDPipe } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -37,7 +37,7 @@ export class CommentsController {
     return this.commentsService.findOne(uuid);
   }
 
-  @Patch(':uuid')
+  @Put(':uuid')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Mettre à jour un commentaire' })
   @ApiParam({ name: 'uuid', description: 'UUID du commentaire' })

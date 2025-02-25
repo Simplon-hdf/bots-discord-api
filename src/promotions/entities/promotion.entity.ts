@@ -69,9 +69,6 @@ export class Promotion {
   @Column({ name: 'uuid_course', type: 'uuid' })
   uuidCourse: string;
 
-  @Column({ type: 'uuid', name: 'uuid_guild' })
-  uuidGuild: string;
-
   @ApiProperty({
     description: 'Formation associées aux promotions',
     type: () => [Course],
@@ -84,7 +81,7 @@ export class Promotion {
   @Column({ name: 'uuid_guild', type: 'varchar', length: 19, nullable: true })
   uuid_guild: string;
 
- @ManyToOne(() => Guild, guild => guild.promotions)
+  @ManyToOne(() => Guild, guild => guild.promotions)
   @JoinColumn({ name: 'uuid_guild' })
   guild: Guild;
 

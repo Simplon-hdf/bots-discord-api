@@ -14,7 +14,7 @@ import { PickableInternUUIDFields } from '../../utils/pickable-intern-uuid-field
  * @example
  * ```typescript
  * const transaction = new CreateXpTransactionDto();
- * transaction.uuid_member = "123e4567-e89b-12d3-a456-426614174000";
+ * transaction.uuidMember = "123e4567-e89b-12d3-a456-426614174000";
  * transaction.amount = 100;
  * transaction.reason = "Participation active";
  * transaction.notes = "Aide exceptionnelle"; // Optionnel
@@ -24,7 +24,7 @@ import { PickableInternUUIDFields } from '../../utils/pickable-intern-uuid-field
  * @see XpTransactionsController
  */
 export class CreateXpTransactionDto extends PickType(PickableInternUUIDFields, [
-  'uuid_member'
+  'uuidMember'
 ]) {
   @ApiProperty({
     description: 'Type de la transaction',
@@ -32,7 +32,7 @@ export class CreateXpTransactionDto extends PickType(PickableInternUUIDFields, [
     example: XpTransactionType.GAIN
   })
   @IsEnum(XpTransactionType)
-  transaction_type: XpTransactionType;
+  transactionType: XpTransactionType;
 
   @ApiProperty({
     description: 'Source de la transaction',
@@ -47,7 +47,7 @@ export class CreateXpTransactionDto extends PickType(PickableInternUUIDFields, [
     example: '100.00'
   })
   @IsDecimal({ decimal_digits: '2', force_decimal: true })
-  transaction_value: string;
+  transactionValue: string;
 
   @ApiProperty({
     description: 'Raison de la transaction',
@@ -77,7 +77,7 @@ export class CreateXpTransactionDto extends PickType(PickableInternUUIDFields, [
   })
   @IsOptional()
   @IsEnum(ReferenceType)
-  reference_type?: ReferenceType;
+  referenceType?: ReferenceType;
 
   @ApiProperty({
     description: 'UUID de l\'objet référencé',
@@ -86,5 +86,5 @@ export class CreateXpTransactionDto extends PickType(PickableInternUUIDFields, [
   })
   @IsOptional()
   @IsUUID()
-  reference_uuid?: string;
+  referenceUuid?: string;
 }

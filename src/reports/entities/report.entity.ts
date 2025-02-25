@@ -15,70 +15,67 @@ export enum ReportCategory {
   OTHER = 'other'
 }
 
-@Entity()
-@Unique(['reporter', 'resource', 'reported_member'])
+@Entity('reports')
+@Unique(['reporter', 'resource', 'reportedMember'])
 export class Report {
   @ApiProperty({
-    description: 'Identifiant unique du signalement',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    format: 'uuid'
+    description: 'UUID unique du signalement',
+    example: '123e4567-e89b-12d3-a456-426614174000'
   })
-  @PrimaryGeneratedColumn('uuid')
-  uuid_report: string;
+  @PrimaryGeneratedColumn('uuid', { name: 'uuid_report' })
+  uuidReport: string;
 
   @ApiProperty({
     description: 'Type de l\'élément signalé (ressource ou membre)',
     enum: ReportType,
-    example: ReportType.RESOURCE,
-    enumName: 'ReportType'
+    example: ReportType.RESOURCE
   })
   @Column({
     type: 'enum',
-    enum: ReportType
+    enum: ReportType,
+    name: 'type'
   })
   type: ReportType;
 
   @ApiProperty({
     description: 'Catégorie du signalement',
     enum: ReportCategory,
-    example: ReportCategory.INAPPROPRIATE,
-    enumName: 'ReportCategory'
+    example: ReportCategory.INAPPROPRIATE
   })
   @Column({
     type: 'enum',
-    enum: ReportCategory
+    enum: ReportCategory,
+    name: 'category'
   })
   category: ReportCategory;
 
   @ApiProperty({
     description: 'Raison détaillée du signalement',
-    example: 'Contenu offensant envers la communauté',
-    maxLength: 50
+    example: 'Contenu offensant envers la communauté'
   })
-  @Column({ type: 'varchar', length: 50 })
+  @Column({ type: 'varchar', length: 50, name: 'reason' })
   reason: string;
 
   @ApiProperty({
     description: 'Statut actuel du signalement (pending, resolved, rejected)',
-    example: 'pending',
-    maxLength: 50
+    example: 'pending'
   })
-  @Column({ type: 'varchar', length: 50 })
+  @Column({ type: 'varchar', length: 50, name: 'status' })
   status: string;
 
   @ApiProperty({
     description: 'Date de création du signalement',
     example: '2024-02-22T16:05:01.484Z'
   })
-  @CreateDateColumn()
-  created_at: Date;
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 
   @ApiProperty({
     description: 'Date de dernière mise à jour du signalement',
     example: '2024-02-22T16:05:01.484Z'
   })
-  @UpdateDateColumn()
-  updated_at: Date;
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
 
   @ManyToOne(() => Member)
   @JoinColumn({ name: 'reporter_uuid' })
@@ -88,7 +85,7 @@ export class Report {
   })
   reporter: Member;
 
-  @ManyToOne(() => Resource, { nullable: true })
+  @ManyToOne(() => Resource, resource => resource.reports)
   @JoinColumn({ name: 'resource_uuid' })
   @ApiProperty({ 
     description: 'Ressource signalée (uniquement si type = resource)',
@@ -97,12 +94,12 @@ export class Report {
   })
   resource?: Resource;
 
-  @ManyToOne(() => Member, { nullable: true })
+  @ManyToOne(() => Member)
   @JoinColumn({ name: 'reported_member_uuid' })
   @ApiProperty({ 
     description: 'Membre signalé (uniquement si type = member)',
     type: () => Member,
     required: false
   })
-  reported_member?: Member;
+  reportedMember?: Member;
 } 

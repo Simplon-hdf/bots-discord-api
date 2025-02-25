@@ -5,8 +5,8 @@ import { PickableDtoFields } from "src/utils/pickable-dto-fields";
 
 export class CreateCourseDto extends PickType(IntersectionType(PickableDiscordUUIDFields, PickableDtoFields), [
     'name', 
-    'uuid_guild', 
-    'uuid_role']) {
+    'uuidGuild', 
+    'uuidRole']) {
 
     @ApiProperty({
         description: 'Si la formation est certifiante',

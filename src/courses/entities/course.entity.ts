@@ -65,7 +65,7 @@ export class Course {
     description: 'Guilde associée aux formations',
     type: () => Guild,
   })
-  @ManyToOne(() => Guild, (guild) => guild.courses)
+  @OneToOne(() => Guild, (guild) => guild.course)
   @JoinColumn({ name: 'uuid_guild' })
   guild: Guild;
 

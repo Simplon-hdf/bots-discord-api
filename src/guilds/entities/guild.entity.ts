@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn, OneToMany, OneToOne, JoinColumn, ManyToOne} from 'typeorm';
+import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Course } from '../../courses/entities/course.entity';
 import { Member } from '../../members/entities/member.entity';
@@ -8,13 +8,8 @@ import { GuildTemplate } from '../../guilds-templates/entities/guild-template.en
 import { Channel } from '../../channels/entities/channel.entity';
 import { Category } from '../../categories/entities/category.entity';
 import { Campus } from '../../campuses/entities/campus.entity';
-import { ApiProperty } from '@nestjs/swagger';
-import { Course } from '../../courses/entities/course.entity';
-import { Member } from '../../members/entities/member.entity';
-import { Campus } from 'src/campuses/entities/campus.entity';
-import { Promotion } from 'src/promotions/entities/promotion.entity';
 
-@Entity('Guilds')
+@Entity('guilds')
 export class Guild {
   @ApiProperty({
     description: 'ID Discord du serveur',
@@ -32,10 +27,10 @@ export class Guild {
 
   @ApiProperty({
     description: 'Nombre de membres',
-    example: 100,
+    example: '100',
   })
-  @Column({ type: 'int' })
-  memberCount: number;
+  @Column({ type: 'varchar', length: 50, name: 'member_count' })
+  memberCount: string;
 
   @ApiProperty({
     description: 'Configuration du serveur',
@@ -56,28 +51,59 @@ export class Guild {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @ManyToOne(() => Member, (member) => member.guild)
-  members: Member[];
+  @ApiProperty({
+    description: 'Membres de la guilde',
+    type: () => [Member]
+  })
+  @OneToMany(() => Member, (member) => member.guild, { lazy: true })
+  members: Promise<Member[]>;
 
+  @ApiProperty({
+    description: 'Promotions de la guilde',
+    type: () => [Promotion]
+  })
   @OneToMany(() => Promotion, (promotion) => promotion.guild)
   promotions: Promotion[];
 
+  @ApiProperty({
+    description: 'Formation associée à la guilde',
+    type: () => Course
+  })
   @OneToOne(() => Course, course => course.guild)
-  @JoinColumn({ name: 'uuidCourse' })
   course: Course;
 
+  @ApiProperty({
+    description: 'Rôles de la guilde',
+    type: () => [Role]
+  })
   @OneToMany(() => Role, role => role.guild)
   roles: Role[];
 
+  @ApiProperty({
+    description: 'Template de la guilde',
+    type: () => GuildTemplate
+  })
   @OneToOne(() => GuildTemplate, template => template.guild)
   template: GuildTemplate;
 
+  @ApiProperty({
+    description: 'Canaux de la guilde',
+    type: () => [Channel]
+  })
   @OneToMany(() => Channel, channel => channel.guild)
   channels: Channel[];
 
+  @ApiProperty({
+    description: 'Catégories de la guilde',
+    type: () => [Category]
+  })
   @OneToMany(() => Category, category => category.guild)
   categories: Category[];
 
+  @ApiProperty({
+    description: 'Campus associés à la guilde',
+    type: () => [Campus]
+  })
   @OneToMany(() => Campus, campus => campus.guild)
   campuses: Campus[];
 }

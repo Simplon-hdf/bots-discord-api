@@ -14,8 +14,8 @@ export class CreateRoleDto extends PickType(IntersectionType(PickableDtoFields, 
     })
     @IsString()
     @MaxLength(50)
-    @Matches(/^\d+$/, { message: 'member_count doit être une chaîne numérique' })
-    member_count: string = '0';
+    @Matches(/^\d+$/, { message: 'memberCount doit être une chaîne numérique' })
+    memberCount: string = '0';
 
     @ApiProperty({
         description: 'Position du rôle dans la hiérarchie',
@@ -23,8 +23,8 @@ export class CreateRoleDto extends PickType(IntersectionType(PickableDtoFields, 
     })
     @IsString()
     @MaxLength(50)
-    @Matches(/^\d+$/, { message: 'role_position doit être une chaîne numérique' })
-    role_position: string;
+    @Matches(/^\d+$/, { message: 'rolePosition doit être une chaîne numérique' })
+    rolePosition: string;
 
     @ApiProperty({
         description: 'Indique si le rôle est affiché séparément dans la liste des membres',

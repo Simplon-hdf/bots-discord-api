@@ -99,14 +99,14 @@ export class PickableInternUUIDFields {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_reporter: string;
+  uuidReporter: string;
 
   @ApiProperty({
     description: 'Identifiant unique du membre signalé',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  uuid_reported_member: string;
+  uuidReportedMember: string;
 
   @ApiProperty({
     description: 'Identifiant unique de l\'action de modération',

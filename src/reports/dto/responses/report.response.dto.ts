@@ -8,21 +8,21 @@ export class ReportMemberResponseDto {
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
   @Expose()
-  uuid_member: string;
+  uuidMember: string;
 
   @ApiProperty({
     description: 'Nom d\'utilisateur sur le serveur',
     example: 'User2'
   })
   @Expose()
-  guild_username: string;
+  guildUsername: string;
 
   @ApiProperty({
     description: 'Rôle dans la communauté',
     example: 'Member'
   })
   @Expose()
-  community_role: string;
+  communityRole: string;
 
   // On exclut les autres champs du membre
   @Exclude()
@@ -38,10 +38,10 @@ export class ReportMemberResponseDto {
   status: string;
 
   @Exclude()
-  uuid_discord: string;
+  uuidDiscord: string;
 
   @Exclude()
-  uuid_guild: string;
+  uuidGuild: string;
 
   @Exclude()
   xp: string;
@@ -53,7 +53,7 @@ export class ReportResponseDto {
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
   @Expose()
-  uuid_report: string;
+  uuidReport: string;
 
   @ApiProperty({
     description: 'Type de signalement',
@@ -90,14 +90,14 @@ export class ReportResponseDto {
     example: '2024-02-22T12:00:00Z'
   })
   @Expose()
-  created_at: Date;
+  createdAt: Date;
 
   @ApiProperty({
     description: 'Date de dernière mise à jour',
     example: '2024-02-22T12:00:00Z'
   })
   @Expose()
-  updated_at: Date;
+  updatedAt: Date;
 
   @ApiProperty({
     description: 'Membre qui a fait le signalement',
@@ -114,5 +114,5 @@ export class ReportResponseDto {
   })
   @Expose()
   @Type(() => ReportMemberResponseDto)
-  reported_member?: ReportMemberResponseDto;
+  reportedMember?: ReportMemberResponseDto;
 } 

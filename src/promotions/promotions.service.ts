@@ -20,11 +20,11 @@ export class PromotionsService {
     try {
       // Création du rôle associé à la promotion
       const newRole = this.roleRepository.create({
-        uuid_role: createPromotionDto.uuid_role, // UUID fourni par le DTO
-        uuid_guild: createPromotionDto.uuid_guild, // Lié à la guilde
+        uuidRole: createPromotionDto.uuidRole, // UUID fourni par le DTO
+        uuidGuild: createPromotionDto.uuidGuild, // Lié à la guilde
         name: createPromotionDto.name, // Même nom que la promotion
-        member_count: "0",
-        role_position: "0",
+        memberCount: 0,
+        rolePosition: 0,
         hoist: false,
         color: "#000000",
       });
@@ -35,7 +35,7 @@ export class PromotionsService {
       // Création de la promotion avec le rôle associé
       const newPromotion = this.promotionRepository.create({
         ...createPromotionDto,
-        uuid_role: savedRole.uuid_role, // Associe le rôle créé à la promotion
+        uuidRole: savedRole.uuidRole, // Associe le rôle créé à la promotion
       });
 
       return await this.promotionRepository.save(newPromotion);

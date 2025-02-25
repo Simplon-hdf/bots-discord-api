@@ -32,101 +32,99 @@ export class MembersService {
   }
 
   // Récupérer un membre par son uuid
-  async findOne(uuid: string): Promise<Member> {
+  async findOne(uuidMember: string): Promise<Member> {
     const member = await this.membersRepository.findOne({
-      where: { uuid },
+      where: { uuidMember },
       relations: ['resources']
     });
 
     if (!member) {
-      throw new NotFoundException(`Member with UUID ${uuid} not found`);
+      throw new NotFoundException(`Member with UUID ${uuidMember} not found`);
     }
     return member;
   }
 
   // Mettre à jour un membre
-  async update(uuid: string, updateMemberDto: UpdateMemberDto): Promise<Member> {
-    const member = await this.findOne(uuid);
+  async update(uuidMember: string, updateMemberDto: UpdateMemberDto): Promise<Member> {
+    const member = await this.findOne(uuidMember);
     Object.assign(member, updateMemberDto);
     return await this.membersRepository.save(member);
   }
 
   // Supprimer un membre
-  async remove(uuid: string): Promise<DeleteResult> {
-    const result = await this.membersRepository.delete({ uuid });
+  async remove(uuidMember: string): Promise<DeleteResult> {
+    const result = await this.membersRepository.delete({ uuidMember });
     if (result.affected === 0) {
-      throw new NotFoundException(`Member with UUID ${uuid} not found`);
+      throw new NotFoundException(`Member with UUID ${uuidMember} not found`);
     }
     return result;
   }
 
-  async getMemberRoles(uuid_member: string): Promise<Role[]> {
+  async getMemberRoles(uuidMember: string): Promise<Role[]> {
     const member = await this.membersRepository.findOne({
-        where: { uuid_member },
+        where: { uuidMember },
         relations: ['roles'],
     });
 
     if (!member) {
-        throw new NotFoundException(`Member with UUID ${uuid_member} not found`);
+        throw new NotFoundException(`Member with UUID ${uuidMember} not found`);
     }
 
     return member.roles;
-}
+  }
 
-  async assignRoleToMember(uuid_member: string, uuid_role: string): Promise<Member> {
+  async assignRoleToMember(uuidMember: string, uuidRole: string): Promise<Member> {
     const member = await this.membersRepository.findOne({
-        where: { uuid_member },
+        where: { uuidMember },
         relations: ['roles'],
     });
 
     if (!member) {
-        throw new NotFoundException(`Member with UUID ${uuid_member} not found`);
+        throw new NotFoundException(`Member with UUID ${uuidMember} not found`);
     }
 
-    const role = await this.rolesRepository.findOne({ where: { uuid_role } });
+    const role = await this.rolesRepository.findOne({ where: { uuidRole } });
     if (!role) {
-        throw new NotFoundException(`Role with UUID ${uuid_role} not found`);
+        throw new NotFoundException(`Role with UUID ${uuidRole} not found`);
     }
 
     // Vérifier si le membre possède déjà ce rôle
-    if (member.roles.some(r => r.uuid_role === uuid_role)) {
-        throw new BadRequestException(`Member already has the role ${uuid_role}`);
+    if (member.roles.some(r => r.uuidRole === uuidRole)) {
+        throw new BadRequestException(`Member already has the role ${uuidRole}`);
     }
 
     // Ajouter le rôle au membre
     member.roles.push(role);
 
     // Incrémenter `member_count`
-    role.member_count = (parseInt(role.member_count, 10) + 1).toString();
+    role.memberCount = parseInt(role.memberCount.toString(), 10) + 1;
     await this.rolesRepository.save(role);
 
     return await this.membersRepository.save(member);
-}
-
-
-async removeRoleFromMember(uuid_member: string, uuid_role: string): Promise<Member> {
-  const member = await this.membersRepository.findOne({
-      where: { uuid_member },
-      relations: ['roles'],
-  });
-
-  if (!member) {
-      throw new NotFoundException(`Member with UUID ${uuid_member} not found`);
   }
 
-  const role = await this.rolesRepository.findOne({ where: { uuid_role } });
-  if (!role) {
-      throw new NotFoundException(`Role with UUID ${uuid_role} not found`);
+  async removeRoleFromMember(uuidMember: string, uuidRole: string): Promise<Member> {
+    const member = await this.membersRepository.findOne({
+        where: { uuidMember },
+        relations: ['roles'],
+    });
+
+    if (!member) {
+        throw new NotFoundException(`Member with UUID ${uuidMember} not found`);
+    }
+
+    const role = await this.rolesRepository.findOne({ where: { uuidRole } });
+    if (!role) {
+        throw new NotFoundException(`Role with UUID ${uuidRole} not found`);
+    }
+
+    // Supprimer le rôle du membre
+    member.roles = member.roles.filter(r => r.uuidRole !== uuidRole);
+
+    // Mettre à jour `member_count`
+    role.memberCount = Math.max(0, parseInt(role.memberCount.toString(), 10) - 1);
+    await this.rolesRepository.save(role);
+
+    return await this.membersRepository.save(member);
   }
-
-  // Supprimer le rôle du membre
-  member.roles = member.roles.filter(r => r.uuid_role !== uuid_role);
-
-  // Mettre à jour `member_count`
-  role.member_count = Math.max(0, parseInt(role.member_count, 10) - 1).toString();
-  await this.rolesRepository.save(role);
-
-  return await this.membersRepository.save(member);
-}
-
 }

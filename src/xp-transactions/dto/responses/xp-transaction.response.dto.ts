@@ -8,21 +8,21 @@ export class XpTransactionMemberResponseDto {
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
   @Expose()
-  uuid_member: string;
+  uuidMember: string;
 
   @ApiProperty({
     description: 'Nom d\'utilisateur sur le serveur',
     example: 'User2'
   })
   @Expose()
-  guild_username: string;
+  guildUsername: string;
 
   @ApiProperty({
     description: 'Rôle dans la communauté',
     example: 'Member'
   })
   @Expose()
-  community_role: string;
+  communityRole: string;
 
   // On exclut les autres champs du membre
   @Exclude()
@@ -38,10 +38,10 @@ export class XpTransactionMemberResponseDto {
   status: string;
 
   @Exclude()
-  uuid_discord: string;
+  uuidDiscord: string;
 
   @Exclude()
-  uuid_guild: string;
+  uuidGuild: string;
 
   @Exclude()
   xp: string;
@@ -53,7 +53,7 @@ export class XpTransactionResponseDto {
     example: '550e8400-e29b-41d4-a716-446655440000'
   })
   @Expose()
-  uuid_xp_transaction: string;
+  uuidXpTransaction: string;
 
   @ApiProperty({
     description: 'Type de la transaction',
@@ -61,7 +61,7 @@ export class XpTransactionResponseDto {
     example: XpTransactionType.GAIN
   })
   @Expose()
-  transaction_type: XpTransactionType;
+  transactionType: XpTransactionType;
 
   @ApiProperty({
     description: 'Source de la transaction',
@@ -76,7 +76,7 @@ export class XpTransactionResponseDto {
     example: '100.00'
   })
   @Expose()
-  transaction_value: string;
+  transactionValue: string;
 
   @ApiProperty({
     description: 'Raison de la transaction',
@@ -100,7 +100,7 @@ export class XpTransactionResponseDto {
     required: false
   })
   @Expose()
-  reference_type?: ReferenceType;
+  referenceType?: ReferenceType;
 
   @ApiProperty({
     description: 'UUID de l\'objet référencé',
@@ -108,14 +108,14 @@ export class XpTransactionResponseDto {
     required: false
   })
   @Expose()
-  reference_uuid?: string;
+  referenceUuid?: string;
 
   @ApiProperty({
     description: 'Date de création',
     example: '2024-03-14T12:00:00Z'
   })
   @Expose()
-  created_at: Date;
+  createdAt: Date;
 
   @ApiProperty({
     description: 'Membre concerné par la transaction',

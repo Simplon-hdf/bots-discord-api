@@ -12,7 +12,7 @@ export class DiscordUser {
     example: '123456789012345678'
   })
   @PrimaryColumn({ type: 'varchar', length: 19, name: 'uuid_discord' })
-  uuid: string;
+  uuidDiscord: string;
 
   @ApiProperty({
     description: 'Nom d\'utilisateur Discord',
@@ -25,7 +25,7 @@ export class DiscordUser {
     description: 'Discriminateur Discord',
     example: '1234'
   })
-  @Column({ type: 'varchar', length: 50 })
+  @Column({ type: 'varchar', length: 50, name: 'discriminator' })
   discriminator: string;
 
   @ApiProperty({

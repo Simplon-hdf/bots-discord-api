@@ -5,7 +5,7 @@ import { PickableInternUUIDFields } from "src/utils/pickable-intern-uuid-fields"
 import { ArrayNotEmpty, ArrayUnique, IsString, Matches } from "class-validator";
 
 export class AssignRoleToMemberDto extends PickType(PickableInternUUIDFields, [
-    'uuid_member',
+    'uuidMember',
 ]) {
 
     @ApiProperty({
@@ -15,6 +15,6 @@ export class AssignRoleToMemberDto extends PickType(PickableInternUUIDFields, [
     @ArrayNotEmpty()
     @ArrayUnique()
     @IsString({ each: true }) // Assure que chaque élément est une chaîne
-    @Matches(/^\d{17,19}$/, { each: true, message: "Chaque uuid_role doit être un Snowflake Discord valide (17 à 19 chiffres uniquement)" })
-    uuid_roles: string[];
+    @Matches(/^\d{17,19}$/, { each: true, message: "Chaque uuidRole doit être un Snowflake Discord valide (17 à 19 chiffres uniquement)" })
+    uuidRoles: string[];
 }

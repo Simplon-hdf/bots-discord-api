@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToOne, JoinColumn, ManyToMany } from 'typeorm';import { ApiProperty } from '@nestjs/swagger';
+import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToOne, JoinColumn, ManyToMany } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 import { Guild } from '../../guilds/entities/guild.entity';
 import { Member } from '../../members/entities/member.entity';
 import { Course } from '../../courses/entities/course.entity';
@@ -12,7 +13,7 @@ export class Role {
     example: '172653890987364567'
   })
   @PrimaryColumn('varchar', { name: 'uuid_role' })
-  uuid: string;
+  uuidRole: string;
 
   @ApiProperty({
     description: 'Nom du rôle',
@@ -27,14 +28,14 @@ export class Role {
     example: 10
   })
   @Column({ type: 'int', nullable: false })
-  member_count: number;
+  memberCount: number;
 
   @ApiProperty({
     description: 'Position du rôle dans la hiérarchie',
     example: 1
   })
   @Column({ type: 'int', nullable: false })
-  role_position: number;
+  rolePosition: number;
 
   @ApiProperty({
     description: 'Indique si le rôle est affiché séparément dans la liste des membres',

@@ -11,7 +11,7 @@ export class Campus {
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
   @PrimaryGeneratedColumn('uuid', { name: 'uuid_campus' })
-  uuid: string;
+  uuidCampus: string;
 
   @ApiProperty({
     description: 'Nom du campus',

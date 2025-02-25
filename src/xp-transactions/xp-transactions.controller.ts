@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { XpTransactionsService } from './xp-transactions.service';
 import { CreateXpTransactionDto } from './dto/create-xp-transaction.dto';
-import { UpdateXpTransactionDto } from './dto/update-xp-transaction.dto';
 import { ApiOperation, ApiResponse, ApiTags, ApiParam } from '@nestjs/swagger';
 import { XpTransactionResponseDto } from './dto/responses/xp-transaction.response.dto';
 
@@ -18,26 +17,7 @@ export class XpTransactionsController {
   @ApiResponse({ 
     status: 201, 
     description: 'Transaction XP créée avec succès',
-    type: XpTransaction,
-    content: {
-      'application/json': {
-        example: {
-          uuid: '550e8400-e29b-41d4-a716-446655440000',
-          transaction_type: 'GAIN',
-          transaction_value: 100,
-          createdAt: '2024-03-14T12:00:00Z',
-          uuidMember: '123e4567-e89b-12d3-a456-426614174000',
-          member: {
-            uuid: '123e4567-e89b-12d3-a456-426614174000',
-            guild_username: 'JohnDoe',
-            xp: '100.00',
-            level: 1,
-            community_role: 'Member',
-            status: 'Active'
-          }
-        }
-      }
-    }
+    type: XpTransactionResponseDto
   })
   @ApiResponse({ status: 400, description: 'Données invalides' })
   @ApiResponse({ status: 404, description: 'Membre non trouvé' })
@@ -59,13 +39,13 @@ export class XpTransactionsController {
     return await this.xpTransactionsService.findAll();
   }
 
-  @Get('member/:uuid_member')
+  @Get('member/:uuid')
   @ApiOperation({ 
     summary: 'Récupérer les transactions XP d\'un membre',
     description: 'Retourne la liste des transactions XP d\'un membre spécifique.'
   })
   @ApiParam({ 
-    name: 'uuid_member',
+    name: 'uuid',
     description: 'UUID du membre dont on veut récupérer les transactions',
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
@@ -75,8 +55,8 @@ export class XpTransactionsController {
     type: [XpTransactionResponseDto] 
   })
   @ApiResponse({ status: 404, description: 'Membre non trouvé' })
-  async findByMember(@Param('uuid_member') uuid_member: string): Promise<XpTransactionResponseDto[]> {
-    return await this.xpTransactionsService.findByMember(uuid_member);
+  async findByMember(@Param('uuid') uuid: string): Promise<XpTransactionResponseDto[]> {
+    return await this.xpTransactionsService.findByMember(uuid);
   }
 
   @Get(':uuid')
@@ -92,25 +72,6 @@ export class XpTransactionsController {
   @ApiResponse({ status: 404, description: 'Transaction XP non trouvée' })
   async findOne(@Param('uuid') uuid: string): Promise<XpTransactionResponseDto> {
     return await this.xpTransactionsService.findOne(uuid);
-  }
-
-  @Patch(':uuid')
-  @ApiOperation({ 
-    summary: 'Mettre à jour une transaction XP',
-    description: 'Met à jour les informations d\'une transaction XP existante.'
-  })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'La transaction XP a été mise à jour avec succès.',
-    type: XpTransactionResponseDto 
-  })
-  @ApiResponse({ status: 400, description: 'Données invalides' })
-  @ApiResponse({ status: 404, description: 'Transaction XP non trouvée' })
-  async update(
-    @Param('uuid') uuid: string,
-    @Body() updateXpTransactionDto: UpdateXpTransactionDto
-  ): Promise<XpTransactionResponseDto> {
-    return await this.xpTransactionsService.update(uuid, updateXpTransactionDto);
   }
 
   @Delete(':uuid')

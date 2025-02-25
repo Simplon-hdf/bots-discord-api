@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { ReportType, ReportCategory } from '../../../reports/entities/report.entity';
+import { VoteType } from '../../../votes/entities/vote.entity';
 
 export class ResourceCreatorResponseDto {
   @ApiProperty({
@@ -8,21 +9,21 @@ export class ResourceCreatorResponseDto {
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
   @Expose()
-  uuid_member: string;
+  uuidMember: string;
 
   @ApiProperty({
     description: 'Nom d\'utilisateur sur le serveur',
     example: 'User2'
   })
   @Expose()
-  guild_username: string;
+  guildUsername: string;
 
   @ApiProperty({
     description: 'Rôle dans la communauté',
     example: 'Member'
   })
   @Expose()
-  community_role: string;
+  communityRole: string;
 
   // On exclut les autres champs du membre
   @Exclude()
@@ -38,10 +39,10 @@ export class ResourceCreatorResponseDto {
   status: string;
 
   @Exclude()
-  uuid_discord: string;
+  uuidDiscord: string;
 
   @Exclude()
-  uuid_guild: string;
+  uuidGuild: string;
 
   @Exclude()
   xp: string;
@@ -52,8 +53,8 @@ export class ResourceReportResponseDto {
     description: 'UUID du signalement',
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
-  @Expose()
-  uuid_report: string;
+  @Expose({ name: 'uuid_report' })
+  uuidReport: string;
 
   @ApiProperty({
     description: 'Type de signalement',
@@ -89,8 +90,8 @@ export class ResourceReportResponseDto {
     description: 'Date de création',
     example: '2024-02-22T12:00:00Z'
   })
-  @Expose()
-  created_at: Date;
+  @Expose({ name: 'created_at' })
+  createdAt: Date;
 
   @ApiProperty({
     description: 'Membre qui a fait le signalement',
@@ -101,13 +102,98 @@ export class ResourceReportResponseDto {
   reporter: ResourceCreatorResponseDto;
 }
 
+export class ResourceVoteResponseDto {
+  @ApiProperty({
+    description: 'UUID du vote',
+    example: '123e4567-e89b-12d3-a456-426614174000'
+  })
+  @Expose()
+  uuidVote: string;
+
+  @ApiProperty({
+    description: 'Type de vote',
+    enum: VoteType,
+    example: VoteType.UPVOTE
+  })
+  @Expose()
+  voteType: VoteType;
+
+  @ApiProperty({
+    description: 'Date de création',
+    example: '2024-02-22T12:00:00Z'
+  })
+  @Expose()
+  createdAt: Date;
+
+  @ApiProperty({
+    description: 'Statut actif du vote',
+    example: true
+  })
+  @Expose()
+  isActive: boolean;
+
+  @ApiProperty({
+    description: 'Membre qui a voté',
+    type: () => ResourceCreatorResponseDto
+  })
+  @Expose()
+  @Type(() => ResourceCreatorResponseDto)
+  member: ResourceCreatorResponseDto;
+}
+
+export class ResourceCommentResponseDto {
+  @ApiProperty({
+    description: 'UUID du commentaire',
+    example: '123e4567-e89b-12d3-a456-426614174000'
+  })
+  @Expose()
+  uuidComment: string;
+
+  @ApiProperty({
+    description: 'Contenu du commentaire',
+    example: 'Très bon travail sur ce projet !'
+  })
+  @Expose()
+  content: string;
+
+  @ApiProperty({
+    description: 'Statut du commentaire',
+    example: 'active'
+  })
+  @Expose()
+  status: string;
+
+  @ApiProperty({
+    description: 'Date de création',
+    example: '2024-02-22T12:00:00Z'
+  })
+  @Expose()
+  createdAt: Date;
+
+  @ApiProperty({
+    description: 'Membre qui a commenté',
+    type: () => ResourceCreatorResponseDto
+  })
+  @Expose()
+  @Type(() => ResourceCreatorResponseDto)
+  member: ResourceCreatorResponseDto;
+
+  @ApiProperty({
+    description: 'Votes du commentaire',
+    type: () => [ResourceVoteResponseDto]
+  })
+  @Expose()
+  @Type(() => ResourceVoteResponseDto)
+  votes: ResourceVoteResponseDto[];
+}
+
 export class ResourceResponseDto {
   @ApiProperty({
     description: 'UUID de la ressource',
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
   @Expose()
-  uuid_resource: string;
+  uuidResource: string;
 
   @ApiProperty({
     description: 'Titre de la ressource',
@@ -138,11 +224,25 @@ export class ResourceResponseDto {
   status: string;
 
   @ApiProperty({
+    description: 'UUID du créateur',
+    example: '123e4567-e89b-12d3-a456-426614174000'
+  })
+  @Expose()
+  creatorUuid: string;
+
+  @ApiProperty({
     description: 'Date de création',
     example: '2024-02-22T12:00:00Z'
   })
   @Expose()
-  created_at: Date;
+  createdAt: Date;
+
+  @ApiProperty({
+    description: 'Date de mise à jour',
+    example: '2024-02-22T12:00:00Z'
+  })
+  @Expose()
+  updatedAt: Date;
 
   @ApiProperty({
     description: 'Créateur de la ressource',
@@ -160,7 +260,19 @@ export class ResourceResponseDto {
   @Type(() => ResourceReportResponseDto)
   reports: ResourceReportResponseDto[];
 
-  // On exclut les champs non nécessaires
-  @Exclude()
-  updated_at: Date;
+  @ApiProperty({
+    description: 'Votes de la ressource',
+    type: () => [ResourceVoteResponseDto]
+  })
+  @Expose()
+  @Type(() => ResourceVoteResponseDto)
+  votes: ResourceVoteResponseDto[];
+
+  @ApiProperty({
+    description: 'Commentaires de la ressource',
+    type: () => [ResourceCommentResponseDto]
+  })
+  @Expose()
+  @Type(() => ResourceCommentResponseDto)
+  comments: ResourceCommentResponseDto[];
 } 

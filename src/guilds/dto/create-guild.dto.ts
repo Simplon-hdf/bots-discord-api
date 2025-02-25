@@ -1,4 +1,4 @@
-import { IsString, IsInt, MaxLength, IsObject, Min, Length } from 'class-validator';
+import { IsString, MaxLength, IsObject, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateGuildDto {
@@ -20,11 +20,11 @@ export class CreateGuildDto {
 
   @ApiProperty({
     description: 'Nombre de membres dans le serveur',
-    example: 100
+    example: '100'
   })
-  @IsInt()
-  @Min(0)
-  memberCount: number;
+  @IsString()
+  @MaxLength(50)
+  memberCount: string;
 
   @ApiProperty({
     description: 'Configuration du serveur',

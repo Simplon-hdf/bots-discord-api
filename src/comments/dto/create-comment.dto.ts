@@ -32,26 +32,19 @@ export class CreateCommentDto {
   @IsIn(['active', 'inactive', 'deleted'], { 
     message: 'Le statut doit être soit active, inactive ou deleted'
   })
-  comment_status: string;
+  status: string;
 
   @ApiProperty({
     description: 'UUID du membre qui crée le commentaire',
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
-  @IsUUID('4', { message: 'L\'ID de l\'utilisateur doit être un UUID valide' })
+  @IsUUID('4', { message: 'L\'UUID du membre doit être un UUID valide' })
   uuidMember: string;
 
   @ApiProperty({
-    description: 'UUID de la ressource concernée par le commentaire',
+    description: 'UUID de la ressource commentée',
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
-  @IsUUID('4', { message: 'L\'ID de la ressource doit être un UUID valide' })
-  resource_uuid: string;
-
-  @ApiProperty({
-    description: 'UUID de l\'utilisateur',
-    example: '123e4567-e89b-12d3-a456-426614174000'
-  })
-  @IsUUID('4', { message: 'L\'ID de l\'utilisateur doit être un UUID valide' })
-  user_uuid: string;
+  @IsUUID('4', { message: 'L\'UUID de la ressource doit être un UUID valide' })
+  uuidResource: string;
 }

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test d'Authentification Discord</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #36393f;
+            color: #ffffff;
+        }
+        .container {
+            background-color: #2f3136;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            color: #7289da;
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #7289da;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #5b6eae;
+        }
+        .card {
+            background-color: #40444b;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        pre {
+            background-color: #202225;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            color: #dcddde;
+        }
+        .success {
+            color: #43b581;
+        }
+        .error {
+            color: #f04747;
+        }
+        .info-box {
+            background-color: #4f545c;
+            border-left: 4px solid #7289da;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test d'Authentification Discord</h1>
+        
+        <div class="card">
+            <h2>1. Connexion avec Discord</h2>
+            <p>Cliquez sur le bouton ci-dessous pour vous connecter avec Discord :</p>
+            <a href="http://localhost:3000/auth/login" class="btn">Se connecter avec Discord</a>
+            <a href="http://localhost:3000/auth/discord" class="btn">Se connecter (route alternative)</a>
+        </div>
+
+        <div class="card">
+            <h2>2. Informations utilisateur</h2>
+            <p>Entrez un code d'autorisation pour récupérer les informations utilisateur :</p>
+            <input type="text" id="codeInput" placeholder="Code d'autorisation" style="width: 100%; padding: 8px; margin-bottom: 10px; background-color: #40444b; border: 1px solid #202225; color: white; border-radius: 4px;">
+            <button onclick="getUserInfo()" class="btn">Récupérer les infos</button>
+            <div id="userInfoResult" class="info-box" style="display: none;"></div>
+        </div>
+
+        <div class="card">
+            <h2>3. Résultat de l'authentification</h2>
+            <div id="authResult" class="info-box">
+                En attente d'authentification...
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>4. Token JWT</h2>
+            <div id="tokenInfo" class="info-box">
+                Aucun token disponible
+            </div>
+            <button onclick="decodeToken()" class="btn" id="decodeBtn" style="display: none;">Décoder le token</button>
+            <div id="decodedToken" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Fonction pour récupérer et afficher les paramètres de l'URL
+        function parseUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const errorMessage = urlParams.get('message');
+            
+            if (token) {
+                document.getElementById('authResult').innerHTML = '<span class="success">✓ Authentification réussie!</span>';
+                document.getElementById('tokenInfo').innerHTML = `<strong>Token JWT:</strong><br><pre>${token}</pre>`;
+                document.getElementById('decodeBtn').style.display = 'inline-block';
+                localStorage.setItem('discord_jwt_token', token);
+            } else if (errorMessage) {
+                document.getElementById('authResult').innerHTML = `<span class="error">✗ Erreur d'authentification:</span><br>${decodeURIComponent(errorMessage)}`;
+            }
+        }
+
+        // Fonction pour récupérer les informations utilisateur
+        async function getUserInfo() {
+            const code = document.getElementById('codeInput').value.trim();
+            if (!code) {
+                alert('Veuillez entrer un code d\'autorisation');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/auth/user-info?code=${code}`);
+                const data = await response.json();
+                
+                const resultElement = document.getElementById('userInfoResult');
+                resultElement.style.display = 'block';
+                
+                if (response.ok) {
+                    resultElement.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                    
+                    if (data.token) {
+                        document.getElementById('tokenInfo').innerHTML = `<strong>Token JWT:</strong><br><pre>${data.token}</pre>`;
+                        document.getElementById('decodeBtn').style.display = 'inline-block';
+                        localStorage.setItem('discord_jwt_token', data.token);
+                    }
+                } else {
+                    resultElement.innerHTML = `<span class="error">Erreur:</span> ${data.message || 'Une erreur est survenue'}`;
+                }
+            } catch (error) {
+                document.getElementById('userInfoResult').style.display = 'block';
+                document.getElementById('userInfoResult').innerHTML = `<span class="error">Erreur:</span> ${error.message}`;
+            }
+        }
+
+        // Fonction pour décoder le token JWT
+        function decodeToken() {
+            const token = localStorage.getItem('discord_jwt_token');
+            if (!token) {
+                alert('Aucun token disponible');
+                return;
+            }
+
+            try {
+                // Décoder le token (partie payload)
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+
+                const decodedElement = document.getElementById('decodedToken');
+                decodedElement.style.display = 'block';
+                decodedElement.innerHTML = `<strong>Token décodé:</strong><br><pre>${JSON.stringify(JSON.parse(jsonPayload), null, 2)}</pre>`;
+            } catch (error) {
+                alert('Erreur lors du décodage du token: ' + error.message);
+            }
+        }
+
+        // Exécuter au chargement de la page
+        window.onload = function() {
+            parseUrlParams();
+            
+            // Vérifier si un token est déjà stocké
+            const storedToken = localStorage.getItem('discord_jwt_token');
+            if (storedToken) {
+                document.getElementById('tokenInfo').innerHTML = `<strong>Token JWT stocké:</strong><br><pre>${storedToken}</pre>`;
+                document.getElementById('decodeBtn').style.display = 'inline-block';
+            }
+        };
+    </script>
+</body>
+</html> 

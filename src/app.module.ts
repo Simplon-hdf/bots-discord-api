@@ -25,6 +25,8 @@ import { CommentsModule } from './comments/comments.module';
 import { DiscordUsersModule } from './discord-users/discord-users.module';
 import { CoursesModule } from './courses/courses.module';
 import { TagsModule } from './tags/tags.module';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 /**
  * Module principal de l'application
@@ -38,6 +40,11 @@ import { TagsModule } from './tags/tags.module';
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
     LoggerModule.forRoot(loggerConfig),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
+    }),
+    AuthModule,
     GuildsModule,
     CampusesModule,
     GuildsTemplatesModule,

@@ -23,7 +23,17 @@ async function bootstrap() {
     .setDescription('API pour la gestion du bot Discord')
     .setVersion('1.0')
     .addTag('answers', 'Gestion des réponses aux questions')
+    .addTag('auth', 'Authentification via Discord OAuth2')
     .addTag('bot')
+    .addBearerAuth(
+      { 
+        type: 'http', 
+        scheme: 'bearer', 
+        bearerFormat: 'JWT',
+        description: 'Entrez votre JWT token ici'
+      },
+      'JWT-auth'
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

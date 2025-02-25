@@ -124,10 +124,29 @@ export class ReportsService {
   }
 
   async update(uuid: string, updateReportDto: UpdateReportDto): Promise<ReportResponseDto> {
-    throw new ForbiddenException(
-      'Les utilisateurs ne peuvent pas modifier leurs signalements. Seuls les modérateurs peuvent mettre à jour le statut.'
-    );
-    // Cette fonctionnalité sera implémentée plus tard avec le système de modération
+    // Vérifier que le signalement existe
+    const report = await this.reportsRepository.findOne({
+      where: { uuidReport: uuid },
+      relations: ['reporter', 'resource', 'reportedMember']
+    });
+
+    if (!report) {
+      throw new NotFoundException(`Report with UUID ${uuid} not found`);
+    }
+
+    // Mettre à jour le signalement
+    const updatedReport = await this.reportsRepository.save({
+      ...report,
+      ...updateReportDto
+    });
+
+    // Récupérer le signalement mis à jour avec toutes ses relations
+    const reportWithRelations = await this.reportsRepository.findOne({
+      where: { uuidReport: updatedReport.uuidReport },
+      relations: ['reporter', 'resource', 'reportedMember']
+    });
+
+    return plainToInstance(ReportResponseDto, reportWithRelations, { excludeExtraneousValues: true });
   }
 
   async remove(uuid: string, currentUserId: string): Promise<void> {

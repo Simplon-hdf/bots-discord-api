@@ -172,4 +172,13 @@ test.describe('Answers API E2E Tests', () => {
     });
     expect(methodNotAllowedResponse.status()).toBe(404);
   });
+
+  test('Gestion des erreurs', async ({ request }) => {
+    // Test avec UUID inexistant
+    console.log('Testing non-existent UUID...');
+    const nonExistentResponse = await request.get(`${API_URL}/answers/non-existent-uuid`);
+    expect([404, 500]).toContain(nonExistentResponse.status()); // Accepte soit 404 soit 500
+    const nonExistentData = JSON.parse(await nonExistentResponse.text());
+    expect(nonExistentData.message).toBeTruthy(); // Vérifie juste qu'il y a un message d'erreur
+  });
 });

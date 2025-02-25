@@ -3,21 +3,42 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ModeratorActionsService } from './moderator-actions.service';
 import { ModeratorAction } from './entities/moderator-action.entity';
+import { Report } from '../reports/entities/report.entity';
+import { Member } from '../members/entities/member.entity';
 import { CreateModeratorActionDto, ActionType } from './dto/create-moderator-action.dto';
-import { UpdateModeratorActionDto } from './dto/update-moderator-action.dto';
-import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { describe, it, expect, vi, beforeEach, afterEach, vitest } from 'vitest';
+import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('ModeratorActionsService', () => {
   let service: ModeratorActionsService;
-  let repository: Repository<ModeratorAction>;
+  let moderatorActionRepository: Repository<ModeratorAction>;
+  let reportRepository: Repository<Report>;
+  let memberRepository: Repository<Member>;
 
-  const mockRepository = {
-    create: vi.fn(),
+  const mockModeratorAction = {
+    uuidModeration: '123e4567-e89b-12d3-a456-426614174000',
+    actionType: 'warning',
+    actionReason: 'Test reason',
+    moderatorUuid: '123e4567-e89b-12d3-a456-426614174001',
+    reportUuid: '123e4567-e89b-12d3-a456-426614174002',
+  };
+
+  const mockReport = {
+    uuidReport: '123e4567-e89b-12d3-a456-426614174002',
+    status: 'pending',
     save: vi.fn(),
-    find: vi.fn(),
-    findOne: vi.fn(),
-    remove: vi.fn(),
+  };
+
+  const mockModerator: Partial<Member> = {
+    uuidMember: '123e4567-e89b-12d3-a456-426614174001',
+    communityRole: 'Moderator',
+  };
+
+  const mockCreateDto: CreateModeratorActionDto = {
+    uuidMember: mockModerator.uuidMember!,
+    uuidReport: mockReport.uuidReport,
+    type: ActionType.WARN,
+    reason: 'Test reason',
   };
 
   beforeEach(async () => {
@@ -26,141 +47,105 @@ describe('ModeratorActionsService', () => {
         ModeratorActionsService,
         {
           provide: getRepositoryToken(ModeratorAction),
-          useValue: mockRepository,
+          useValue: {
+            create: vi.fn().mockReturnValue(mockModeratorAction),
+            save: vi.fn().mockResolvedValue(mockModeratorAction),
+            find: vi.fn().mockResolvedValue([mockModeratorAction]),
+            findOne: vi.fn().mockResolvedValue(mockModeratorAction),
+          },
+        },
+        {
+          provide: getRepositoryToken(Report),
+          useValue: {
+            findOne: vi.fn().mockResolvedValue(mockReport),
+            save: vi.fn().mockResolvedValue({ ...mockReport, status: 'resolved' }),
+          },
+        },
+        {
+          provide: getRepositoryToken(Member),
+          useValue: {
+            findOne: vi.fn().mockResolvedValue(mockModerator),
+          },
         },
       ],
     }).compile();
 
     service = module.get<ModeratorActionsService>(ModeratorActionsService);
-    repository = module.get<Repository<ModeratorAction>>(getRepositoryToken(ModeratorAction));
+    moderatorActionRepository = module.get<Repository<ModeratorAction>>(
+      getRepositoryToken(ModeratorAction),
+    );
+    reportRepository = module.get<Repository<Report>>(
+      getRepositoryToken(Report),
+    );
+    memberRepository = module.get<Repository<Member>>(
+      getRepositoryToken(Member),
+    );
   });
-
-  afterEach(() => {
-    vitest.clearAllMocks();
-  });
-
-  const mockModeratorAction = {
-    id: '123e4567-e89b-12d3-a456-426614174000',
-    userId: '123e4567-e89b-12d3-a456-426614174001',
-    actionType: ActionType.BAN,
-    reason: 'Test reason for moderation action',
-    duration: '24h',
-    notes: 'Test notes',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
 
   describe('create', () => {
-    it('should create a new moderator action', async () => {
-      const createDto: CreateModeratorActionDto = {
-        userId: mockModeratorAction.userId,
-        actionType: mockModeratorAction.actionType,
-        reason: mockModeratorAction.reason,
-        duration: mockModeratorAction.duration,
-        notes: mockModeratorAction.notes,
-      };
-
-      mockRepository.create.mockReturnValue(mockModeratorAction);
-      mockRepository.save.mockResolvedValue(mockModeratorAction);
-
-      const result = await service.create(createDto);
-
-      expect(repository.create).toHaveBeenCalledWith(createDto);
-      expect(repository.save).toHaveBeenCalled();
+    it('devrait créer une nouvelle action de modération', async () => {
+      const result = await service.create(mockCreateDto);
       expect(result).toEqual(mockModeratorAction);
     });
 
-    it('should throw BadRequestException when creation fails', async () => {
-      const createDto: CreateModeratorActionDto = {
-        userId: mockModeratorAction.userId,
-        actionType: mockModeratorAction.actionType,
-        reason: mockModeratorAction.reason,
-      };
+    it('devrait lever une exception si le membre n\'existe pas', async () => {
+      vi.spyOn(memberRepository, 'findOne').mockResolvedValueOnce(null);
+      await expect(service.create(mockCreateDto)).rejects.toThrow(NotFoundException);
+    });
 
-      mockRepository.save.mockRejectedValue(new Error('Database error'));
+    it('devrait lever une exception si le membre n\'est pas modérateur', async () => {
+      vi.spyOn(memberRepository, 'findOne').mockResolvedValueOnce({
+        ...mockModerator,
+        communityRole: 'User',
+      } as Member);
+      await expect(service.create(mockCreateDto)).rejects.toThrow(ForbiddenException);
+    });
 
-      await expect(service.create(createDto)).rejects.toThrow(BadRequestException);
+    it('devrait lever une exception si le signalement n\'existe pas', async () => {
+      vi.spyOn(reportRepository, 'findOne').mockResolvedValueOnce(null);
+      await expect(service.create(mockCreateDto)).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('findAll', () => {
-    it('should return an array of moderator actions', async () => {
-      const mockActions = [mockModeratorAction];
-      mockRepository.find.mockResolvedValue(mockActions);
-
+    it('devrait retourner toutes les actions de modération', async () => {
       const result = await service.findAll();
-
-      expect(repository.find).toHaveBeenCalledWith({
-        order: { createdAt: 'DESC' },
-      });
-      expect(result).toEqual(mockActions);
+      expect(result).toEqual([mockModeratorAction]);
     });
 
-    it('should throw BadRequestException when find fails', async () => {
-      mockRepository.find.mockRejectedValue(new Error('Database error'));
-
+    it('devrait gérer les erreurs de base de données', async () => {
+      vi.spyOn(moderatorActionRepository, 'find').mockRejectedValueOnce(new Error());
       await expect(service.findAll()).rejects.toThrow(BadRequestException);
     });
   });
 
   describe('findOne', () => {
-    it('should return a moderator action by id', async () => {
-      mockRepository.findOne.mockResolvedValue(mockModeratorAction);
-
-      const result = await service.findOne(mockModeratorAction.id);
-
-      expect(repository.findOne).toHaveBeenCalledWith({
-        where: { id: mockModeratorAction.id },
-      });
+    it('devrait retourner une action de modération spécifique', async () => {
+      const result = await service.findOne(mockModeratorAction.uuidModeration);
       expect(result).toEqual(mockModeratorAction);
     });
 
-    it('should throw NotFoundException when action is not found', async () => {
-      mockRepository.findOne.mockResolvedValue(null);
-
-      await expect(service.findOne('non-existent-id')).rejects.toThrow(NotFoundException);
+    it('devrait lever une exception si l\'action n\'existe pas', async () => {
+      vi.spyOn(moderatorActionRepository, 'findOne').mockResolvedValueOnce(null);
+      await expect(service.findOne('invalid-uuid')).rejects.toThrow(NotFoundException);
     });
   });
 
-  describe('update', () => {
-    const updateDto: UpdateModeratorActionDto = {
-      reason: 'Updated reason',
-    };
-
-    it('should update a moderator action', async () => {
-      const updatedAction = { ...mockModeratorAction, ...updateDto };
-      mockRepository.findOne.mockResolvedValue(mockModeratorAction);
-      mockRepository.save.mockResolvedValue(updatedAction);
-
-      const result = await service.update(mockModeratorAction.id, updateDto);
-
-      expect(repository.save).toHaveBeenCalled();
-      expect(result).toEqual(updatedAction);
+  describe('findByReport', () => {
+    it('devrait retourner les actions de modération pour un signalement', async () => {
+      const result = await service.findByReport(mockReport.uuidReport);
+      expect(result).toEqual([mockModeratorAction]);
     });
 
-    it('should throw NotFoundException when action to update is not found', async () => {
-      mockRepository.findOne.mockResolvedValue(null);
-
-      await expect(
-        service.update('non-existent-id', updateDto),
-      ).rejects.toThrow(NotFoundException);
+    it('devrait gérer les erreurs de base de données', async () => {
+      vi.spyOn(moderatorActionRepository, 'find').mockRejectedValueOnce(new Error());
+      await expect(service.findByReport(mockReport.uuidReport)).rejects.toThrow(BadRequestException);
     });
   });
 
   describe('remove', () => {
-    it('should remove a moderator action', async () => {
-      mockRepository.findOne.mockResolvedValue(mockModeratorAction);
-      mockRepository.remove.mockResolvedValue(mockModeratorAction);
-
-      await service.remove(mockModeratorAction.id);
-
-      expect(repository.remove).toHaveBeenCalledWith(mockModeratorAction);
-    });
-
-    it('should throw NotFoundException when action to remove is not found', async () => {
-      mockRepository.findOne.mockResolvedValue(null);
-
-      await expect(service.remove('non-existent-id')).rejects.toThrow(NotFoundException);
+    it('devrait lever une exception car la suppression n\'est pas autorisée', async () => {
+      await expect(service.remove(mockModeratorAction.uuidModeration)).rejects.toThrow(BadRequestException);
     });
   });
-});
+}); 

@@ -1,4 +1,4 @@
-import { IsString, MaxLength, IsEnum, IsOptional, IsDecimal, IsUUID } from 'class-validator';
+import { IsString, MaxLength, IsEnum, IsOptional, IsDecimal, IsUUID, Min, Max } from 'class-validator';
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { XpTransactionType, XpTransactionSource, ReferenceType } from '../entities/xp-transaction.entity';
 import { PickableInternUUIDFields } from '../../utils/pickable-intern-uuid-fields';
@@ -44,10 +44,14 @@ export class CreateXpTransactionDto extends PickType(PickableInternUUIDFields, [
 
   @ApiProperty({
     description: 'Valeur de la transaction XP',
-    example: '100.00'
+    example: '100.00',
+    minimum: -1000,
+    maximum: 1000
   })
   @IsDecimal({ decimal_digits: '2', force_decimal: true })
-  transactionValue: string;
+  @Min(-1000)
+  @Max(1000)
+  transaction_value: string;
 
   @ApiProperty({
     description: 'Raison de la transaction',

@@ -508,4 +508,119 @@ describe('ResourcesService', () => {
       expect(result.status).toBe(existingResource.status); // Non modifié
     });
   });
+
+  describe('remove', () => {
+    it('should remove an existing resource', async () => {
+      // Arrange
+      const mockMember = {
+        uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+        username: 'testuser',
+        status: 'active',
+      };
+
+      const existingResource = {
+        uuidResource: '123e4567-e89b-12d3-a456-426614174001',
+        title: 'Resource to Delete',
+        description: 'Test Description',
+        content: 'Test Content',
+        status: 'active',
+        creator: mockMember,
+        creatorUuid: mockMember.uuidMember,
+        comments: [
+          {
+            uuidComment: '123e4567-e89b-12d3-a456-426614174002',
+            content: 'Test Comment',
+            member: mockMember,
+          },
+        ],
+        votes: [],
+        reports: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockResourceRepository.findOne.mockResolvedValue(existingResource);
+      mockResourceRepository.remove.mockResolvedValue(existingResource);
+
+      // Act
+      await service.remove(existingResource.uuidResource);
+
+      // Assert
+      expect(mockResourceRepository.findOne).toHaveBeenCalledWith({
+        where: { uuidResource: existingResource.uuidResource }
+      });
+      expect(mockResourceRepository.remove).toHaveBeenCalledWith(existingResource);
+    });
+
+    it('should throw NotFoundException when removing non-existent resource', async () => {
+      // Arrange
+      const uuid = '123e4567-e89b-12d3-a456-426614174001';
+      mockResourceRepository.findOne.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(service.remove(uuid)).rejects.toThrow(
+        new NotFoundException(`Resource with UUID ${uuid} not found`)
+      );
+      expect(mockResourceRepository.findOne).toHaveBeenCalledWith({
+        where: { uuidResource: uuid }
+      });
+      expect(mockResourceRepository.remove).not.toHaveBeenCalled();
+    });
+
+    it('should cascade delete related entities', async () => {
+      // Arrange
+      const mockMember = {
+        uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+        username: 'testuser',
+        status: 'active',
+      };
+
+      const existingResource = {
+        uuidResource: '123e4567-e89b-12d3-a456-426614174001',
+        title: 'Resource to Delete',
+        description: 'Test Description',
+        content: 'Test Content',
+        status: 'active',
+        creator: mockMember,
+        creatorUuid: mockMember.uuidMember,
+        comments: [
+          {
+            uuidComment: '123e4567-e89b-12d3-a456-426614174002',
+            content: 'Test Comment',
+            member: mockMember,
+          },
+        ],
+        votes: [
+          {
+            uuidVote: '123e4567-e89b-12d3-a456-426614174003',
+            voteType: 'upvote',
+            member: mockMember,
+          },
+        ],
+        reports: [
+          {
+            uuidReport: '123e4567-e89b-12d3-a456-426614174004',
+            type: 'resource',
+            reason: 'Test Report',
+            reporter: mockMember,
+          },
+        ],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockResourceRepository.findOne.mockResolvedValue(existingResource);
+      mockResourceRepository.remove.mockResolvedValue(existingResource);
+
+      // Act
+      await service.remove(existingResource.uuidResource);
+
+      // Assert
+      expect(mockResourceRepository.findOne).toHaveBeenCalledWith({
+        where: { uuidResource: existingResource.uuidResource }
+      });
+      expect(mockResourceRepository.remove).toHaveBeenCalledWith(existingResource);
+      // La suppression en cascade est gérée par TypeORM via les décorateurs @OneToMany
+    });
+  });
 }); 

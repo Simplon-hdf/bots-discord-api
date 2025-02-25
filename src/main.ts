@@ -22,7 +22,6 @@ async function bootstrap() {
     .setTitle('Discord Bot API')
     .setDescription('API pour la gestion du bot Discord')
     .setVersion('1.0')
-    .addTag('answers', 'Gestion des réponses aux questions')
     .addTag('bot')
     .build();
 

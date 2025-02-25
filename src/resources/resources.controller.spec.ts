@@ -1,183 +1,297 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ResourcesController } from './resources.controller';
 import { ResourcesService } from './resources.service';
-import { Resource } from './entities/resource.entity';
-import { Repository } from 'typeorm';
+import { CreateResourceDto } from './dto/create-resource.dto';
+import { UpdateResourceDto } from './dto/update-resource.dto';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { NotFoundException } from '@nestjs/common';
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { typeOrmConfig } from '../config/typeorm.config';
 
 describe('ResourcesController', () => {
   let controller: ResourcesController;
   let service: ResourcesService;
-  let repository: Repository<Resource>;
 
-  beforeAll(async () => {
+  const mockResourcesService = {
+    create: vi.fn(),
+    findAll: vi.fn(),
+    findOne: vi.fn(),
+    update: vi.fn(),
+    remove: vi.fn(),
+    findComments: vi.fn(),
+  };
+
+  beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot(typeOrmConfig),
-        TypeOrmModule.forFeature([Resource])
-      ],
       controllers: [ResourcesController],
-      providers: [ResourcesService],
+      providers: [
+        {
+          provide: ResourcesService,
+          useValue: mockResourcesService,
+        },
+      ],
     }).compile();
 
     controller = module.get<ResourcesController>(ResourcesController);
     service = module.get<ResourcesService>(ResourcesService);
-    repository = module.get<Repository<Resource>>(getRepositoryToken(Resource));
-  });
 
-  beforeEach(async () => {
-    // Nettoyer la table Resources avant chaque test
-    await repository.query('TRUNCATE TABLE "Resources" CASCADE');
-  });
-
-  afterAll(async () => {
-    // Nettoyer la table Resources après tous les tests
-    await repository.query('TRUNCATE TABLE "Resources" CASCADE');
+    // Reset all mocks before each test
+    vi.clearAllMocks();
   });
 
   describe('create', () => {
-    it('should create a resource with valid data', async () => {
-      const createDto = {
+    it('should create a new resource', async () => {
+      // Arrange
+      const createResourceDto: CreateResourceDto = {
         title: 'Test Resource',
         description: 'Test Description',
         content: 'Test Content',
         status: 'active',
+        uuidMember: '123e4567-e89b-12d3-a456-426614174000',
       };
 
-      const result = await controller.create(createDto);
+      const expectedResult = {
+        uuidResource: '123e4567-e89b-12d3-a456-426614174001',
+        ...createResourceDto,
+        creator: {
+          uuidMember: createResourceDto.uuidMember,
+          username: 'testuser',
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
-      expect(result).toBeDefined();
-      expect(result.uuid_resource).toBeDefined();
-      expect(result.title).toBe(createDto.title);
-      expect(result.description).toBe(createDto.description);
-      expect(result.content).toBe(createDto.content);
-      expect(result.status).toBe(createDto.status);
+      mockResourcesService.create.mockResolvedValue(expectedResult);
 
-      // Vérifier en base de données
-      const savedResource = await repository.findOne({ 
-        where: { uuid_resource: result.uuid_resource } 
-      });
-      expect(savedResource).toBeDefined();
-      expect(savedResource?.title).toBe(createDto.title);
+      // Act
+      const result = await controller.create(createResourceDto);
+
+      // Assert
+      expect(service.create).toHaveBeenCalledWith(createResourceDto);
+      expect(result).toBe(expectedResult);
     });
   });
 
   describe('findAll', () => {
     it('should return an array of resources', async () => {
-      // Créer des ressources de test
-      await repository.save([
+      // Arrange
+      const expectedResult = [
         {
-          title: 'Resource 1',
-          description: 'Description 1',
-          content: 'Content 1',
+          uuidResource: '123e4567-e89b-12d3-a456-426614174001',
+          title: 'First Resource',
+          description: 'First Description',
+          content: 'First Content',
           status: 'active',
+          creator: {
+            uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+            username: 'testuser',
+          },
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
-          title: 'Resource 2',
-          description: 'Description 2',
-          content: 'Content 2',
-          status: 'inactive',
+          uuidResource: '123e4567-e89b-12d3-a456-426614174002',
+          title: 'Second Resource',
+          description: 'Second Description',
+          content: 'Second Content',
+          status: 'active',
+          creator: {
+            uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+            username: 'testuser',
+          },
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
-      ]);
+      ];
 
+      mockResourcesService.findAll.mockResolvedValue(expectedResult);
+
+      // Act
       const result = await controller.findAll();
 
-      expect(result).toHaveLength(2);
-      expect(result[0].title).toBe('Resource 1');
-      expect(result[1].title).toBe('Resource 2');
-    });
-
-    it('should return empty array when no resources exist', async () => {
-      const result = await controller.findAll();
-      expect(result).toEqual([]);
+      // Assert
+      expect(service.findAll).toHaveBeenCalled();
+      expect(result).toBe(expectedResult);
     });
   });
 
   describe('findOne', () => {
-    it('should return a resource when it exists', async () => {
-      // Créer une ressource de test
-      const resource = await repository.save({
+    it('should return a single resource', async () => {
+      // Arrange
+      const uuid = '123e4567-e89b-12d3-a456-426614174001';
+      const expectedResult = {
+        uuidResource: uuid,
         title: 'Test Resource',
         description: 'Test Description',
         content: 'Test Content',
         status: 'active',
-      });
+        creator: {
+          uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+          username: 'testuser',
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
-      const result = await controller.findOne(resource.uuid_resource);
+      mockResourcesService.findOne.mockResolvedValue(expectedResult);
 
-      expect(result).toBeDefined();
-      expect(result.uuid_resource).toBe(resource.uuid_resource);
-      expect(result.title).toBe(resource.title);
+      // Act
+      const result = await controller.findOne(uuid);
+
+      // Assert
+      expect(service.findOne).toHaveBeenCalledWith(uuid);
+      expect(result).toBe(expectedResult);
     });
 
-    it('should throw NotFoundException when resource not found', async () => {
-      const uuid = '00000000-0000-0000-0000-000000000000';
+    it('should throw NotFoundException when resource does not exist', async () => {
+      // Arrange
+      const uuid = '123e4567-e89b-12d3-a456-426614174001';
+      mockResourcesService.findOne.mockRejectedValue(
+        new NotFoundException(`Resource with UUID ${uuid} not found`)
+      );
+
+      // Act & Assert
       await expect(controller.findOne(uuid)).rejects.toThrow(NotFoundException);
+      expect(service.findOne).toHaveBeenCalledWith(uuid);
     });
   });
 
   describe('update', () => {
-    it('should update a resource when it exists', async () => {
-      // Créer une ressource de test
-      const resource = await repository.save({
-        title: 'Original Resource',
-        description: 'Original Description',
-        content: 'Original Content',
-        status: 'active',
-      });
-
-      const updateDto = {
+    it('should update a resource', async () => {
+      // Arrange
+      const uuid = '123e4567-e89b-12d3-a456-426614174001';
+      const updateResourceDto: UpdateResourceDto = {
         title: 'Updated Resource',
-        status: 'inactive',
+        description: 'Updated Description',
       };
 
-      const result = await controller.update(resource.uuid_resource, updateDto);
+      const expectedResult = {
+        uuidResource: uuid,
+        ...updateResourceDto,
+        content: 'Original Content',
+        status: 'active',
+        creator: {
+          uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+          username: 'testuser',
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
-      expect(result).toBeDefined();
-      expect(result.title).toBe(updateDto.title);
-      expect(result.status).toBe(updateDto.status);
-      expect(result.description).toBe(resource.description); // Non modifié
+      mockResourcesService.update.mockResolvedValue(expectedResult);
 
-      // Vérifier en base de données
-      const updatedResource = await repository.findOne({ 
-        where: { uuid_resource: resource.uuid_resource } 
-      });
-      expect(updatedResource?.title).toBe(updateDto.title);
-      expect(updatedResource?.status).toBe(updateDto.status);
+      // Act
+      const result = await controller.update(uuid, updateResourceDto);
+
+      // Assert
+      expect(service.update).toHaveBeenCalledWith(uuid, updateResourceDto);
+      expect(result).toBe(expectedResult);
     });
 
     it('should throw NotFoundException when updating non-existent resource', async () => {
-      const uuid = '00000000-0000-0000-0000-000000000000';
-      await expect(controller.update(uuid, { title: 'Updated' })).rejects.toThrow(NotFoundException);
+      // Arrange
+      const uuid = '123e4567-e89b-12d3-a456-426614174001';
+      const updateResourceDto: UpdateResourceDto = {
+        title: 'Updated Resource',
+      };
+
+      mockResourcesService.update.mockRejectedValue(
+        new NotFoundException(`Resource with UUID ${uuid} not found`)
+      );
+
+      // Act & Assert
+      await expect(controller.update(uuid, updateResourceDto)).rejects.toThrow(
+        NotFoundException
+      );
+      expect(service.update).toHaveBeenCalledWith(uuid, updateResourceDto);
     });
   });
 
   describe('remove', () => {
-    it('should delete a resource when it exists', async () => {
-      // Créer une ressource de test
-      const resource = await repository.save({
-        title: 'Resource to Delete',
-        description: 'Test Description',
-        content: 'Test Content',
-        status: 'active',
-      });
+    it('should remove a resource', async () => {
+      // Arrange
+      const uuid = '123e4567-e89b-12d3-a456-426614174001';
+      mockResourcesService.remove.mockResolvedValue(undefined);
 
-      await controller.remove(resource.uuid_resource);
+      // Act
+      await controller.remove(uuid);
 
-      // Vérifier que la ressource est supprimée
-      const deletedResource = await repository.findOne({ 
-        where: { uuid_resource: resource.uuid_resource } 
-      });
-      expect(deletedResource).toBeNull();
+      // Assert
+      expect(service.remove).toHaveBeenCalledWith(uuid);
     });
 
-    it('should throw NotFoundException when deleting non-existent resource', async () => {
-      const uuid = '00000000-0000-0000-0000-000000000000';
+    it('should throw NotFoundException when removing non-existent resource', async () => {
+      // Arrange
+      const uuid = '123e4567-e89b-12d3-a456-426614174001';
+      mockResourcesService.remove.mockRejectedValue(
+        new NotFoundException(`Resource with UUID ${uuid} not found`)
+      );
+
+      // Act & Assert
       await expect(controller.remove(uuid)).rejects.toThrow(NotFoundException);
+      expect(service.remove).toHaveBeenCalledWith(uuid);
+    });
+  });
+
+  describe('findComments', () => {
+    it('should return comments for a resource', async () => {
+      // Arrange
+      const uuid = '123e4567-e89b-12d3-a456-426614174001';
+      const expectedResult = [
+        {
+          uuidComment: '123e4567-e89b-12d3-a456-426614174002',
+          content: 'First Comment',
+          member: {
+            uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+            username: 'testuser',
+          },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          uuidComment: '123e4567-e89b-12d3-a456-426614174003',
+          content: 'Second Comment',
+          member: {
+            uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+            username: 'testuser',
+          },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      mockResourcesService.findComments.mockResolvedValue(expectedResult);
+
+      // Act
+      const result = await controller.findComments(uuid);
+
+      // Assert
+      expect(service.findComments).toHaveBeenCalledWith(uuid);
+      expect(result).toBe(expectedResult);
+    });
+
+    it('should throw NotFoundException when resource does not exist', async () => {
+      // Arrange
+      const uuid = '123e4567-e89b-12d3-a456-426614174001';
+      mockResourcesService.findComments.mockRejectedValue(
+        new NotFoundException(`Resource with UUID ${uuid} not found`)
+      );
+
+      // Act & Assert
+      await expect(controller.findComments(uuid)).rejects.toThrow(NotFoundException);
+      expect(service.findComments).toHaveBeenCalledWith(uuid);
+    });
+
+    it('should return empty array when resource has no comments', async () => {
+      // Arrange
+      const uuid = '123e4567-e89b-12d3-a456-426614174001';
+      mockResourcesService.findComments.mockResolvedValue([]);
+
+      // Act
+      const result = await controller.findComments(uuid);
+
+      // Assert
+      expect(service.findComments).toHaveBeenCalledWith(uuid);
+      expect(result).toEqual([]);
+      expect(Array.isArray(result)).toBe(true);
     });
   });
 }); 

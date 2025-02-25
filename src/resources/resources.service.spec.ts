@@ -6,6 +6,7 @@ import { Resource } from './entities/resource.entity';
 import { Member } from '../members/entities/member.entity';
 import { Comment } from '../comments/entities/comment.entity';
 import { CreateResourceDto } from './dto/create-resource.dto';
+import { UpdateResourceDto } from './dto/update-resource.dto';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { NotFoundException } from '@nestjs/common';
 
@@ -20,6 +21,7 @@ describe('ResourcesService', () => {
     save: vi.fn(),
     findOne: vi.fn(),
     find: vi.fn(),
+    remove: vi.fn(),
   };
 
   const mockMemberRepository = {
@@ -345,6 +347,165 @@ describe('ResourcesService', () => {
       expect(result).toBeDefined();
       expect(result).toHaveLength(0);
       expect(Array.isArray(result)).toBe(true);
+    });
+  });
+
+  describe('update', () => {
+    it('should update a resource and maintain its relations', async () => {
+      // Arrange
+      const mockMember = {
+        uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+        username: 'testuser',
+        status: 'active',
+      };
+
+      const existingResource = {
+        uuidResource: '123e4567-e89b-12d3-a456-426614174001',
+        title: 'Original Title',
+        description: 'Original Description',
+        content: 'Original Content',
+        status: 'active',
+        creator: mockMember,
+        creatorUuid: mockMember.uuidMember,
+        comments: [
+          {
+            uuidComment: '123e4567-e89b-12d3-a456-426614174002',
+            content: 'Test Comment',
+            member: mockMember,
+          },
+        ],
+        votes: [],
+        reports: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const updateResourceDto: UpdateResourceDto = {
+        title: 'Updated Title',
+        description: 'Updated Description',
+        status: 'inactive',
+      };
+
+      const updatedResource = {
+        ...existingResource,
+        ...updateResourceDto,
+        updatedAt: new Date(),
+      };
+
+      mockResourceRepository.findOne
+        .mockResolvedValueOnce(existingResource)  // Premier appel pour vérifier l'existence
+        .mockResolvedValueOnce(updatedResource);  // Second appel après la mise à jour
+
+      mockResourceRepository.save.mockResolvedValue(updatedResource);
+
+      // Act
+      const result = await service.update(existingResource.uuidResource, updateResourceDto);
+
+      // Assert
+      expect(mockResourceRepository.findOne).toHaveBeenNthCalledWith(1, {
+        where: { uuidResource: existingResource.uuidResource }
+      });
+
+      expect(mockResourceRepository.save).toHaveBeenCalledWith({
+        ...existingResource,
+        ...updateResourceDto
+      });
+
+      expect(mockResourceRepository.findOne).toHaveBeenNthCalledWith(2, {
+        where: { uuidResource: existingResource.uuidResource },
+        relations: [
+          'creator',
+          'reports',
+          'reports.reporter',
+          'votes',
+          'votes.member',
+          'comments',
+          'comments.member',
+          'comments.votes',
+          'comments.votes.member'
+        ]
+      });
+
+      expect(result).toBeDefined();
+      expect(result.title).toBe(updateResourceDto.title);
+      expect(result.description).toBe(updateResourceDto.description);
+      expect(result.status).toBe(updateResourceDto.status);
+      expect(result.content).toBe(existingResource.content); // Non modifié
+      expect(result.comments).toHaveLength(1); // Relations maintenues
+    });
+
+    it('should throw NotFoundException when updating non-existent resource', async () => {
+      // Arrange
+      const uuid = '123e4567-e89b-12d3-a456-426614174001';
+      const updateResourceDto: UpdateResourceDto = {
+        title: 'Updated Title',
+      };
+
+      mockResourceRepository.findOne.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(service.update(uuid, updateResourceDto)).rejects.toThrow(
+        new NotFoundException(`Resource with UUID ${uuid} not found`)
+      );
+
+      expect(mockResourceRepository.findOne).toHaveBeenCalledWith({
+        where: { uuidResource: uuid }
+      });
+      expect(mockResourceRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should only update provided fields', async () => {
+      // Arrange
+      const mockMember = {
+        uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+        username: 'testuser',
+        status: 'active',
+      };
+
+      const existingResource = {
+        uuidResource: '123e4567-e89b-12d3-a456-426614174001',
+        title: 'Original Title',
+        description: 'Original Description',
+        content: 'Original Content',
+        status: 'active',
+        creator: mockMember,
+        creatorUuid: mockMember.uuidMember,
+        comments: [],
+        votes: [],
+        reports: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const updateResourceDto: UpdateResourceDto = {
+        title: 'Updated Title',
+        // description et status non fournis, devraient rester inchangés
+      };
+
+      const updatedResource = {
+        ...existingResource,
+        title: updateResourceDto.title,
+        updatedAt: new Date(),
+      };
+
+      mockResourceRepository.findOne
+        .mockResolvedValueOnce(existingResource)
+        .mockResolvedValueOnce(updatedResource);
+
+      mockResourceRepository.save.mockResolvedValue(updatedResource);
+
+      // Act
+      const result = await service.update(existingResource.uuidResource, updateResourceDto);
+
+      // Assert
+      expect(mockResourceRepository.save).toHaveBeenCalledWith({
+        ...existingResource,
+        title: updateResourceDto.title
+      });
+
+      expect(result.title).toBe(updateResourceDto.title);
+      expect(result.description).toBe(existingResource.description); // Non modifié
+      expect(result.status).toBe(existingResource.status); // Non modifié
     });
   });
 }); 

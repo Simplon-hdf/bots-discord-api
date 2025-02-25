@@ -48,7 +48,8 @@ describe('CoursesController', () => {
         name: 'Développeur web',
         isCertified: true,
         uuidCategory: '123456789012345678',
-        uuidGuild: '123456789012345678'
+        uuidGuild: '123456789012345678',
+        uuidRole: ''
       };
 
       mockService.create.mockResolvedValue({

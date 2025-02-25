@@ -6,6 +6,8 @@ import {
   JoinColumn,
   OneToMany,
   ManyToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
 import { Guild } from '../../guilds/entities/guild.entity';
@@ -65,7 +67,7 @@ export class Course {
     description: 'Guilde associée aux formations',
     type: () => Guild,
   })
-  @OneToOne(() => Guild, (guild) => guild.course)
+  @ManyToOne(() => Guild, (guild) => guild.courses)
   @JoinColumn({ name: 'uuid_guild' })
   guild: Guild;
 
@@ -73,10 +75,9 @@ export class Course {
     description: 'UUID unique de la guilde',
     example: '123456789012345678',
   })
-  @Column({ name: 'uuid_guild', type: 'varchar', length: 19, nullable: true})
+  @Column({ name: 'uuid_guild', type: 'varchar', length: 19})
     uuidGuild: string;
   
-
   @ApiProperty({
     description: 'Catégorie associée à la formation',
     example: {
@@ -90,30 +91,35 @@ export class Course {
 
   @ApiProperty({
     description: 'UUID unique de la catégorie',
-    example: '123456789012345678',
-    nullable: true,
+    example: '123456789012345678'
   })
   @Column({
     name: 'uuid_category',
     type: 'varchar',
-    length: 19,
-    nullable: true,
+    length: 19
   })
   uuidCategory: string;
-
+  
   @ApiProperty({
-    description: 'Rôle associé à la formation',
-    example: {
-      uuid: '809809876543210987',
-      name: 'CDA',
-    },
+    description: 'Rôles associés aux formations',
+    type: () => [Role],
+    isArray: true,
+    nullable: true
   })
-  @Column({ name: 'uuid_role', type: 'varchar', length: 19, nullable: true })
-  uuidRole: string;
-
-  @OneToOne(() => Role, (role) => role.course)
-  @JoinColumn({ name: 'uuid_role' })
-  role: Role;
+  
+  @ManyToMany(() => Role, role => role.courses, { nullable: true })
+  @JoinTable({
+    name: 'courses_roles',
+    joinColumns: [{
+        name: 'uuid_course',
+        referencedColumnName: 'uuid'
+    }],
+    inverseJoinColumns: [{
+        name: 'uuid_role',
+        referencedColumnName: 'uuidRole'
+    }]
+  })
+  roles: Role[];
 
   @ApiProperty({
     description: 'Promotions associées à la formation',
@@ -125,7 +131,7 @@ export class Course {
   promotions: Promotion[];
 
   @ApiProperty({
-    description: 'Chaînes associées à la formation',
+    description: 'Channels associés à la formation',
     type: () => [Channel],
     isArray: true,
     nullable: true,

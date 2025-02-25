@@ -30,7 +30,7 @@ export class PickableDiscordUUIDFields {
     description: 'Identifiant unique de category (Snowflake)',
     minLength: 17,
     maxLength: 19,
-    example: '726798891974243359',
+    example: '123456789012345678',
   })
   @IsString()
   @Matches(/^\d+$/)

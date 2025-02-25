@@ -88,12 +88,13 @@ export class Role {
   members: Member[];
   
   @ApiProperty({
-    description: 'Formation associée à un role',
+    description: 'Formations associées aux roles',
     type: () => [Course],
-    isArray: true
+    isArray: true,
+    nullable: true
   })
-  @OneToOne(() => Course, course => course.role)
-  course: Course;
+  @ManyToMany(() => Course, course => course.roles, { nullable: true })
+  courses: Course[];
 
   @OneToOne(() => Campus, campus => campus.role)
   campus: Campus;

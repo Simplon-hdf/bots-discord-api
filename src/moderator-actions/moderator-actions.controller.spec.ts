@@ -2,31 +2,29 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ModeratorActionsController } from './moderator-actions.controller';
 import { ModeratorActionsService } from './moderator-actions.service';
 import { CreateModeratorActionDto, ActionType } from './dto/create-moderator-action.dto';
-import { UpdateModeratorActionDto } from './dto/update-moderator-action.dto';
-import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { ModeratorAction } from './entities/moderator-action.entity';
+import { UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('ModeratorActionsController', () => {
   let controller: ModeratorActionsController;
   let service: ModeratorActionsService;
 
-  const mockModeratorAction = {
-    id: '123e4567-e89b-12d3-a456-426614174000',
-    userId: '123e4567-e89b-12d3-a456-426614174001',
-    actionType: ActionType.BAN,
-    reason: 'Test reason for moderation action',
-    duration: '24h',
-    notes: 'Test notes',
-    createdAt: new Date(),
+  const mockModeratorAction: ModeratorAction = {
+    uuidModeration: '123e4567-e89b-12d3-a456-426614174000',
+    actionType: 'warning',
+    actionReason: 'Test reason',
+    actionCreatedAt: new Date(),
+    moderatorUuid: '123e4567-e89b-12d3-a456-426614174001',
+    reportUuid: '123e4567-e89b-12d3-a456-426614174002',
     updatedAt: new Date(),
-  };
+  } as ModeratorAction;
 
-  const mockService = {
-    create: vi.fn(),
-    findAll: vi.fn(),
-    findOne: vi.fn(),
-    update: vi.fn(),
-    remove: vi.fn(),
+  const mockCreateDto: CreateModeratorActionDto = {
+    uuidMember: mockModeratorAction.moderatorUuid,
+    uuidReport: mockModeratorAction.reportUuid,
+    type: ActionType.WARN,
+    reason: mockModeratorAction.actionReason,
   };
 
   beforeEach(async () => {
@@ -35,7 +33,13 @@ describe('ModeratorActionsController', () => {
       providers: [
         {
           provide: ModeratorActionsService,
-          useValue: mockService,
+          useValue: {
+            create: vi.fn().mockResolvedValue(mockModeratorAction),
+            findAll: vi.fn().mockResolvedValue([mockModeratorAction]),
+            findOne: vi.fn().mockResolvedValue(mockModeratorAction),
+            remove: vi.fn(),
+            findByReport: vi.fn().mockResolvedValue([mockModeratorAction]),
+          },
         },
       ],
     }).compile();
@@ -44,125 +48,62 @@ describe('ModeratorActionsController', () => {
     service = module.get<ModeratorActionsService>(ModeratorActionsService);
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe('create', () => {
-    it('should create a new moderator action', async () => {
-      const createDto: CreateModeratorActionDto = {
-        userId: mockModeratorAction.userId,
-        actionType: mockModeratorAction.actionType,
-        reason: mockModeratorAction.reason,
-        duration: mockModeratorAction.duration,
-        notes: mockModeratorAction.notes,
-      };
-
-      mockService.create.mockResolvedValue(mockModeratorAction);
-
-      const result = await controller.create(createDto);
-
-      expect(service.create).toHaveBeenCalledWith(createDto);
-      expect(result).toEqual({
-        statusCode: 201,
-        message: 'Action de modération créée avec succès',
-        data: mockModeratorAction,
-      });
+    it('devrait créer une nouvelle action de modération', async () => {
+      const result = await controller.create(mockCreateDto, mockModeratorAction.moderatorUuid);
+      expect(result).toEqual(mockModeratorAction);
+      expect(service.create).toHaveBeenCalledWith(mockCreateDto);
     });
 
-    it('should handle creation errors', async () => {
-      const createDto: CreateModeratorActionDto = {
-        userId: mockModeratorAction.userId,
-        actionType: mockModeratorAction.actionType,
-        reason: mockModeratorAction.reason,
-      };
-
-      mockService.create.mockRejectedValue(new BadRequestException());
-
-      await expect(controller.create(createDto)).rejects.toThrow(BadRequestException);
+    it('devrait lever une exception si l\'UUID du membre ne correspond pas', async () => {
+      await expect(
+        controller.create(mockCreateDto, 'different-uuid')
+      ).rejects.toThrow(UnauthorizedException);
     });
   });
 
   describe('findAll', () => {
-    it('should return an array of moderator actions', async () => {
-      const mockActions = [mockModeratorAction];
-      mockService.findAll.mockResolvedValue(mockActions);
-
+    it('devrait retourner toutes les actions de modération', async () => {
       const result = await controller.findAll();
-
+      expect(result).toEqual([mockModeratorAction]);
       expect(service.findAll).toHaveBeenCalled();
-      expect(result).toEqual({
-        statusCode: 200,
-        data: mockActions,
-      });
     });
   });
 
   describe('findOne', () => {
-    it('should return a moderator action by id', async () => {
-      mockService.findOne.mockResolvedValue(mockModeratorAction);
-
-      const result = await controller.findOne(mockModeratorAction.id);
-
-      expect(service.findOne).toHaveBeenCalledWith(mockModeratorAction.id);
-      expect(result).toEqual({
-        statusCode: 200,
-        data: mockModeratorAction,
-      });
+    it('devrait retourner une action de modération spécifique', async () => {
+      const result = await controller.findOne(mockModeratorAction.uuidModeration);
+      expect(result).toEqual(mockModeratorAction);
+      expect(service.findOne).toHaveBeenCalledWith(mockModeratorAction.uuidModeration);
     });
 
-    it('should handle not found errors', async () => {
-      mockService.findOne.mockRejectedValue(new NotFoundException());
-
-      await expect(controller.findOne('non-existent-id')).rejects.toThrow(NotFoundException);
-    });
-  });
-
-  describe('update', () => {
-    const updateDto: UpdateModeratorActionDto = {
-      reason: 'Updated reason',
-    };
-
-    it('should update a moderator action', async () => {
-      const updatedAction = { ...mockModeratorAction, ...updateDto };
-      mockService.update.mockResolvedValue(updatedAction);
-
-      const result = await controller.update(mockModeratorAction.id, updateDto);
-
-      expect(service.update).toHaveBeenCalledWith(mockModeratorAction.id, updateDto);
-      expect(result).toEqual({
-        statusCode: 200,
-        message: 'Action de modération mise à jour avec succès',
-        data: updatedAction,
-      });
-    });
-
-    it('should handle update errors', async () => {
-      mockService.update.mockRejectedValue(new NotFoundException());
-
+    it('devrait gérer les actions non trouvées', async () => {
+      vi.spyOn(service, 'findOne').mockRejectedValueOnce(new NotFoundException());
       await expect(
-        controller.update('non-existent-id', updateDto),
+        controller.findOne('invalid-uuid')
       ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('remove', () => {
-    it('should remove a moderator action', async () => {
-      mockService.remove.mockResolvedValue(undefined);
-
-      const result = await controller.remove(mockModeratorAction.id);
-
-      expect(service.remove).toHaveBeenCalledWith(mockModeratorAction.id);
-      expect(result).toEqual({
-        statusCode: 200,
-        message: 'Action de modération supprimée avec succès',
-      });
-    });
-
-    it('should handle removal errors', async () => {
-      mockService.remove.mockRejectedValue(new NotFoundException());
-
-      await expect(controller.remove('non-existent-id')).rejects.toThrow(NotFoundException);
+    it('devrait supprimer une action de modération', async () => {
+      await controller.remove(mockModeratorAction.uuidModeration);
+      expect(service.remove).toHaveBeenCalledWith(mockModeratorAction.uuidModeration);
     });
   });
-});
+
+  describe('findByReport', () => {
+    it('devrait retourner les actions de modération pour un signalement', async () => {
+      const result = await controller.findByReport(mockModeratorAction.reportUuid);
+      expect(result).toEqual([mockModeratorAction]);
+      expect(service.findByReport).toHaveBeenCalledWith(mockModeratorAction.reportUuid);
+    });
+
+    it('devrait gérer les signalements non trouvés', async () => {
+      vi.spyOn(service, 'findByReport').mockRejectedValueOnce(new NotFoundException());
+      await expect(
+        controller.findByReport('invalid-uuid')
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+}); 

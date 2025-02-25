@@ -40,6 +40,7 @@ async function bootstrap() {
       },
       'JWT-auth'
     )
+    .addTag('bot')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

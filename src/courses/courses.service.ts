@@ -19,7 +19,6 @@ export class CoursesService {
 
     async create(createCourseDto: CreateCourseDto): Promise<Course> {
         try {
-            // Vérifier si une formation existe déjà avec le même nom
             const existingCourse = await this.courseRepository.findOne({
                 where: { name: createCourseDto.name },
             });
@@ -27,34 +26,40 @@ export class CoursesService {
             if (existingCourse) {
                 throw new ConflictException(`Course with name ${createCourseDto.name} already exists`);
             }
-    
-            // Créer un rôle associé à la formation
-            const roleData = {
-                uuidRole: createCourseDto.uuidRole,
-                uuidGuild: createCourseDto.uuidGuild,
-                name: createCourseDto.name,
-                memberCount: 0,
-                rolePosition: 0,
-                hoist: false,
-                color: "#000000",
-            };
-    
-            const newRole = this.roleRepository.create(roleData);
-            const savedRole = await this.roleRepository.save(newRole);
-    
-            // Créer la formation
+
             const courseData = {
-                ...createCourseDto,
-                uuidRole: savedRole.uuidRole
+                name: createCourseDto.name,
+                isCertified: createCourseDto.isCertified,
+                uuidGuild: createCourseDto.uuidGuild,
+                uuidCategory: createCourseDto.uuidCategory,
             };
-    
+
             const newCourse = this.courseRepository.create(courseData);
             const savedCourse = await this.courseRepository.save(newCourse);
 
-            // Charger le cours avec ses relations
+            if (createCourseDto.uuidRole) {
+                const role = await this.roleRepository.findOne({
+                    where: { uuidRole: createCourseDto.uuidRole }
+                });
+
+                if (role) {
+                    await this.courseRepository
+                        .createQueryBuilder()
+                        .relation(Course, "roles")
+                        .of(savedCourse)
+                        .add(role.uuidRole);
+                }
+            }
+
             const courseWithRelations = await this.courseRepository.findOne({
                 where: { uuid: savedCourse.uuid },
-                relations: ['role']
+                relations: {
+                    category: true,
+                    guild: true,
+                    roles: true,
+                    promotions: true,
+                    channels: true
+                }
             });
 
             if (!courseWithRelations) {
@@ -118,7 +123,7 @@ export class CoursesService {
         }
         const result = await this.courseRepository.delete({ uuid });
         if (result.affected === 0) {
-            throw new BadRequestException('Failed to delete course'); // Correction ici
+            throw new BadRequestException('Failed to delete course');
         }
     }
 }

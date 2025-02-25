@@ -1,4 +1,4 @@
-import { IsString, MaxLength } from 'class-validator';
+import { IsString, MaxLength, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateAnswerDto {
@@ -8,7 +8,8 @@ export class CreateAnswerDto {
     maxLength: 50,
     type: String
   })
-  @IsString({message: 'Answer content must be a string'})
-  @MaxLength(50, {message: 'Answer content must not exceed 50 characters'})
+  @IsString({ message: 'Answer content must be a string' })
+  @IsNotEmpty({ message: 'Answer content cannot be empty' })
+  @MaxLength(50, { message: 'Answer content must not exceed 50 characters' })
   content: string;
 }

@@ -675,7 +675,7 @@ describe('ReportsService', () => {
   });
 
   describe('update', () => {
-    it('should update a report with all fields', async () => {
+    it('should update a report with modifiable fields only', async () => {
       // Arrange
       const mockReporter = {
         uuidMember: '123e4567-e89b-12d3-a456-426614174000',
@@ -702,12 +702,9 @@ describe('ReportsService', () => {
       };
 
       const updateReportDto = {
-        type: ReportType.RESOURCE,
         category: ReportCategory.HARASSMENT,
         reason: 'Updated reason',
         status: 'resolved',
-        uuidReporter: mockReporter.uuidMember,
-        uuidResource: mockResource.uuidResource
       };
 
       const updatedReport = {
@@ -740,22 +737,24 @@ describe('ReportsService', () => {
         relations: ['reporter', 'resource', 'reportedMember']
       });
 
-      expect(result.type).toBe(updateReportDto.type);
+      // Verify only modifiable fields are updated
       expect(result.category).toBe(updateReportDto.category);
       expect(result.reason).toBe(updateReportDto.reason);
       expect(result.status).toBe(updateReportDto.status);
+
+      // Verify immutable fields remain unchanged
+      expect(result.type).toBe(existingReport.type);
+      expect(result.reporter.uuidMember).toBe(existingReport.reporter.uuidMember);
+      expect(result.resource?.uuidResource).toBe(existingReport.resource.uuidResource);
     });
 
     it('should throw NotFoundException when report does not exist', async () => {
       // Arrange
       const uuid = '123e4567-e89b-12d3-a456-426614174001';
       const updateReportDto = {
-        type: ReportType.RESOURCE,
         category: ReportCategory.HARASSMENT,
         reason: 'Updated reason',
         status: 'resolved',
-        uuidReporter: '123e4567-e89b-12d3-a456-426614174000',
-        uuidResource: '123e4567-e89b-12d3-a456-426614174001'
       };
 
       mockReportsRepository.findOne.mockResolvedValue(null);

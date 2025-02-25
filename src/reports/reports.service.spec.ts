@@ -601,4 +601,66 @@ describe('ReportsService', () => {
       expect(Array.isArray(result)).toBe(true);
     });
   });
+
+  describe('findOne', () => {
+    it('should return a report with all its relations', async () => {
+      // Arrange
+      const mockReporter = {
+        uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+        guildUsername: 'reporter',
+        status: 'active',
+      };
+
+      const mockResource = {
+        uuidResource: '123e4567-e89b-12d3-a456-426614174001',
+        title: 'Reported Resource',
+        status: 'active',
+      };
+
+      const mockReport = {
+        uuidReport: '123e4567-e89b-12d3-a456-426614174002',
+        type: ReportType.RESOURCE,
+        category: ReportCategory.INAPPROPRIATE,
+        reason: 'Test reason',
+        status: 'pending',
+        reporter: mockReporter,
+        resource: mockResource,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockReportsRepository.findOne.mockResolvedValue(mockReport);
+
+      // Act
+      const result = await service.findOne(mockReport.uuidReport);
+
+      // Assert
+      expect(mockReportsRepository.findOne).toHaveBeenCalledWith({
+        where: { uuidReport: mockReport.uuidReport },
+        relations: ['reporter', 'resource', 'reportedMember']
+      });
+      expect(result).toBeDefined();
+      expect(result.uuidReport).toBe(mockReport.uuidReport);
+      expect(result.type).toBe(ReportType.RESOURCE);
+      expect(result.reporter).toBeDefined();
+      expect(result.reporter.uuidMember).toBe(mockReporter.uuidMember);
+      expect(result.resource).toBeDefined();
+      expect(result.resource.uuidResource).toBe(mockResource.uuidResource);
+    });
+
+    it('should throw NotFoundException when report does not exist', async () => {
+      // Arrange
+      const uuid = '123e4567-e89b-12d3-a456-426614174000';
+      mockReportsRepository.findOne.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(service.findOne(uuid)).rejects.toThrow(
+        new NotFoundException(`Report with UUID ${uuid} not found`)
+      );
+      expect(mockReportsRepository.findOne).toHaveBeenCalledWith({
+        where: { uuidReport: uuid },
+        relations: ['reporter', 'resource', 'reportedMember']
+      });
+    });
+  });
 }); 

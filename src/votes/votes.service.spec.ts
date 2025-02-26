@@ -1,135 +1,182 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { VotesService } from './votes.service';
-import { Repository, UpdateResult } from 'typeorm';
-import { Vote } from './entities/vote.entity';
+import { Vote, VoteType } from './entities/vote.entity';
+import { Member } from '../members/entities/member.entity';
+import { Resource } from '../resources/entities/resource.entity';
+import { Comment } from '../comments/entities/comment.entity';
 import { CreateVoteDto } from './dto/create-vote.dto';
-import { UpdateVoteDto } from './dto/update-vote.dto';
+import { ConflictException, NotFoundException } from '@nestjs/common';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('VotesService', () => {
   let service: VotesService;
-  let repository: Repository<Vote>;
+  let voteRepository: Repository<Vote>;
+  let memberRepository: Repository<Member>;
+  let resourceRepository: Repository<Resource>;
+  let commentRepository: Repository<Comment>;
 
-  const mockVote: Vote = {
-    voteUuid: '123e4567-e89b-12d3-a456-426614174000',
-    userId: '123e4567-e89b-12d3-a456-426614174001',
-    itemId: '123e4567-e89b-12d3-a456-426614174002',
-    voteType: 'upvote',
-    voteCreatedAt: new Date(),
-    voteUpdatedAt: new Date(),
-    voteIsActive: true
+  const mockMember = {
+    uuidMember: '123e4567-e89b-12d3-a456-426614174000',
+    guildUsername: 'TestUser',
+    communityRole: 'Member',
+  } as Member;
+
+  const mockResource = {
+    uuidResource: '123e4567-e89b-12d3-a456-426614174001',
+    title: 'Test Resource',
+  } as Resource;
+
+  const mockComment = {
+    uuidComment: '123e4567-e89b-12d3-a456-426614174002',
+    content: 'Test Comment',
+  } as Comment;
+
+  const mockVote = {
+    uuidVote: '123e4567-e89b-12d3-a456-426614174003',
+    voteType: VoteType.UPVOTE,
+    member: mockMember,
+    resource: mockResource,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  } as Vote;
+
+  const mockCreateResourceVoteDto: CreateVoteDto = {
+    uuidMember: mockMember.uuidMember,
+    voteType: VoteType.UPVOTE,
+    uuidResource: mockResource.uuidResource,
   };
 
-  const mockCreateVoteDto: CreateVoteDto = {
-    userId: '123e4567-e89b-12d3-a456-426614174001',
-    itemId: '123e4567-e89b-12d3-a456-426614174002',
-    voteType: 'upvote'
+  const mockCreateCommentVoteDto: CreateVoteDto = {
+    uuidMember: mockMember.uuidMember,
+    voteType: VoteType.UPVOTE,
+    uuidComment: mockComment.uuidComment,
   };
 
-  const mockUpdateVoteDto: UpdateVoteDto = {
-    voteIsActive: false
-  };
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        VotesService,
+        {
+          provide: getRepositoryToken(Vote),
+          useValue: {
+            create: vi.fn().mockReturnValue(mockVote),
+            save: vi.fn().mockResolvedValue(mockVote),
+            find: vi.fn().mockResolvedValue([mockVote]),
+            findOne: vi.fn().mockResolvedValue(null),
+            remove: vi.fn().mockResolvedValue(true),
+          },
+        },
+        {
+          provide: getRepositoryToken(Member),
+          useValue: {
+            findOne: vi.fn().mockResolvedValue(mockMember),
+          },
+        },
+        {
+          provide: getRepositoryToken(Resource),
+          useValue: {
+            findOne: vi.fn().mockResolvedValue(mockResource),
+          },
+        },
+        {
+          provide: getRepositoryToken(Comment),
+          useValue: {
+            findOne: vi.fn().mockResolvedValue(mockComment),
+          },
+        },
+      ],
+    }).compile();
 
-  beforeEach(() => {
-    repository = {
-      create: vi.fn(),
-      save: vi.fn(),
-      find: vi.fn(),
-      findOne: vi.fn(),
-      softDelete: vi.fn()
-    } as unknown as Repository<Vote>;
-
-    service = new VotesService(repository);
+    service = module.get<VotesService>(VotesService);
+    voteRepository = module.get<Repository<Vote>>(getRepositoryToken(Vote));
+    memberRepository = module.get<Repository<Member>>(getRepositoryToken(Member));
+    resourceRepository = module.get<Repository<Resource>>(getRepositoryToken(Resource));
+    commentRepository = module.get<Repository<Comment>>(getRepositoryToken(Comment));
   });
 
   describe('create', () => {
-    it('devrait créer un vote avec succès', async () => {
-      vi.spyOn(repository, 'create').mockReturnValue(mockVote);
-      vi.spyOn(repository, 'save').mockResolvedValue(mockVote);
+    describe('vote sur une ressource', () => {
+      it('devrait créer un vote sur une ressource', async () => {
+        vi.spyOn(voteRepository, 'findOne').mockResolvedValueOnce(null);
+        const result = await service.create(mockCreateResourceVoteDto);
+        expect(result).toEqual(mockVote);
+      });
 
-      const result = await service.create(mockCreateVoteDto);
+      it('devrait lever une exception si le membre n\'existe pas', async () => {
+        vi.spyOn(memberRepository, 'findOne').mockResolvedValueOnce(null);
+        await expect(service.create(mockCreateResourceVoteDto)).rejects.toThrow(NotFoundException);
+      });
 
-      expect(result).toEqual(mockVote);
-      expect(repository.create).toHaveBeenCalledWith(mockCreateVoteDto);
-      expect(repository.save).toHaveBeenCalledWith(mockVote);
+      it('devrait lever une exception si la ressource n\'existe pas', async () => {
+        vi.spyOn(resourceRepository, 'findOne').mockResolvedValueOnce(null);
+        await expect(service.create(mockCreateResourceVoteDto)).rejects.toThrow(NotFoundException);
+      });
+
+      it('devrait lever une exception si le membre a déjà voté pour la ressource', async () => {
+        vi.spyOn(voteRepository, 'findOne').mockResolvedValueOnce(mockVote);
+        await expect(service.create(mockCreateResourceVoteDto)).rejects.toThrow(ConflictException);
+      });
+    });
+
+    describe('vote sur un commentaire', () => {
+      it('devrait créer un vote sur un commentaire', async () => {
+        vi.spyOn(voteRepository, 'findOne').mockResolvedValueOnce(null);
+        const result = await service.create(mockCreateCommentVoteDto);
+        expect(result).toEqual(mockVote);
+      });
+
+      it('devrait lever une exception si le commentaire n\'existe pas', async () => {
+        vi.spyOn(commentRepository, 'findOne').mockResolvedValueOnce(null);
+        await expect(service.create(mockCreateCommentVoteDto)).rejects.toThrow(NotFoundException);
+      });
+
+      it('devrait lever une exception si le membre a déjà voté pour le commentaire', async () => {
+        vi.spyOn(voteRepository, 'findOne').mockResolvedValueOnce(mockVote);
+        await expect(service.create(mockCreateCommentVoteDto)).rejects.toThrow(ConflictException);
+      });
     });
   });
 
   describe('findAll', () => {
-    it('devrait retourner tous les votes actifs', async () => {
-      vi.spyOn(repository, 'find').mockResolvedValue([mockVote]);
-
+    it('devrait retourner tous les votes', async () => {
       const result = await service.findAll();
-
       expect(result).toEqual([mockVote]);
-      expect(repository.find).toHaveBeenCalledWith({
-        where: { voteIsActive: true }
+      expect(voteRepository.find).toHaveBeenCalledWith({
+        relations: ['member', 'resource', 'comment']
       });
     });
   });
 
   describe('findOne', () => {
     it('devrait retourner un vote spécifique', async () => {
-      vi.spyOn(repository, 'findOne').mockResolvedValue(mockVote);
-
-      const result = await service.findOne(mockVote.voteUuid);
-
+      vi.spyOn(voteRepository, 'findOne').mockResolvedValueOnce(mockVote);
+      const result = await service.findOne(mockVote.uuidVote);
       expect(result).toEqual(mockVote);
-      expect(repository.findOne).toHaveBeenCalledWith({
-        where: { voteUuid: mockVote.voteUuid, voteIsActive: true }
+      expect(voteRepository.findOne).toHaveBeenCalledWith({
+        where: { uuidVote: mockVote.uuidVote },
+        relations: ['member', 'resource', 'comment']
       });
     });
 
     it('devrait retourner null si le vote n\'existe pas', async () => {
-      vi.spyOn(repository, 'findOne').mockResolvedValue(null);
-
-      const result = await service.findOne('non-existent-id');
-
-      expect(result).toBeNull();
-    });
-  });
-
-  describe('update', () => {
-    it('devrait mettre à jour un vote avec succès', async () => {
-      const updatedVote = { ...mockVote, ...mockUpdateVoteDto };
-      vi.spyOn(repository, 'findOne').mockResolvedValue(mockVote);
-      vi.spyOn(repository, 'save').mockResolvedValue(updatedVote);
-
-      const result = await service.update(mockVote.voteUuid, mockUpdateVoteDto);
-
-      expect(result).toEqual(updatedVote);
-      expect(repository.save).toHaveBeenCalledWith(updatedVote);
-    });
-
-    it('devrait retourner null si le vote n\'existe pas', async () => {
-      vi.spyOn(repository, 'findOne').mockResolvedValue(null);
-
-      const result = await service.update('non-existent-id', mockUpdateVoteDto);
-
+      vi.spyOn(voteRepository, 'findOne').mockResolvedValueOnce(null);
+      const result = await service.findOne('invalid-uuid');
       expect(result).toBeNull();
     });
   });
 
   describe('remove', () => {
-    it('devrait supprimer un vote avec succès', async () => {
-      vi.spyOn(repository, 'findOne').mockResolvedValue(mockVote);
-      vi.spyOn(repository, 'softDelete').mockResolvedValue({
-        affected: 1,
-        raw: [],
-        generatedMaps: []
-      } as UpdateResult);
-
-      const result = await service.remove(mockVote.voteUuid);
-
+    it('devrait supprimer un vote', async () => {
+      vi.spyOn(voteRepository, 'findOne').mockResolvedValueOnce(mockVote);
+      const result = await service.remove(mockVote.uuidVote);
       expect(result).toBe(true);
-      expect(repository.softDelete).toHaveBeenCalledWith(mockVote.voteUuid);
     });
 
-    it('devrait retourner false si le vote n\'existe pas', async () => {
-      vi.spyOn(repository, 'findOne').mockResolvedValue(null);
-
-      const result = await service.remove('non-existent-id');
-
-      expect(result).toBe(false);
+    it('devrait lever une exception si le vote n\'existe pas', async () => {
+      vi.spyOn(voteRepository, 'findOne').mockResolvedValueOnce(null);
+      await expect(service.remove('invalid-uuid')).rejects.toThrow(NotFoundException);
     });
   });
 });

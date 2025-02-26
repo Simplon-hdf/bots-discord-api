@@ -66,11 +66,11 @@ export class Guild {
   promotions: Promotion[];
 
   @ApiProperty({
-    description: 'Formation associée à la guilde',
-    type: () => Course
+    description: 'Formations associées à la guilde',
+    type: () => [Course]
   })
-  @OneToOne(() => Course, course => course.guild)
-  course: Course;
+  @OneToMany(() => Course, course => course.guild)
+  courses: Course[];
 
   @ApiProperty({
     description: 'Rôles de la guilde',

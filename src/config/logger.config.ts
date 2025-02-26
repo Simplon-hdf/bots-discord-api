@@ -12,4 +12,4 @@ if (process.env.NODE_ENV === 'production') {
   loggerConfig = devConfig;
 }
 
-export { loggerConfig }; 
+export { loggerConfig };

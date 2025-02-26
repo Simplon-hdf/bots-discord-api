@@ -200,7 +200,12 @@ $ npm run test:e2e
 
 # couverture de tests
 $ npm run test:cov
+
+# test de l'authentification
+http://localhost:3000/test-auth
 ```
+
+
 
 ## Contributeurs
 

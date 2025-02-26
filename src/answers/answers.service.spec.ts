@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Answer } from './entities/answer.entity';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Repository } from 'typeorm';
-import { CreateAnswerDto } from './dto/create-answer.dto';
+import { CreateAnswerQuestionDto } from './dto/create-answer-question.dto';
 
 describe('AnswersService', () => {
   let service: AnswersService;
@@ -39,20 +39,19 @@ describe('AnswersService', () => {
 
   describe('create', () => {
     it('should create a new answer', async () => {
-      const createAnswerDto: CreateAnswerDto = {
+      const createAnswerQuestionDto: CreateAnswerQuestionDto = {
         content: 'Test answer',
-        isMultipleAnswer: false,
         uuidQuestion: '123e4567-e89b-12d3-a456-426614174000'
       };
 
-      const answer = { uuid: 'test-uuid', ...createAnswerDto };
+      const answer = { uuid: 'test-uuid', ...createAnswerQuestionDto };
       mockRepository.create.mockReturnValue(answer);
       mockRepository.save.mockResolvedValue(answer);
 
-      const result = await service.create(createAnswerDto);
+      const result = await service.create(createAnswerQuestionDto);
 
       expect(result).toEqual(answer);
-      expect(mockRepository.create).toHaveBeenCalledWith(createAnswerDto);
+      expect(mockRepository.create).toHaveBeenCalledWith(createAnswerQuestionDto);
       expect(mockRepository.save).toHaveBeenCalledWith(answer);
     });
   });

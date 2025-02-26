@@ -5,6 +5,7 @@ import { Course } from './entities/course.entity';
 import { Repository } from 'typeorm';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { CreateCourseDto } from './dto/create-course.dto';
 
 describe('CoursesService', () => {
   let service: CoursesService;
@@ -16,8 +17,8 @@ describe('CoursesService', () => {
     isCertified: true,
     createdAt: new Date(),
     updatedAt: null,
-    uuidCategory: '123e4567-e89b-12d3-a456-426614174000',
-    uuidGuild: '123e4567-e89b-12d3-a456-426614174000',
+    uuidCategory: '123456789012345678',
+    uuidGuild: '123456789012345678',
   };
 
   const mockRepository = {
@@ -44,21 +45,37 @@ describe('CoursesService', () => {
   });
 
   describe('create', () => {
-    it('should create a course', async () => {
+    it('should create a course without role', async () => {
       const dto = {
-        uuid: '123e4567-e89b-12d3-a456-426614174000',
-        name: 'Développeur web',
-        isCertified: true,
-        uuidCategory: '123e4567-e89b-12d3-a456-426614174000',
-        uuidGuild: '123456789012345678',
-      };
+          name: 'Développeur web',
+          isCertified: true,
+          uuidCategory: '123456789012345678',
+          uuidGuild: '123456789012345678',
+          uuidRole: ''
+      };  
 
       mockRepository.findOne.mockResolvedValue(null);
       mockRepository.create.mockReturnValue(mockCourse);
       mockRepository.save.mockResolvedValue(mockCourse);
 
       const result = await service.create(dto);
+      expect(result).toEqual(mockCourse);
+  });
 
+  it('should create a course with role', async () => {
+      const dto = {
+          name: 'Développeur web',
+          isCertified: true,
+          uuidCategory: '123456789012345678',
+          uuidGuild: '123456789012345678',
+          uuidRole: '123456789012345678'
+      } as CreateCourseDto;  // Utiliser type assertion
+
+      mockRepository.findOne.mockResolvedValue(null);
+      mockRepository.create.mockReturnValue(mockCourse);
+      mockRepository.save.mockResolvedValue(mockCourse);
+
+      const result = await service.create(dto);
       expect(result).toEqual(mockCourse);
     });
 
@@ -66,9 +83,10 @@ describe('CoursesService', () => {
       const dto = {
         uuid: '123e4567-e89b-12d3-a456-426614174000',
         name: 'Développeur web',
-        uuidCategory: '123e4567-e89b-12d3-a456-426614174000',
+        uuidCategory: '123456789012345678',
         uuidGuild: '123456789012345678',
-        isCertified: true
+        isCertified: true,
+        uuidRole: '123456789012345678'
       };
 
       mockRepository.findOne.mockResolvedValue(mockCourse);

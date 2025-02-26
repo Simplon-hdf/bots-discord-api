@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Put, Param, Delete, NotFoundException } from '@nestjs/common';
 import { QuestionsService } from './questions.service';
-import { CreateQuestionDto } from './dto/create-question.dto';
+import { CreateQuestionPollDto } from './dto/create-question-poll.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 
 @Controller('questions')
@@ -8,8 +8,8 @@ export class QuestionsController {
   constructor(private readonly questionsService: QuestionsService) {}
 
   @Post()
-  create(@Body() createQuestionDto: CreateQuestionDto) {
-    return this.questionsService.create(createQuestionDto);
+  create(@Body() createQuestionPollDto: CreateQuestionPollDto) {
+    return this.questionsService.create(createQuestionPollDto);
   }
 
   @Get()

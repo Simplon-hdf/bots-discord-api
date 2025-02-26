@@ -45,6 +45,24 @@ export class CoursesController {
     return this.coursesService.create(createCourseDto);
   }
 
+  @Get()
+  @ApiOperation({
+      summary: 'Récupérer toutes les formations',
+      description: 'Retourne la liste complète des formations avec leurs relations'
+  })
+  @ApiResponse({
+      status: HttpStatus.OK,
+      description: 'Liste des formations récupérée avec succès',
+      type: [Course]
+  })
+  @ApiResponse({
+      status: HttpStatus.BAD_REQUEST,
+      description: 'Erreur lors de la récupération des formations'
+  })
+  async findAll(): Promise<Course[]> {
+      return this.coursesService.findAll();
+  }
+
   @Get(':uuid_course')
   @ApiOperation({
     summary: 'Récupérer une formation par son UUID',
@@ -56,12 +74,12 @@ export class CoursesController {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'La formation a été trouvée.',
     type: Course,
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: 'Formation non trouvée.',
   })
   async getByUUID(@Param('uuid_course') uuid_course: string): Promise<Course> {
@@ -79,20 +97,20 @@ export class CoursesController {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'La formation a été mise à jour avec succès.',
     type: Course,
   })
   @ApiResponse({
-    status: 400,
+    status: HttpStatus.BAD_REQUEST,
     description: 'Données invalides fournies.',
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: 'Formation non trouvée.',
   })
   @ApiResponse({
-    status: 409,
+    status: HttpStatus.CONFLICT,
     description: 'Le nouveau nom est déjà utilisé par une autre formation.',
   })
   async updateByUUID(
@@ -113,15 +131,15 @@ export class CoursesController {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiResponse({
-    status: 204,
+    status: HttpStatus.NO_CONTENT,
     description: 'La formation a été supprimée avec succès.',
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: 'Formation non trouvée.',
   })
   @ApiResponse({
-    status: 400,
+    status: HttpStatus.BAD_REQUEST,
     description: 'Erreur lors de la suppression de la formation.',
   })
   async deleteByUUID(@Param('uuid_course') uuid_course: string): Promise<void> {

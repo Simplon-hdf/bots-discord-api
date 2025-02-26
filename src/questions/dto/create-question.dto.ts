@@ -1,4 +1,6 @@
-import { MaxLength, IsBoolean, IsString, MinLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import { MaxLength, IsBoolean, ValidateNested, ArrayMinSize } from 'class-validator';
+import { CreateAnswerDto } from 'src/answers/dto/create-answer.dto';
 
 export class CreateQuestionDto {
   @MaxLength(50)
@@ -7,8 +9,8 @@ export class CreateQuestionDto {
   @IsBoolean()
   isMultipleAnswer: boolean;
 
-  @IsString()
-  @MaxLength(36)
-  @MinLength(36)
-  uuidPoll: string;
+  @ValidateNested({ each: true })
+  @ArrayMinSize(2, {message: "La question doit avoir au moins deux réponses"})
+  @Type(()=>CreateAnswerDto)
+  answers: CreateAnswerDto[];
 }

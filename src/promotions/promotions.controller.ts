@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Put, Param, Delete, NotFoundException, Htt
 import { PromotionsService } from './promotions.service';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { UpdatePromotionDto } from './dto/update-promotion.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { Promotion } from './entities/promotion.entity';
 
 @ApiTags('promotions')
@@ -31,7 +31,6 @@ export class PromotionsController {
     return this.promotionsService.create(createPromotionDto);
   }
 
-
   @Get()
   @ApiOperation({ summary: 'Récupérer toutes les promotions' })
   @ApiResponse({ status: 200, description: 'Liste des promotions récupérée avec succès.', type: [Promotion] })
@@ -41,7 +40,7 @@ export class PromotionsController {
 
   @Get(':uuid')
   @ApiOperation({ summary: 'Récupérer une promotion par son UUID' })
-  @ApiResponse({ status: 200, description: 'La promotion a été trouvée.', type: Promotion })
+  @ApiResponse({ status: 200, description: 'Promotion récupérée avec succès.', type: Promotion })
   @ApiResponse({ status: 404, description: 'Promotion non trouvée' })
   findOne(@Param('uuid') uuid: string) {
     return this.promotionsService.findOne(uuid);
@@ -65,5 +64,33 @@ export class PromotionsController {
   @ApiResponse({ status: 404, description: 'Promotion non trouvée' })
   remove(@Param('uuid') uuid: string) {
     return this.promotionsService.remove(uuid);
+  }
+
+  @Post(':uuid_promotion/followers/:uuid_member')
+  @ApiOperation({ summary: 'Ajouter un membre comme follower d\'une promotion' })
+  @ApiParam({ name: 'uuid_promotion', description: 'UUID de la promotion' })
+  @ApiParam({ name: 'uuid_member', description: 'UUID du membre à ajouter comme follower' })
+  @ApiResponse({ status: 200, description: 'Le membre a été ajouté comme follower avec succès.', type: Promotion })
+  @ApiResponse({ status: 404, description: 'Promotion ou membre non trouvé' })
+  @ApiResponse({ status: 400, description: 'Le membre est déjà follower de cette promotion' })
+  addFollower(
+    @Param('uuid_promotion') uuidPromotion: string,
+    @Param('uuid_member') uuidMember: string,
+  ) {
+    return this.promotionsService.addFollower(uuidPromotion, uuidMember);
+  }
+
+  @Post(':uuid_promotion/managers/:uuid_member')
+  @ApiOperation({ summary: 'Ajouter un membre comme manager d\'une promotion' })
+  @ApiParam({ name: 'uuid_promotion', description: 'UUID de la promotion' })
+  @ApiParam({ name: 'uuid_member', description: 'UUID du membre à ajouter comme manager' })
+  @ApiResponse({ status: 200, description: 'Le membre a été ajouté comme manager avec succès.', type: Promotion })
+  @ApiResponse({ status: 404, description: 'Promotion ou membre non trouvé' })
+  @ApiResponse({ status: 400, description: 'Le membre est déjà manager de cette promotion' })
+  addManager(
+    @Param('uuid_promotion') uuidPromotion: string,
+    @Param('uuid_member') uuidMember: string,
+  ) {
+    return this.promotionsService.addManager(uuidPromotion, uuidMember);
   }
 } 

@@ -23,14 +23,26 @@ export class CategoriesService {
 
   findAll() {
     return this.categoryRepository.find({
-      relations: ['guild', 'channels', 'course', 'promotion', 'guildTemplate']
+      relations: {
+        guild: true,
+        channels: true,
+        course: true,
+        promotion: true,
+        guildTemplate: true
+      }
     });
   }
 
   findOne(uuid: string) {
     return this.categoryRepository.findOne({
       where: { uuid },
-      relations: ['guild', 'channels', 'course', 'promotion', 'guildTemplate']
+      relations: {
+        guild: true,
+        channels: true,
+        course: true,
+        promotion: true,
+        guildTemplate: true
+      }
     });
   }
 

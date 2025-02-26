@@ -25,6 +25,7 @@ import { CommentsModule } from './comments/comments.module';
 import { DiscordUsersModule } from './discord-users/discord-users.module';
 import { CoursesModule } from './courses/courses.module';
 import { TagsModule } from './tags/tags.module';
+import { PollsModule } from './polls/polls.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
@@ -70,7 +71,8 @@ import { AppController } from './app.controller';
     ReportsModule,
     CoursesModule,
     CommentsModule,
-    TagsModule
+    TagsModule,
+    PollsModule
   ],
   controllers: [AppController],
   providers: [],

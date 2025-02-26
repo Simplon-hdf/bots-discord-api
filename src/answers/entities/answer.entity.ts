@@ -26,7 +26,7 @@ export class Answer {
     description: 'The question associated with this answer',
     type: () => Question
   })
-  @ManyToOne(() => Question, (question) => question.answers)
+  @ManyToOne(() => Question, (question) => question.answers, {onDelete: 'CASCADE'})
   @JoinColumn({ name: 'uuid_question' })
   question: Question;
 

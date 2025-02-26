@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateQuestionDto } from './dto/create-question.dto';
+import { CreateQuestionPollDto } from './dto/create-question-poll.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { Question } from './entities/question.entity';
 
@@ -12,8 +12,8 @@ export class QuestionsService {
     private questionRepository: Repository<Question>,
   ) {}
 
-  create(createQuestionDto: CreateQuestionDto) {
-    const question = this.questionRepository.create(createQuestionDto);
+  create(createQuestionPollDto: CreateQuestionPollDto) {
+    const question = this.questionRepository.create(createQuestionPollDto);
     return this.questionRepository.save(question)
   }
 

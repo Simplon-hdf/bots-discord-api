@@ -8,6 +8,7 @@ import { Resource } from '../../resources/entities/resource.entity';
 import { XpTransaction } from '../../xp-transactions/entities/xp-transaction.entity';
 import { Role } from 'src/roles/entities/role.entity';
 import { Comment } from '../../comments/entities/comment.entity';
+import { Promotion } from 'src/promotions/entities/promotion.entity';
 
 @Entity('members')
 export class Member {
@@ -123,5 +124,19 @@ export class Member {
   })
   @OneToMany(() => Comment, comment => comment.member)
   comments: Comment[];
+
+  @ApiProperty({
+    description: 'Promotions suivies par le membre',
+    type: () => [Promotion]
+  })
+  @ManyToMany(() => Promotion, promotion => promotion.followers)
+  followedPromotions: Promotion[];
+
+  @ApiProperty({
+    description: 'Promotions gérées par le membre',
+    type: () => [Promotion]
+  })
+  @ManyToMany(() => Promotion, promotion => promotion.managers)
+  managedPromotions: Promotion[];
 
 }

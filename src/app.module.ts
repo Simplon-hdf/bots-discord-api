@@ -26,6 +26,9 @@ import { DiscordUsersModule } from './discord-users/discord-users.module';
 import { CoursesModule } from './courses/courses.module';
 import { TagsModule } from './tags/tags.module';
 import { PollsModule } from './polls/polls.module';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import { AppController } from './app.controller';
 
 /**
  * Module principal de l'application
@@ -39,6 +42,11 @@ import { PollsModule } from './polls/polls.module';
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
     LoggerModule.forRoot(loggerConfig),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
+    }),
+    AuthModule,
     GuildsModule,
     CampusesModule,
     GuildsTemplatesModule,
@@ -66,7 +74,7 @@ import { PollsModule } from './polls/polls.module';
     TagsModule,
     PollsModule
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule implements OnModuleInit {

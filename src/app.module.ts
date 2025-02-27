@@ -31,6 +31,7 @@ import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { PollTemplatesModule } from './poll-templates/poll-templates.module';
 import { QuestionTemplatesModule } from './question-templates/question-templates.module';
+import { AnswerTemplatesModule } from './answer-templates/answer-templates.module';
 
 /**
  * Module principal de l'application
@@ -77,6 +78,7 @@ import { QuestionTemplatesModule } from './question-templates/question-templates
     PollsModule,
     PollTemplatesModule,
     QuestionTemplatesModule,
+    AnswerTemplatesModule
   ],
   controllers: [AppController],
   providers: [],

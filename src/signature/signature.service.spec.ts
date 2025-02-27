@@ -111,7 +111,7 @@ describe('SignatureService', () => {
       // Vérifier la structure du channel
       expect(promotion.channel).toHaveProperty('snowflake');
       expect(promotion.channel).toHaveProperty('nom');
-      expect(promotion.channel.snowflake).toBe('1344593994616930337');
+      expect(promotion.channel.snowflake).toBe('1344640530763485265');
       
       // Vérifier le chargé de projet
       expect(promotion.chargeDeProjet).toHaveProperty('snowflake');

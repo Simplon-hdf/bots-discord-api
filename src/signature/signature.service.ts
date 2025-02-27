@@ -57,7 +57,7 @@ export class SignatureService {
         uuid: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
         nom: 'Cda P4 Vals',
         channel: {
-          snowflake: '1344611809826439258',
+          snowflake: '1344593994616930337',
           nom: 'Forum de la Cda P4 Vals'
         },
         chargeDeProjet: {

@@ -5,7 +5,7 @@ import { CreateDashboardAccountDto } from './create-dashboard-account.dto';
 describe('CreateDashboardAccountDto', () => {
     it('should validate a valid DTO', async () => {
         const dto = new CreateDashboardAccountDto();
-        dto.uuid_discord = '123456789012345678';
+        dto.uuidDiscord = '123456789012345678';
         dto.email = 'test@example.com';
         dto.password = 'password123';
 
@@ -23,11 +23,12 @@ describe('CreateDashboardAccountDto', () => {
         const errorProperties = errors.map(error => error.property);
         expect(errorProperties).toContain('email');
         expect(errorProperties).toContain('password');
+        expect(errorProperties).toContain('uuidDiscord');
     });
 
     it('should fail validation for invalid email', async () => {
         const dto = new CreateDashboardAccountDto();
-        dto.uuid_discord = '123456789012345678';
+        dto.uuidDiscord = '123456789012345678';
         dto.email = 'invalid-email';
         dto.password = 'password123';
 
@@ -38,7 +39,7 @@ describe('CreateDashboardAccountDto', () => {
 
     it('should fail validation for short password', async () => {
         const dto = new CreateDashboardAccountDto();
-        dto.uuid_discord = '123456789012345678';
+        dto.uuidDiscord = '123456789012345678';
         dto.email = 'test@example.com';
         dto.password = 'short';
 

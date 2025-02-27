@@ -14,6 +14,7 @@ describe('GuildsTemplatesService', () => {
     save: vi.fn(),
     find: vi.fn(),
     findOneBy: vi.fn(),
+    findOne: vi.fn(),
     delete: vi.fn(),
   };
 
@@ -71,7 +72,9 @@ describe('GuildsTemplatesService', () => {
 
       const result = await service.findAll();
 
-      expect(mockRepository.find).toHaveBeenCalled();
+      expect(mockRepository.find).toHaveBeenCalledWith({
+        relations: ['guild', 'category']
+      });
       expect(result).toEqual(templates);
     });
   });
@@ -80,11 +83,14 @@ describe('GuildsTemplatesService', () => {
     it('should return a guild template by uuid', async () => {
       const template = { id: 1, name: 'Template 1' };
       const uuid = '123456789012345678';
-      mockRepository.findOneBy.mockResolvedValue(template);
+      mockRepository.findOne.mockResolvedValue(template);
 
       const result = await service.findOne(uuid);
 
-      expect(mockRepository.findOneBy).toHaveBeenCalledWith({ uuid });
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { uuid },
+        relations: ['guild', 'category']
+      });
       expect(result).toEqual(template);
     });
   });
@@ -93,22 +99,60 @@ describe('GuildsTemplatesService', () => {
     it('should update a guild template', async () => {
       const uuid = '123456789012345678';
       const updateDto = { name: 'Updated Template' };
-      const existingTemplate = { id: 1, name: 'Old Template' };
-      const updatedTemplate = { ...existingTemplate, ...updateDto };
-
+      
+      // Créer un objet template existant
+      const existingTemplate = { 
+        id: 1, 
+        uuid: '123456789012345678',
+        name: 'Test Template', 
+        description: 'Test Description',
+        configuration: {
+          language: 'fr',
+          prefix: '!',
+          welcomeChannel: '123456789',
+        },
+        updatedAt: new Date()
+      };
+      
+      // Réinitialiser les mocks
+      vi.clearAllMocks();
+      
+      // Mock findOneBy pour retourner le template existant
       mockRepository.findOneBy.mockResolvedValue(existingTemplate);
-      mockRepository.save.mockResolvedValue(updatedTemplate);
-
+      
+      // Mock save pour simuler la sauvegarde
+      mockRepository.save.mockImplementation((entity) => {
+        // Vérifier que l'entité a bien été mise à jour
+        expect(entity.name).toBe('Updated Template');
+        expect(entity.updatedAt).toBeInstanceOf(Date);
+        
+        // Retourner l'entité mise à jour
+        return Promise.resolve(entity);
+      });
+      
+      // Appeler la méthode update
       const result = await service.update(uuid, updateDto);
-
+      
+      // Vérifier que findOneBy a été appelé avec le bon uuid
       expect(mockRepository.findOneBy).toHaveBeenCalledWith({ uuid });
-      expect(mockRepository.save).toHaveBeenCalledWith(updatedTemplate);
-      expect(result).toEqual(updatedTemplate);
+      
+      // Vérifier que save a été appelé
+      expect(mockRepository.save).toHaveBeenCalled();
+      
+      // Vérifier que le résultat contient les bonnes valeurs
+      expect(result.name).toBe('Updated Template');
+      expect(result.description).toBe('Test Description');
+      expect(result.updatedAt).toBeInstanceOf(Date);
     });
-
+    
     it('should return null if template not found', async () => {
       const uuid = '123456789012345678';
       const updateDto = { name: 'Updated Template' };
+      
+      // Réinitialiser les mocks
+      vi.clearAllMocks();
+      
+      // Simuler le comportement du service
       mockRepository.findOneBy.mockResolvedValue(null);
 
       const result = await service.update(uuid, updateDto);

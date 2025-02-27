@@ -8,5 +8,6 @@ import { Guild } from './entities/guild.entity';
   imports: [TypeOrmModule.forFeature([Guild])],
   controllers: [GuildsController],
   providers: [GuildsService],
+  exports: [GuildsService]
 })
 export class GuildsModule {}

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateQuestionTemplateDto } from './dto/create-question-template.dto';
+import { CreateQuestionPollTemplateDto } from './dto/create-question-poll-template.dto';
 import { UpdateQuestionTemplateDto } from './dto/update-question-template.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionTemplate } from './entities/question-template.entity';
@@ -13,8 +13,8 @@ export class QuestionTemplatesService {
     private questionTemplateRepository: Repository<QuestionTemplate>,
   ) {}
 
-  create(createQuestionTemplateDto: CreateQuestionTemplateDto) : Promise<QuestionTemplate> {
-    const questionTemplate = this.questionTemplateRepository.create(createQuestionTemplateDto);
+  create(createQuestionPollTemplateDto: CreateQuestionPollTemplateDto) : Promise<QuestionTemplate> {
+    const questionTemplate = this.questionTemplateRepository.create(createQuestionPollTemplateDto);
     return this.questionTemplateRepository.save(questionTemplate);
   }
 

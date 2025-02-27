@@ -1,8 +1,9 @@
 import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Guild } from '../../guilds/entities/guild.entity';
+import { Category } from '../../categories/entities/category.entity';
 
-@Entity('GuildTemplates')
+@Entity('guilds_templates')
 export class GuildTemplate {
   @ApiProperty({
     description: 'ID Discord du template',
@@ -74,4 +75,20 @@ export class GuildTemplate {
   @OneToOne(() => Guild, guild => guild.template)
   @JoinColumn({ name: 'uuidGuild' })
   guild: Guild;
+
+  @ApiProperty({
+    description: 'ID Discord de la catégorie associée',
+    example: '123456789012345678',
+    required: false
+  })
+  @Column({ name: 'uuid_category', type: 'varchar', length: 19, nullable: true })
+  uuidCategory: string;
+
+  @ApiProperty({
+    description: 'Catégorie associée à ce template',
+    type: () => Category
+  })
+  @OneToOne(() => Category, category => category.guildTemplate)
+  @JoinColumn({ name: 'uuid_category' })
+  category: Category;
 }

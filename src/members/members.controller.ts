@@ -23,6 +23,7 @@ import {
 } from '@nestjs/swagger';
 import { Member } from './entities/member.entity';
 import { Role } from '../roles/entities/role.entity';
+import { Promotion } from '../promotions/entities/promotion.entity';
 
 @ApiTags('members')
 @Controller('members')
@@ -213,5 +214,32 @@ export class MembersController {
     @Param('uuid_role') uuid_role: string,
   ) {
     return this.membersService.removeRoleFromMember(uuid_member, uuid_role);
+  }
+
+  @Get(':uuid/promotions')
+  @ApiOperation({
+    summary: 'Récupérer les promotions suivies et gérées par un membre',
+    description:
+      'Retourne les promotions suivies et gérées par un membre spécifique en utilisant son UUID.',
+  })
+  @ApiParam({
+    name: 'uuid',
+    description: 'UUID unique du membre à rechercher',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Les promotions du membre ont été récupérées avec succès.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: "Aucun membre trouvé avec l'UUID fourni.",
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: "Erreur lors de la récupération des promotions du membre.",
+  })
+  findMemberPromotions(@Param('uuid') uuid: string) {
+    return this.membersService.findMemberPromotions(uuid);
   }
 }

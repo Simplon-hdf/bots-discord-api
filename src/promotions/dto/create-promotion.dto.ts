@@ -9,7 +9,9 @@ export class CreatePromotionDto extends PickType(IntersectionType(PickableDtoFie
   'name',
   'uuidRole',
   'uuidGuild',
-  'uuidCourse'
+  'uuidCourse',
+  'uuidCampus',
+  'uuidCategory'
 ]) {
 
   @ApiProperty({

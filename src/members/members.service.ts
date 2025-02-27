@@ -33,15 +33,66 @@ export class MembersService {
 
   // Récupérer un membre par son uuid
   async findOne(uuidMember: string): Promise<Member> {
-    const member = await this.membersRepository.findOne({
-      where: { uuidMember },
-      relations: ['resources']
-    });
+    try {
+      const member = await this.membersRepository.findOne({
+        where: { uuidMember },
+        relations: ['resources']
+      });
 
-    if (!member) {
-      throw new NotFoundException(`Member with UUID ${uuidMember} not found`);
+      if (!member) {
+        throw new NotFoundException(`Member with UUID ${uuidMember} not found`);
+      }
+      return member;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException(`Erreur lors de la récupération du membre: ${error.message}`);
     }
-    return member;
+  }
+
+  // Récupérer les promotions suivies et gérées par un membre
+  async findMemberPromotions(uuidMember: string): Promise<{ followedPromotions: any[], managedPromotions: any[] }> {
+    try {
+      // Vérifier d'abord si le membre existe
+      const member = await this.membersRepository.findOne({
+        where: { uuidMember }
+      });
+
+      if (!member) {
+        throw new NotFoundException(`Member with UUID ${uuidMember} not found`);
+      }
+
+      // Utiliser des requêtes SQL brutes pour récupérer les promotions suivies
+      const followedPromotionsQuery = this.membersRepository.manager.query(`
+        SELECT p.* FROM "Promotions" p
+        JOIN promotions_followers pf ON p.uuid_promotion = pf.uuid_promotion
+        WHERE pf.uuid_member = $1
+      `, [uuidMember]);
+
+      // Utiliser des requêtes SQL brutes pour récupérer les promotions gérées
+      const managedPromotionsQuery = this.membersRepository.manager.query(`
+        SELECT p.* FROM "Promotions" p
+        JOIN promotions_managers pm ON p.uuid_promotion = pm.uuid_promotion
+        WHERE pm.uuid_member = $1
+      `, [uuidMember]);
+
+      // Exécuter les deux requêtes en parallèle
+      const [followedPromotions, managedPromotions] = await Promise.all([
+        followedPromotionsQuery,
+        managedPromotionsQuery
+      ]);
+
+      return {
+        followedPromotions: followedPromotions || [],
+        managedPromotions: managedPromotions || []
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException(`Erreur lors de la récupération des promotions du membre: ${error.message}`);
+    }
   }
 
   // Mettre à jour un membre

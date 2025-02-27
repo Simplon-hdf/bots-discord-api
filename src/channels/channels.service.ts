@@ -18,11 +18,16 @@ export class ChannelsService {
   }
 
   findAll() {
-    return this.channelRepository.find();
+    return this.channelRepository.find({
+      relations: ['guild', 'category']
+    });
   }
 
   findOne(uuid: string) {
-    return this.channelRepository.findOneBy({ uuid });
+    return this.channelRepository.findOne({
+      where: { uuid },
+      relations: ['guild', 'category']
+    });
   }
 
   async update(uuid: string, updateChannelDto: UpdateChannelDto) {

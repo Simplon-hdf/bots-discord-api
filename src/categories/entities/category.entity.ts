@@ -3,6 +3,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Channel } from '../../channels/entities/channel.entity';
 import { Guild } from '../../guilds/entities/guild.entity';
 import { Course } from '../../courses/entities/course.entity';
+import { Promotion } from 'src/promotions/entities/promotion.entity';
+import { GuildTemplate } from 'src/guilds-templates/entities/guild-template.entity';
 
 @Entity('categories')
 export class Category {
@@ -64,11 +66,9 @@ export class Category {
 
   @ApiProperty({
     description: 'Formation associée à la catégorie',
-    type: () => [Course],
-    isArray: true
+    type: () => Course
   })
   @OneToOne(() => Course, course => course.category)
-  @JoinColumn({ name: 'uuidCourse' })
   course: Course;
 
   @ApiProperty({
@@ -78,4 +78,27 @@ export class Category {
   @ManyToOne(() => Guild, guild => guild.categories)
   @JoinColumn({ name: 'uuidGuild' })
   guild: Guild;
+
+  @ApiProperty({
+    description: 'Promotion associée à cette catégorie',
+    type: () => Promotion
+  })
+  @OneToOne(() => Promotion, promotion => promotion.category)
+  promotion: Promotion;
+
+  @ApiProperty({
+    description: 'ID Discord du template de serveur associé',
+    example: '123456789012345678',
+    required: false
+  })
+  @Column({ name: 'uuid_guild_template', type: 'varchar', length: 19, nullable: true })
+  uuidGuildTemplate: string;
+
+  @ApiProperty({
+    description: 'Template de serveur associé à cette catégorie',
+    type: () => GuildTemplate
+  })
+  @OneToOne(() => GuildTemplate, guildTemplate => guildTemplate.category)
+  @JoinColumn({ name: 'uuid_guild_template' })
+  guildTemplate: GuildTemplate;
 }

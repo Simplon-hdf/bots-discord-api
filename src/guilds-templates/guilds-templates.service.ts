@@ -18,11 +18,16 @@ export class GuildsTemplatesService {
   }
 
   findAll() {
-    return this.guildTemplateRepository.find();
+    return this.guildTemplateRepository.find({
+      relations: ['guild', 'category']
+    });
   }
 
   findOne(uuid: string) {
-    return this.guildTemplateRepository.findOneBy({ uuid });
+    return this.guildTemplateRepository.findOne({
+      where: { uuid },
+      relations: ['guild', 'category']
+    });
   }
 
   async update(uuid: string, updateGuildTemplateDto: UpdateGuildTemplateDto) {
@@ -32,10 +37,11 @@ export class GuildsTemplatesService {
     }
     
     // Mise à jour des champs autorisés uniquement
-    const { name, description, configuration } = updateGuildTemplateDto;
+    const { name, description, configuration, uuidCategory } = updateGuildTemplateDto;
     if (name !== undefined) guildTemplate.name = name;
     if (description !== undefined) guildTemplate.description = description;
     if (configuration !== undefined) guildTemplate.configuration = configuration;
+    if (uuidCategory !== undefined) guildTemplate.uuidCategory = uuidCategory;
     
     guildTemplate.updatedAt = new Date();
     return this.guildTemplateRepository.save(guildTemplate);

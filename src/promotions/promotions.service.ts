@@ -5,6 +5,7 @@ import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { UpdatePromotionDto } from './dto/update-promotion.dto';
 import { Promotion } from './entities/promotion.entity';
 import { Role } from '../roles/entities/role.entity';
+import { Member } from '../members/entities/member.entity';
 
 @Injectable()
 export class PromotionsService {
@@ -14,6 +15,9 @@ export class PromotionsService {
 
     @InjectRepository(Role)
     private roleRepository: Repository<Role>,
+
+    @InjectRepository(Member)
+    private memberRepository: Repository<Member>,
   ) {}
 
   async create(createPromotionDto: CreatePromotionDto): Promise<Promotion> {
@@ -45,11 +49,17 @@ export class PromotionsService {
   }
 
   async findAll(): Promise<Promotion[]> {
-    return await this.promotionRepository.find();
+    return await this.promotionRepository.find({
+      relations: ['followers', 'managers', 'category', 'course', 'campus', 'role', 'guild']
+    });
   }
 
   async findOne(uuid: string): Promise<Promotion> {
-    const promotion = await this.promotionRepository.findOneBy({ uuid });
+    const promotion = await this.promotionRepository.findOne({
+      where: { uuid },
+      relations: ['followers', 'managers', 'category', 'course', 'campus', 'role', 'guild']
+    });
+    
     if (!promotion) {
       throw new NotFoundException(`Promotion avec UUID ${uuid} non trouvée`);
     }
@@ -69,10 +79,72 @@ export class PromotionsService {
     return await this.promotionRepository.save(promotion);
   }
 
-  async remove(uuid: string): Promise<void> {
-    const result = await this.promotionRepository.delete({ uuid });
-    if (result.affected === 0) {
-      throw new NotFoundException(`Promotion avec UUID ${uuid} non trouvée`);
+  async remove(uuid: string) {
+    const promotion = await this.findOne(uuid);
+    return await this.promotionRepository.remove(promotion);
+  }
+
+  async addFollower(uuidPromotion: string, uuidMember: string): Promise<Promotion> {
+    const promotion = await this.promotionRepository.findOne({
+      where: { uuid: uuidPromotion },
+      relations: ['followers']
+    });
+
+    if (!promotion) {
+      throw new NotFoundException(`Promotion avec UUID ${uuidPromotion} non trouvée`);
     }
+
+    const member = await this.memberRepository.findOneBy({ uuidMember });
+    if (!member) {
+      throw new NotFoundException(`Membre avec UUID ${uuidMember} non trouvé`);
+    }
+
+    // Vérifier si le membre est déjà follower
+    if (promotion.followers && promotion.followers.some(follower => follower.uuidMember === uuidMember)) {
+      throw new BadRequestException(`Le membre est déjà follower de cette promotion`);
+    }
+
+    // Initialiser le tableau des followers s'il n'existe pas
+    if (!promotion.followers) {
+      promotion.followers = [];
+    }
+
+    // Ajouter le membre aux followers
+    promotion.followers.push(member);
+    
+    // Sauvegarder la promotion mise à jour
+    return await this.promotionRepository.save(promotion);
+  }
+
+  async addManager(uuidPromotion: string, uuidMember: string): Promise<Promotion> {
+    const promotion = await this.promotionRepository.findOne({
+      where: { uuid: uuidPromotion },
+      relations: ['managers']
+    });
+
+    if (!promotion) {
+      throw new NotFoundException(`Promotion avec UUID ${uuidPromotion} non trouvée`);
+    }
+
+    const member = await this.memberRepository.findOneBy({ uuidMember });
+    if (!member) {
+      throw new NotFoundException(`Membre avec UUID ${uuidMember} non trouvé`);
+    }
+
+    // Vérifier si le membre est déjà manager
+    if (promotion.managers && promotion.managers.some(manager => manager.uuidMember === uuidMember)) {
+      throw new BadRequestException(`Le membre est déjà manager de cette promotion`);
+    }
+
+    // Initialiser le tableau des managers s'il n'existe pas
+    if (!promotion.managers) {
+      promotion.managers = [];
+    }
+
+    // Ajouter le membre aux managers
+    promotion.managers.push(member);
+    
+    // Sauvegarder la promotion mise à jour
+    return await this.promotionRepository.save(promotion);
   }
 }

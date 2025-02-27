@@ -41,14 +41,14 @@ export class Channel {
     example: '123456789012345678',
     required: false
   })
-  @Column({ name: 'uuidCategory', type: 'varchar', length: 19, nullable: true })
+  @Column({ name: 'uuid_category', type: 'varchar', length: 19, nullable: true })
   uuidCategory: string;
 
   @ApiProperty({
     description: 'ID Discord du serveur associé',
     example: '123456789012345678'
   })
-  @Column({ name: 'uuidGuild', type: 'varchar', length: 19 })
+  @Column({ name: 'uuid_guild', type: 'varchar', length: 19 })
   uuidGuild: string;
 
   @ApiProperty({

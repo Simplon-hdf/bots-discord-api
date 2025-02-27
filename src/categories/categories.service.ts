@@ -22,11 +22,28 @@ export class CategoriesService {
   }
 
   findAll() {
-    return this.categoryRepository.find();
+    return this.categoryRepository.find({
+      relations: {
+        guild: true,
+        channels: true,
+        course: true,
+        promotion: true,
+        guildTemplate: true
+      }
+    });
   }
 
   findOne(uuid: string) {
-    return this.categoryRepository.findOneBy({ uuid });
+    return this.categoryRepository.findOne({
+      where: { uuid },
+      relations: {
+        guild: true,
+        channels: true,
+        course: true,
+        promotion: true,
+        guildTemplate: true
+      }
+    });
   }
 
   async update(uuid: string, updateCategoryDto: UpdateCategoryDto) {
@@ -36,9 +53,10 @@ export class CategoriesService {
     }
     
     // Mise à jour des champs autorisés uniquement
-    const { name, position } = updateCategoryDto;
+    const { name, position, uuidGuildTemplate } = updateCategoryDto;
     if (name !== undefined) category.name = name;
     if (position !== undefined) category.position = position;
+    if (uuidGuildTemplate !== undefined) category.uuidGuildTemplate = uuidGuildTemplate;
     
     category.updatedAt = new Date();
     return this.categoryRepository.save(category);

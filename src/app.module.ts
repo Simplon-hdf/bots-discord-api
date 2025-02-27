@@ -30,6 +30,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { PollTemplatesModule } from './poll-templates/poll-templates.module';
+import { QuestionTemplatesModule } from './question-templates/question-templates.module';
 
 /**
  * Module principal de l'application
@@ -75,6 +76,7 @@ import { PollTemplatesModule } from './poll-templates/poll-templates.module';
     TagsModule,
     PollsModule,
     PollTemplatesModule,
+    QuestionTemplatesModule,
   ],
   controllers: [AppController],
   providers: [],

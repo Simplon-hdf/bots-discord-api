@@ -1,15 +1,29 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ForumDto {
+export class ChannelDto {
   @ApiProperty({ 
-    example: '123456789012345678', 
-    description: 'Identifiant Discord (snowflake) du forum'
+    example: '1343858509615464449', 
+    description: 'Identifiant Discord (snowflake) du channel'
   })
   snowflake: string;
 
   @ApiProperty({ 
-    example: 'Forum de la Promotion 2023', 
+    example: 'Forum de la Cda P4 Vals', 
     description: 'Nom du forum de la promotion'
+  })
+  nom: string;
+}
+
+export class RoleDto {
+  @ApiProperty({ 
+    example: '1344616774402052127', 
+    description: 'Identifiant Discord du rôle'
+  })
+  id: string;
+
+  @ApiProperty({ 
+    example: 'cdp', 
+    description: 'Nom du rôle'
   })
   nom: string;
 }
@@ -28,30 +42,30 @@ export class MemberDto {
   nom: string;
 
   @ApiProperty({ 
-    example: ['cdp', 'cda-p4-vals'], 
+    type: [RoleDto],
     description: 'Liste des rôles associés au membre'
   })
-  roles: string[];
+  roles: RoleDto[];
 }
 
 export class PromotionSignatureDto {
   @ApiProperty({ 
-    example: '123e4567-e89b-12d3-a456-426614174000', 
+    example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479', 
     description: 'Identifiant unique (UUID) de la promotion'
   })
   uuid: string;
 
   @ApiProperty({ 
-    example: 'Promotion 2023', 
+    example: 'Cda P4 Vals', 
     description: 'Nom de la promotion'
   })
   nom: string;
 
   @ApiProperty({
-    description: 'Informations sur le forum associé à la promotion',
-    type: ForumDto
+    description: 'Informations sur le channel associé à la promotion',
+    type: ChannelDto
   })
-  forum: ForumDto;
+  channel: ChannelDto;
 
   @ApiProperty({
     description: 'Informations sur le chargé de projet de la promotion',
@@ -70,4 +84,12 @@ export class PromotionSignatureDto {
     description: 'Liste des apprenants associés à la promotion'
   })
   apprenants: MemberDto[];
+}
+
+export class PromotionsSignatureResponseDto {
+  @ApiProperty({
+    type: [PromotionSignatureDto],
+    description: 'Liste des promotions avec leurs signatures'
+  })
+  promotions: PromotionSignatureDto[];
 } 

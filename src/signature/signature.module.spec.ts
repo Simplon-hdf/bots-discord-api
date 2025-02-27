@@ -26,7 +26,7 @@ describe('SignatureModule', () => {
     const mockMembersService = { findByPromotion: vi.fn() };
     const mockRolesService = { findByPromotion: vi.fn() };
     const mockGuildsService = { findOne: vi.fn() };
-    const mockChannelsService = { findForumByPromotion: vi.fn() };
+    const mockChannelsService = { findChannelByPromotion: vi.fn() };
 
     const moduleRef = await Test.createTestingModule({
       controllers: [SignatureController],
@@ -51,7 +51,7 @@ describe('SignatureModule', () => {
       const mockMembersService = { findByPromotion: vi.fn() };
       const mockRolesService = { findByPromotion: vi.fn() };
       const mockGuildsService = { findOne: vi.fn() };
-      const mockChannelsService = { findForumByPromotion: vi.fn() };
+      const mockChannelsService = { findChannelByPromotion: vi.fn() };
 
       const moduleRef = await Test.createTestingModule({
         controllers: [SignatureController],
@@ -75,7 +75,7 @@ describe('SignatureModule', () => {
       const mockMembersService = { findByPromotion: vi.fn() };
       const mockRolesService = { findByPromotion: vi.fn() };
       const mockGuildsService = { findOne: vi.fn() };
-      const mockChannelsService = { findForumByPromotion: vi.fn() };
+      const mockChannelsService = { findChannelByPromotion: vi.fn() };
 
       const moduleRef = await Test.createTestingModule({
         controllers: [SignatureController],

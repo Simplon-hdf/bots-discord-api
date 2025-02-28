@@ -68,7 +68,7 @@ describe('IdentificationRequestsService', () => {
   it('should delete an identification request', async () => {
     mockRepository.delete.mockResolvedValue({ affected: 1 });
     expect(await service.remove('123e4567-e89b-12d3-a456-426614174000')).toEqual({ affected: 1 });
-    expect(mockRepository.delete).toHaveBeenCalledWith({ uuid: '123e4567-e89b-12d3-a456-426614174000' });
+    expect(mockRepository.delete).toHaveBeenCalledWith('123e4567-e89b-12d3-a456-426614174000');
   });
 });
 

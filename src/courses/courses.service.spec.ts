@@ -3,9 +3,10 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { CoursesService } from './courses.service';
 import { Course } from './entities/course.entity';
 import { Repository } from 'typeorm';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { CreateCourseDto } from './dto/create-course.dto';
+import { Role } from '../roles/entities/role.entity';
 
 describe('CoursesService', () => {
   let service: CoursesService;
@@ -21,12 +22,35 @@ describe('CoursesService', () => {
     uuidGuild: '123456789012345678',
   };
 
+  const mockRole = {
+    uuidRole: '123456789012345678',
+    name: 'Test Role',
+    memberCount: 0,
+    rolePosition: 1,
+    hoist: false,
+    color: '#000000',
+    createdAt: new Date(),
+    updatedAt: null,
+    uuidGuild: '123456789012345678',
+  };
+
   const mockRepository = {
     create: vi.fn(),
     save: vi.fn(),
     findOne: vi.fn(),
     find: vi.fn(),
     delete: vi.fn(),
+    createQueryBuilder: vi.fn(() => ({
+      relation: vi.fn(() => ({
+        of: vi.fn(() => ({
+          add: vi.fn().mockResolvedValue(true),
+        })),
+      })),
+    })),
+  };
+
+  const mockRoleRepository = {
+    findOne: vi.fn(),
   };
 
   beforeEach(async () => {
@@ -36,6 +60,10 @@ describe('CoursesService', () => {
         {
           provide: getRepositoryToken(Course),
           useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(Role),
+          useValue: mockRoleRepository,
         },
       ],
     }).compile();
@@ -54,7 +82,7 @@ describe('CoursesService', () => {
           uuidRole: ''
       };  
 
-      mockRepository.findOne.mockResolvedValue(null);
+      mockRepository.findOne.mockResolvedValueOnce(null).mockResolvedValueOnce(mockCourse);
       mockRepository.create.mockReturnValue(mockCourse);
       mockRepository.save.mockResolvedValue(mockCourse);
 
@@ -71,15 +99,16 @@ describe('CoursesService', () => {
           uuidRole: '123456789012345678'
       } as CreateCourseDto;  // Utiliser type assertion
 
-      mockRepository.findOne.mockResolvedValue(null);
+      mockRepository.findOne.mockResolvedValueOnce(null).mockResolvedValueOnce(mockCourse);
       mockRepository.create.mockReturnValue(mockCourse);
       mockRepository.save.mockResolvedValue(mockCourse);
+      mockRoleRepository.findOne.mockResolvedValue(mockRole);
 
       const result = await service.create(dto);
       expect(result).toEqual(mockCourse);
     });
 
-    it('should throw ConflictException if course name exists', async () => {
+    it('should throw BadRequestException if course name exists', async () => {
       const dto = {
         uuid: '123e4567-e89b-12d3-a456-426614174000',
         name: 'Développeur web',
@@ -91,7 +120,8 @@ describe('CoursesService', () => {
 
       mockRepository.findOne.mockResolvedValue(mockCourse);
 
-      await expect(service.create(dto)).rejects.toThrow(ConflictException);
+      await expect(service.create(dto)).rejects.toThrow(BadRequestException);
+      await expect(service.create(dto)).rejects.toThrow('Erreur lors de la création du cours: Course with name Développeur web already exists');
     });
   });
 

@@ -11,10 +11,10 @@ describe('RolesService', () => {
   let repository: Repository<Role>;
 
   const mockRole: Role = {
-    uuid: '123e4567-e89b-12d3-a456-426614174000',
+    uuidRole: '123e4567-e89b-12d3-a456-426614174000',
     name: 'Test Role',
-    member_count: '10',
-    role_position: '1',
+    memberCount: 10,
+    rolePosition: 1,
     hoist: true,
     color: '#FF0000',
     createdAt: new Date(),
@@ -50,11 +50,17 @@ describe('RolesService', () => {
     it('devrait créer un nouveau rôle', async () => {
       const createRoleDto = {
         name: 'Test Role',
-        member_count: '10',
-        role_position: '1',
+        memberCount: '10',
+        rolePosition: '1',
         hoist: true,
         color: '#FF0000',
         uuidGuild: '123e4567-e89b-12d3-a456-426614174001'
+      };
+
+      const roleDataWithParsedNumbers = {
+        ...createRoleDto,
+        memberCount: 10,
+        rolePosition: 1
       };
 
       mockRepository.create.mockReturnValue(mockRole);
@@ -63,7 +69,7 @@ describe('RolesService', () => {
       const result = await service.create(createRoleDto);
 
       expect(result).toEqual(mockRole);
-      expect(mockRepository.create).toHaveBeenCalledWith(createRoleDto);
+      expect(mockRepository.create).toHaveBeenCalledWith(roleDataWithParsedNumbers);
       expect(mockRepository.save).toHaveBeenCalledWith(mockRole);
     });
   });
@@ -84,10 +90,10 @@ describe('RolesService', () => {
     it('devrait retourner un rôle par son uuid', async () => {
       mockRepository.findOneBy.mockResolvedValue(mockRole);
 
-      const result = await service.findOne(mockRole.uuid);
+      const result = await service.findOne(mockRole.uuidRole);
 
       expect(result).toEqual(mockRole);
-      expect(mockRepository.findOneBy).toHaveBeenCalledWith({ uuid: mockRole.uuid });
+      expect(mockRepository.findOneBy).toHaveBeenCalledWith({ uuidRole: mockRole.uuidRole });
     });
 
     it('devrait lancer une erreur si le rôle n\'est pas trouvé', async () => {
@@ -110,7 +116,7 @@ describe('RolesService', () => {
       mockRepository.findOneBy.mockResolvedValue(mockRole);
       mockRepository.save.mockResolvedValue(updatedRole);
 
-      const result = await service.update(mockRole.uuid, updateRoleDto);
+      const result = await service.update(mockRole.uuidRole, updateRoleDto);
 
       expect(result).toEqual(updatedRole);
       expect(mockRepository.save).toHaveBeenCalled();
@@ -129,9 +135,9 @@ describe('RolesService', () => {
     it('devrait supprimer un rôle', async () => {
       mockRepository.delete.mockResolvedValue({ affected: 1 });
 
-      await service.remove(mockRole.uuid);
+      await service.remove(mockRole.uuidRole);
 
-      expect(mockRepository.delete).toHaveBeenCalledWith({ uuid: mockRole.uuid });
+      expect(mockRepository.delete).toHaveBeenCalledWith({ uuidRole: mockRole.uuidRole });
     });
 
     it('devrait lancer une erreur si le rôle à supprimer n\'existe pas', async () => {

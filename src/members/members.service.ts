@@ -3,8 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
-import { AssignRoleToMemberDto } from './../roles/dto/assign-role-to-member.dto';
-import { UpdateMemberRolesDto } from './../roles/dto/update-member-roles.dto';
 import { Member } from './entities/member.entity';
 import { Role } from '../roles/entities/role.entity';
 
@@ -63,29 +61,9 @@ export class MembersService {
         throw new NotFoundException(`Member with UUID ${uuidMember} not found`);
       }
 
-      // Utiliser des requêtes SQL brutes pour récupérer les promotions suivies
-      const followedPromotionsQuery = this.membersRepository.manager.query(`
-        SELECT p.* FROM "Promotions" p
-        JOIN promotions_followers pf ON p.uuid_promotion = pf.uuid_promotion
-        WHERE pf.uuid_member = $1
-      `, [uuidMember]);
-
-      // Utiliser des requêtes SQL brutes pour récupérer les promotions gérées
-      const managedPromotionsQuery = this.membersRepository.manager.query(`
-        SELECT p.* FROM "Promotions" p
-        JOIN promotions_managers pm ON p.uuid_promotion = pm.uuid_promotion
-        WHERE pm.uuid_member = $1
-      `, [uuidMember]);
-
-      // Exécuter les deux requêtes en parallèle
-      const [followedPromotions, managedPromotions] = await Promise.all([
-        followedPromotionsQuery,
-        managedPromotionsQuery
-      ]);
-
       return {
-        followedPromotions: followedPromotions || [],
-        managedPromotions: managedPromotions || []
+        followedPromotions: member.followedPromotions || [],
+        managedPromotions: member.managedPromotions || []
       };
     } catch (error) {
       if (error instanceof NotFoundException) {

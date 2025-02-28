@@ -7,6 +7,8 @@ import { describe, it, expect, beforeEach, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from 'src/config/typeorm.config';
+import { QuestionsModule } from 'src/questions/questions.module';
+import { PollsModule } from 'src/polls/polls.module';
 
 describe('Answers Integration Tests', () => {
   let app: INestApplication;
@@ -26,6 +28,8 @@ describe('Answers Integration Tests', () => {
             logging: true,
         }),
         AnswersModule,
+        QuestionsModule,
+        PollsModule,
       ],
     }).compile();
 

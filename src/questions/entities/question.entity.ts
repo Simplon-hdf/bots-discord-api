@@ -1,5 +1,5 @@
 import { Answer } from 'src/answers/entities/answer.entity';
-import { Poll } from '../../polls/entities/poll.entity';
+import { Poll } from 'src/polls/entities/poll.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 

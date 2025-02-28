@@ -1,7 +1,7 @@
-import { Entity, Column, ManyToOne, PrimaryGeneratedColumn, JoinColumn} from 'typeorm';
+import { Entity, Column, ManyToOne, PrimaryGeneratedColumn, JoinColumn, ManyToMany} from 'typeorm';
 import { Question } from 'src/questions/entities/question.entity';  
 import { ApiProperty } from '@nestjs/swagger';
-
+import { Member } from 'src/members/entities/member.entity';
 @Entity('answers')
 export class Answer {
   @ApiProperty({
@@ -30,4 +30,6 @@ export class Answer {
   @JoinColumn({ name: 'uuid_question' })
   question: Question;
 
+  @ManyToMany(() => Member, (member) => member.answers)
+  members: Member[];
 }

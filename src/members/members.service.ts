@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
-import { AssignRoleToMemberDto } from './../roles/dto/assign-role-to-member.dto';
-import { UpdateMemberRolesDto } from './../roles/dto/update-member-roles.dto';
+import { AssignRoleToMemberDto } from '../roles/dto/assign-role-to-member.dto';
+import { UpdateMemberRolesDto } from '../roles/dto/update-member-roles.dto';
 import { Member } from './entities/member.entity';
 import { Role } from '../roles/entities/role.entity';
 

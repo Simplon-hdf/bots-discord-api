@@ -88,11 +88,51 @@ describe('MembersInformationsService', () => {
 
   it('should update a member information', async () => {
     const dto: UpdateMemberInformationsDto = { firstName: 'Jane' };
-    const result = { affected: 1 };
-    mockRepository.update.mockResolvedValue(result);
-
-    expect(await service.update('123e4567-e89b-12d3-a456-426614174000', dto)).toEqual(result);
-    expect(mockRepository.update).toHaveBeenCalledWith('123e4567-e89b-12d3-a456-426614174000', dto);
+    const existingMemberInfo = {
+      uuid: '123e4567-e89b-12d3-a456-426614174000',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@example.com',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    const updatedMemberInfo = {
+      ...existingMemberInfo,
+      firstName: 'Jane',
+      updatedAt: expect.any(Date)
+    };
+    
+    // Réinitialiser les mocks
+    vi.clearAllMocks();
+    
+    // Mock findOneBy pour retourner le membre existant
+    mockRepository.findOneBy.mockResolvedValue(existingMemberInfo);
+    
+    // Mock save pour simuler la sauvegarde
+    mockRepository.save.mockImplementation((entity) => {
+      // Vérifier que l'entité a bien été mise à jour
+      expect(entity.firstName).toBe('Jane');
+      expect(entity.updatedAt).toBeInstanceOf(Date);
+      
+      // Retourner l'entité mise à jour
+      return Promise.resolve(entity);
+    });
+    
+    // Appeler la méthode update
+    const result = await service.update('123e4567-e89b-12d3-a456-426614174000', dto);
+    
+    // Vérifier que findOneBy a été appelé avec le bon uuid
+    expect(mockRepository.findOneBy).toHaveBeenCalledWith({ uuid: '123e4567-e89b-12d3-a456-426614174000' });
+    
+    // Vérifier que save a été appelé
+    expect(mockRepository.save).toHaveBeenCalled();
+    
+    // Vérifier que le résultat contient les bonnes valeurs
+    expect(result.firstName).toBe('Jane');
+    expect(result.lastName).toBe('Doe');
+    expect(result.email).toBe('john.doe@example.com');
+    expect(result.updatedAt).toBeInstanceOf(Date);
   });
 
   it('should delete a member information', async () => {

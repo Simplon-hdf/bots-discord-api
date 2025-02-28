@@ -10,6 +10,7 @@ const mockRepository = {
   save: vi.fn(),
   find: vi.fn(),
   findOneBy: vi.fn(),
+  findOne: vi.fn(),
   delete: vi.fn(),
 };
 
@@ -44,14 +45,31 @@ describe('CategoriesService', () => {
     const result = [{ uuid: '123456789012345678', uuidGuild: '987654321098765432', name: 'Test Category', position: 1 }];
     mockRepository.find.mockResolvedValue(result);
     expect(await service.findAll()).toEqual(result);
-    expect(mockRepository.find).toHaveBeenCalled();
+    expect(mockRepository.find).toHaveBeenCalledWith({
+      relations: {
+        guild: true,
+        channels: true,
+        course: true,
+        promotion: true,
+        guildTemplate: true
+      }
+    });
   });
 
   it('should return a single category', async () => {
     const result = { uuid: '123456789012345678', uuidGuild: '987654321098765432', name: 'Test Category', position: 1 };
-    mockRepository.findOneBy.mockResolvedValue(result);
+    mockRepository.findOne.mockResolvedValue(result);
     expect(await service.findOne('123456789012345678')).toEqual(result);
-    expect(mockRepository.findOneBy).toHaveBeenCalledWith({ uuid: '123456789012345678' });
+    expect(mockRepository.findOne).toHaveBeenCalledWith({
+      where: { uuid: '123456789012345678' },
+      relations: {
+        guild: true,
+        channels: true,
+        course: true,
+        promotion: true,
+        guildTemplate: true
+      }
+    });
   });
 
   it('should update a category', async () => {

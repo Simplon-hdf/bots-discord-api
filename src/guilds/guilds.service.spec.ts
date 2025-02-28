@@ -84,7 +84,7 @@ describe('GuildsService', () => {
     it('should return an array of guilds with relations', async () => {
       const guildWithRelations = {
         ...mockGuild,
-        course: mockCourse,
+        courses: [mockCourse],
         members: [mockMember],
         roles: [mockRole],
       };
@@ -94,7 +94,7 @@ describe('GuildsService', () => {
       
       expect(result).toEqual([guildWithRelations]);
       expect(mockRepository.find).toHaveBeenCalledWith({
-        relations: ['course', 'members', 'roles', 'channels', 'categories', 'campus', 'promotions', 'template']
+        relations: ['courses', 'members', 'roles', 'channels', 'categories', 'campuses', 'promotions', 'template']
       });
     });
   });
@@ -103,7 +103,7 @@ describe('GuildsService', () => {
     it('should return a single guild with relations', async () => {
       const guildWithRelations = {
         ...mockGuild,
-        course: mockCourse,
+        courses: [mockCourse],
         members: [mockMember],
         roles: [mockRole],
       };
@@ -114,7 +114,7 @@ describe('GuildsService', () => {
       expect(result).toEqual(guildWithRelations);
       expect(mockRepository.findOne).toHaveBeenCalledWith({
         where: { uuid: '123456789012345678' },
-        relations: ['course', 'members', 'roles', 'channels', 'categories', 'campus', 'promotions', 'template']
+        relations: ['courses', 'members', 'roles', 'channels', 'categories', 'campuses', 'promotions', 'template']
       });
     });
   });
@@ -128,7 +128,7 @@ describe('GuildsService', () => {
       };
       const existingGuild = {
         ...mockGuild,
-        course: mockCourse,
+        courses: [mockCourse],
         members: [mockMember],
         roles: [mockRole],
       };
@@ -142,7 +142,7 @@ describe('GuildsService', () => {
       expect(result).toEqual(updatedGuild);
       expect(mockRepository.findOne).toHaveBeenCalledWith({
         where: { uuid: '123456789012345678' },
-        relations: ['course', 'members', 'roles', 'channels', 'categories', 'campus', 'promotions', 'template']
+        relations: ['courses', 'members', 'roles', 'channels', 'categories', 'campuses', 'promotions', 'template']
       });
       expect(mockRepository.save).toHaveBeenCalledWith(updatedGuild);
     });

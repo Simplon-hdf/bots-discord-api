@@ -1,14 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Answer } from './entities/answer.entity';
 import { AnswersModule } from './answers.module';
-import { describe, it, expect, beforeEach, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from 'src/config/typeorm.config';
 import { QuestionsModule } from 'src/questions/questions.module';
 import { PollsModule } from 'src/polls/polls.module';
+import { MembersModule } from 'src/members/members.module';
 
 describe('Answers Integration Tests', () => {
   let app: INestApplication;
@@ -30,6 +29,7 @@ describe('Answers Integration Tests', () => {
         AnswersModule,
         QuestionsModule,
         PollsModule,
+        MembersModule,
       ],
     }).compile();
 

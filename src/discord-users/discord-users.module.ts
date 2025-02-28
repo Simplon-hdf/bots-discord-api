@@ -8,5 +8,6 @@ import { DiscordUser } from './entities/discord-user.entity';
   imports: [TypeOrmModule.forFeature([DiscordUser])],
   controllers: [DiscordUsersController],
   providers: [DiscordUsersService],
+  exports: [DiscordUsersService]
 })
 export class DiscordUsersModule {} 

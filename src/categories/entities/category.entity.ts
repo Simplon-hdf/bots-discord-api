@@ -68,8 +68,8 @@ export class Category {
     description: 'Formation associée à la catégorie',
     type: () => Course
   })
-  @OneToOne(() => Course, course => course.category)
-  course: Course;
+  @OneToMany(() => Course, course => course.category)
+  course: Course[];
 
   @ApiProperty({
     description: 'Le serveur Discord associé à cette catégorie',

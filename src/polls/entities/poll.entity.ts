@@ -1,6 +1,7 @@
 import { Question } from 'src/questions/entities/question.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Member } from 'src/members/entities/member.entity';
 
 @Entity('polls')
 export class Poll {
@@ -48,22 +49,30 @@ export class Poll {
   })
   duration: number;
 
+  // @ApiProperty({
+  //   type: () => [Question],
+  //   example: [{ 
+  //     content: 'What is your favorite color?', 
+  //     isMultipleAnswer: true,
+  //     answers: [{
+  //       content: "Red"
+  //     },
+  //     {
+  //       content: "Blue"
+  //     }]
+  //   }],
+  //   description: "List of questions associated with this poll."
+  // })
   @OneToMany(() => Question, (question) => question.poll, {cascade: true})
-  @ApiProperty({
-    type: () => [Question],
-    example: [{ 
-      content: 'What is your favorite color?', 
-      isMultipleAnswer: true,
-      answers: [{
-        content: "Red"
-      },
-      {
-        content: "Blue"
-      }]
-    }],
-    description: "List of questions associated with this poll."
-  })
   questions: Question[];
+
+  // @ApiProperty({
+  //     description: 'The author of the template',
+  //     type: () => Member
+  // })
+  @ManyToOne(() => Member, (author) => author.polls, {nullable: false})
+  @JoinColumn({ name: 'uuid_author' })
+  author: Member;
 
   @CreateDateColumn({
     name: 'created_at',

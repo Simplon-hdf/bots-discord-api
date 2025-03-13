@@ -1,9 +1,10 @@
 import { IsString, IsNotEmpty, IsBoolean, IsInt, MaxLength, Length, ArrayMinSize, ValidateNested } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { CreateQuestionDto } from 'src/questions/dto/create-question.dto';
 import { Type } from 'class-transformer';
+import { PickableInternUUIDFields } from 'src/utils/pickable-intern-uuid-fields';
 
-export class CreatePollDto {
+export class CreatePollDto extends PickType(PickableInternUUIDFields, ['uuidMember']) {
   @ApiProperty({ 
     description: "The title of the poll, which should be concise and descriptive.", 
     maxLength: 50, 

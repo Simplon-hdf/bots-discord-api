@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   OneToOne,
   JoinColumn,
@@ -20,10 +20,10 @@ import { ApiProperty } from '@nestjs/swagger';
 export class Course {
 
   @ApiProperty({
-    description: 'UUID unique de la formation',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: 'ID discord de la formation',
+    example: '123456789012345678',
   })
-  @PrimaryGeneratedColumn('uuid', { name: 'uuid_course' })
+  @PrimaryColumn({ type: 'varchar', length: 19, name: 'uuid_course' })
     uuid: string;
 
   @ApiProperty({

@@ -9,6 +9,23 @@ export class CreateCourseDto extends PickType(IntersectionType(PickableDiscordUU
     'uuidRole',
     'uuidCategory'
 ]) {
+
+    @ApiProperty({
+      description: 'ID Discord des cours',
+      example: '123456789012345678',
+    })
+    @IsNotEmpty()
+    @IsString()
+    @Length(17, 19)
+    @Matches(/^\d+$/)
+    uuid: string;
+
+    @ApiProperty({
+        description: 'Nom de la formation',
+        type: String,
+        example: 'Développeur web',
+    })
+    @IsNotEmpty()
     @MinLength(3)
     name: string;
 

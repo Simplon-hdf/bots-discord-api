@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToOne, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToOne, ManyToMany, JoinTable } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Course } from '../../courses/entities/course.entity';
 import { Guild } from '../../guilds/entities/guild.entity';
@@ -11,9 +11,9 @@ import { Member } from 'src/members/entities/member.entity';
 export class Promotion {
   @ApiProperty({
     description: 'UUID unique de la promotion',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123456789012345678'
   })
-  @PrimaryGeneratedColumn('uuid', { name: 'uuid_promotion' })
+  @PrimaryColumn({ type: 'varchar', length: 19, name: 'uuid_promotion' })
   uuid: string;
 
   @ApiProperty({

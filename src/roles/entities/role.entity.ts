@@ -12,7 +12,7 @@ export class Role {
     description: 'UUID unique du rôle',
     example: '172653890987364567'
   })
-  @PrimaryColumn('varchar', { name: 'uuid_role' })
+  @PrimaryColumn({ type: 'varchar', length: 19,  name: 'uuid_role' })
   uuidRole: string;
 
   @ApiProperty({

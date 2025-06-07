@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './config/typeorm.config';
 import { LoggerModule, PinoLogger } from 'nestjs-pino';
 import { loggerConfig } from './config/logger.config';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { throttlerConfig } from './config/throttler.config';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
@@ -36,6 +36,7 @@ import { PollTemplatesModule } from './poll-templates/poll-templates.module';
 import { QuestionTemplatesModule } from './question-templates/question-templates.module';
 import { AnswerTemplatesModule } from './answer-templates/answer-templates.module';
 import { APP_GUARD } from '@nestjs/core';
+import { DiscordUserThrottlerGuard } from './common/guards/discord-user-throttler.guard';
 
 @Module({
   imports: [
@@ -82,7 +83,7 @@ import { APP_GUARD } from '@nestjs/core';
   providers: [
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard,
+      useClass: DiscordUserThrottlerGuard,
     },
   ],
 })

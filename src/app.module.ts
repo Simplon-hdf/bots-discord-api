@@ -3,6 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './config/typeorm.config';
 import { LoggerModule, PinoLogger } from 'nestjs-pino';
 import { loggerConfig } from './config/logger.config';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { throttlerConfig } from './config/throttler.config';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 import { GuildsModule } from './guilds/guilds.module';
 import { CampusesModule } from './campuses/campuses.module';
 import { GuildsTemplatesModule } from './guilds-templates/guilds-templates.module';
@@ -26,22 +30,13 @@ import { DiscordUsersModule } from './discord-users/discord-users.module';
 import { CoursesModule } from './courses/courses.module';
 import { TagsModule } from './tags/tags.module';
 import { PollsModule } from './polls/polls.module';
-import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { SignatureModule } from './signature/signature.module';
 import { PollTemplatesModule } from './poll-templates/poll-templates.module';
 import { QuestionTemplatesModule } from './question-templates/question-templates.module';
 import { AnswerTemplatesModule } from './answer-templates/answer-templates.module';
+import { APP_GUARD } from '@nestjs/core';
 
-/**
- * Module principal de l'application
- *
- * Ce module importe et configure :
- * - La connexion à la base de données via TypeORM
- * - Le système de logging via Pino
- * - Les modules fonctionnels de l'application
- */
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
@@ -50,6 +45,7 @@ import { AnswerTemplatesModule } from './answer-templates/answer-templates.modul
       isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
     }),
+    ThrottlerModule.forRoot(throttlerConfig),
     AuthModule,
     GuildsModule,
     CampusesModule,
@@ -83,7 +79,12 @@ import { AnswerTemplatesModule } from './answer-templates/answer-templates.modul
     AnswerTemplatesModule
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule implements OnModuleInit {
   constructor(private readonly logger: PinoLogger) {

@@ -18,7 +18,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new EmptyResponseInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
-
+  
   // Configuration pour servir les fichiers statiques
   app.useStaticAssets({
     root: join(__dirname, '..', 'public'),

@@ -1,5 +1,4 @@
 import { Controller, Get, Res, Logger } from '@nestjs/common';
-import { Response } from 'express';
 import { join } from 'path';
 import * as fs from 'fs';
 import { FastifyReply } from 'fastify';
@@ -7,6 +6,15 @@ import { FastifyReply } from 'fastify';
 @Controller()
 export class AppController {
   private readonly logger = new Logger(AppController.name);
+
+  @Get('test-rate-limit')
+  testRateLimit(): any {
+    return {
+      message: 'Test du rate limiting',
+      timestamp: new Date().toISOString(),
+      success: true
+    };
+  }
 
   @Get('test-auth')
   serveAuthTestPage(@Res() res: FastifyReply): void {

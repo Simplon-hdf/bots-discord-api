@@ -1,11 +1,32 @@
-import { Controller, Get, Query, Res, UnauthorizedException, Logger } from '@nestjs/common';
+import { Controller, Get, Query, Res, UnauthorizedException, Logger, Post, Body, HttpCode } from '@nestjs/common';
 import { FastifyReply } from 'fastify';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
-import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiProperty, ApiBody } from '@nestjs/swagger';
 import { DiscordGuildMember } from './interfaces/discord-user.interface';
 // Import du décorateur pour les routes publiques
 import { Public } from './decorators/public.decorator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+
+// DTO pour l'authentification du bot
+class BotAuthDto {
+  @ApiProperty({
+    description: 'Token du bot Discord (avec ou sans préfixe "Bot ")',
+    example: 'MTIzNDU2Nzg5MDEyMzQ1Njc4OTA.Xxxxxx.Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+  })
+  @IsString()
+  @IsNotEmpty()
+  botToken: string;
+
+  @ApiProperty({
+    description: 'ID du bot Discord (optionnel, pour vérification)',
+    example: '1234567890123456789',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  botId?: string;
+}
 
 @Controller('auth')
 export class AuthController {
@@ -213,6 +234,65 @@ export class AuthController {
         message: `Erreur: ${error.message}`,
         status: 500
       });
+    }
+  }
+
+  // ROUTE PUBLIQUE : Authentification pour les bots Discord.js
+  // Permet aux bots de s'authentifier avec leur token et recevoir un JWT
+  @Public()
+  @HttpCode(200)
+  @ApiOperation({ 
+    summary: 'Authentification pour bots Discord',
+    description: 'Permet aux bots Discord.js de s\'authentifier et recevoir un JWT pour l\'API'
+  })
+  @ApiBody({
+    type: BotAuthDto,
+    description: 'Token du bot Discord à valider'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'JWT généré avec succès pour le bot'
+  })
+  @ApiResponse({ 
+    status: 401, 
+    description: 'Token bot invalide ou bot non autorisé'
+  })
+  @Post('bot-login')
+  async botLogin(@Body() authData: BotAuthDto): Promise<any> {
+    this.logger.log('Tentative d\'authentification du bot...');
+    
+    if (!authData.botToken) {
+      this.logger.error('Token bot non fourni');
+      throw new UnauthorizedException('Token bot requis');
+    }
+
+    try {
+      // Valider le bot token et récupérer les informations du bot
+      const botInfo = await this.authService.validateBotToken(authData.botToken);
+      
+      // Générer un JWT pour le bot avec des permissions spéciales
+      const jwt = this.authService.generateBotJwtToken(botInfo);
+      
+      this.logger.log(`Bot ${botInfo.username} authentifié avec succès`);
+      
+      return {
+        message: 'Bot authentifié avec succès',
+        data: {
+          token: jwt,
+          botInfo: {
+            id: botInfo.id,
+            username: botInfo.username,
+            discriminator: botInfo.discriminator || '0000',
+            avatar: botInfo.avatar
+          },
+          tokenType: 'Bearer',
+          expiresIn: '24h'
+        },
+        statusCode: 200
+      };
+    } catch (error) {
+      this.logger.error(`Erreur lors de l'authentification du bot: ${error.message}`, error.stack);
+      throw new UnauthorizedException(`Authentification du bot échouée: ${error.message}`);
     }
   }
 } 

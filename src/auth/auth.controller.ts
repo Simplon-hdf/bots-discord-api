@@ -12,7 +12,7 @@ import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 class BotAuthDto {
   @ApiProperty({
     description: 'Token du bot Discord (avec ou sans préfixe "Bot ")',
-    example: 'MTIzNDU2Nzg5MDEyMzQ1Njc4OTA.Xxxxxx.Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    example: 'Bot YOUR_BOT_TOKEN'
   })
   @IsString()
   @IsNotEmpty()

@@ -2,7 +2,6 @@ services:
   app-prod:
     container_name: bots-api-prod
     image: enguerransgg/api-bots-discord:latest
-    env_file: .env.production
     ports:
       - "8080:3000"
     volumes:
@@ -17,10 +16,7 @@ services:
   db: 
     image: postgres:17-alpine
     container_name: bots-api-db
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: bots-api
+    env_file: .env.production
     ports:
       - "5432:5432"
     volumes: 

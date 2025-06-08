@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # Override du service API existant pour le développement
+  app-dev:
+    environment:
+      - NODE_ENV=development
+      - BOT_API_URL=http://bot-discord:3001
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Nouveau service pour le bot Discord
+  bot-discord:
+    container_name: bot-discord-dev
+    build:
+      context: ../bot-discord-onboarding
+      dockerfile: Dockerfile.dev
+    env_file:
+      - ../bot-discord-onboarding/.env.dev
+    ports:
+      - "3001:3001"  # Port différent pour éviter les conflits
+    volumes:
+      - ../bot-discord-onboarding:/app
+      - /app/node_modules
+      - bot_logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - API_URL=http://app-dev:3000
+    # Commande pour démarrer le bot en mode développement
+    command: ["npm", "run", "dev"]
+
+  # Service de base de données partagée
+  db:
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES=bots_api,bot_discord
+    volumes:
+      - ../bot-discord-onboarding/init-db:/docker-entrypoint-initdb.d/bot-discord
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bots_api"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  bot_logs:
+    driver: local 

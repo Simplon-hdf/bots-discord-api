@@ -59,4 +59,18 @@ export class SignatureController {
   async createTestPromotionData(): Promise<PromotionsSignatureResponseDto> {
     return this.signatureService.createTestData();
   }
+
+  @Post('promotions/specific-data')
+  @ApiOperation({ 
+    summary: 'Add specific promotion data',
+    description: 'Adds specific promotion data to the database, including the special case for Yohan with multiple roles'
+  })
+  @ApiResponse({ 
+    status: HttpStatus.CREATED, 
+    description: 'Specific promotion data successfully added to the database',
+    type: PromotionsSignatureResponseDto
+  })
+  async addSpecificPromotionData(): Promise<PromotionsSignatureResponseDto> {
+    return this.signatureService.addSpecificPromotionData();
+  }
 } 

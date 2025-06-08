@@ -711,4 +711,425 @@ export class SignatureService {
       throw new Error(`Failed to create test data: ${error.message}`);
     }
   }
+
+  /**
+   * Ajoute les données spécifiques de promotion fournies dans la base de données
+   * Gère le cas spécial de Yohan qui a des rôles multiples
+   */
+  async addSpecificPromotionData(): Promise<PromotionsSignatureResponseDto> {
+    this.logger.log('Ajout des données spécifiques de promotion...');
+    
+    try {
+      // 0. Créer/récupérer une guild (serveur Discord)
+      const guildId = '987654321098765432';
+      let existingGuild: any = null;
+      
+      try {
+        existingGuild = await this.guildsService.findOne(guildId);
+      } catch (error) {
+        if (error.name !== 'NotFoundException') {
+          throw error;
+        }
+      }
+      
+      if (!existingGuild) {
+        this.logger.log('Creating guild for specific promotion...');
+        await this.guildsService.create({
+          uuid: guildId,
+          name: 'Test Discord Server',
+          memberCount: '50',
+          configuration: {
+            welcomeChannel: '111111111111111111',
+            prefix: '!'
+          }
+        });
+      }
+      
+      // 1. Créer/récupérer la catégorie
+      const categoryUuid = '1344640530763485265';
+      let category = await this.categoryRepository.findOne({
+        where: { uuid: categoryUuid }
+      });
+      
+      if (!category) {
+        category = await this.categoryRepository.save({
+          uuid: categoryUuid,
+          name: 'Forum de la Cda P4 Vals',
+          position: 1,
+          uuidGuild: guildId
+        });
+      }
+      
+      // 2. Créer/récupérer les rôles
+      // Rôle CDP
+      const roleCdpUuid = '1344616774402052127';
+      let roleCdp = await this.roleRepository.findOne({
+        where: { uuidRole: roleCdpUuid }
+      });
+      
+      if (!roleCdp) {
+        roleCdp = await this.roleRepository.save({
+          uuidRole: roleCdpUuid,
+          name: 'cdp',
+          memberCount: 1,
+          rolePosition: 5,
+          hoist: true,
+          color: '#33FFFF',
+          uuidGuild: guildId
+        });
+      }
+      
+      // Rôle promotion
+      const rolePromoUuid = '1344616774402052128';
+      let rolePromo = await this.roleRepository.findOne({
+        where: { uuidRole: rolePromoUuid }
+      });
+      
+      if (!rolePromo) {
+        rolePromo = await this.roleRepository.save({
+          uuidRole: rolePromoUuid,
+          name: 'cda-p4-vals',
+          memberCount: 10,
+          rolePosition: 3,
+          hoist: true,
+          color: '#FF5733',
+          uuidGuild: guildId
+        });
+      }
+      
+      // Rôle formateur
+      const roleFormateurUuid = '1344616774402052129';
+      let roleFormateur = await this.roleRepository.findOne({
+        where: { uuidRole: roleFormateurUuid }
+      });
+      
+      if (!roleFormateur) {
+        roleFormateur = await this.roleRepository.save({
+          uuidRole: roleFormateurUuid,
+          name: 'formateur',
+          memberCount: 2,
+          rolePosition: 4,
+          hoist: true,
+          color: '#5733FF',
+          uuidGuild: guildId
+        });
+      }
+      
+      // Rôle apprenant
+      const roleApprenantUuid = '1344616774402052126';
+      let roleApprenant = await this.roleRepository.findOne({
+        where: { uuidRole: roleApprenantUuid }
+      });
+      
+      if (!roleApprenant) {
+        roleApprenant = await this.roleRepository.save({
+          uuidRole: roleApprenantUuid,
+          name: 'apprenant',
+          memberCount: 5,
+          rolePosition: 2,
+          hoist: true,
+          color: '#33FF57',
+          uuidGuild: guildId
+        });
+      }
+      
+      // 3. Créer/récupérer le forum
+      const forumChannelUuid = '1344640530763485265';
+      let forumChannel = await this.channelRepository.findOne({
+        where: { uuid: forumChannelUuid }
+      });
+      
+      if (!forumChannel) {
+        forumChannel = await this.channelRepository.save({
+          uuid: forumChannelUuid,
+          name: 'Forum de la Cda P4 Vals',
+          type: 'GUILD_FORUM',
+          channelPosition: 1,
+          uuidCategory: category.uuid,
+          uuidGuild: guildId
+        });
+      }
+      
+      // 4. Créer/récupérer les utilisateurs Discord
+      // Chargé de projet
+      const cdpDiscordId = '987654321098765432';
+      let cdpDiscordUser = await this.discordUserRepository.findOne({
+        where: { uuidDiscord: cdpDiscordId }
+      });
+      
+      if (!cdpDiscordUser) {
+        cdpDiscordUser = await this.discordUserRepository.save({
+          uuidDiscord: cdpDiscordId,
+          discordUsername: 'Jean Dupont',
+          discriminator: '0001'
+        });
+      }
+      
+      // Formateurs Discord Users
+      const trainerDiscordIds = ['223812446312202251', '222222222222222222'];
+      const trainerNames = ['Yohan', 'Bob Durand'];
+      
+      for (let i = 0; i < trainerDiscordIds.length; i++) {
+        const discordId = trainerDiscordIds[i];
+        const name = trainerNames[i];
+        
+        let trainerDiscordUser = await this.discordUserRepository.findOne({
+          where: { uuidDiscord: discordId }
+        });
+        
+        if (!trainerDiscordUser) {
+          trainerDiscordUser = await this.discordUserRepository.save({
+            uuidDiscord: discordId,
+            discordUsername: name,
+            discriminator: `100${i+1}`
+          });
+        }
+      }
+      
+      // Apprenants Discord Users  
+      const learnerDiscordIds = [
+        '843642001592811540', 
+        '871401908055711784', 
+        '1151408937900453888', 
+        '223812446312202251',
+        '1152153253782491196'
+      ];
+      
+      const learnerNames = [
+        'Abel-Karine', 
+        'Audrey', 
+        'Bobo la bête', 
+        'Yohan',
+        'Engurrang'
+      ];
+      
+      for (let i = 0; i < learnerDiscordIds.length; i++) {
+        const discordId = learnerDiscordIds[i];
+        const name = learnerNames[i];
+        
+        // Vérifie si l'utilisateur existe déjà (pour Yohan notamment)
+        let learnerDiscordUser = await this.discordUserRepository.findOne({
+          where: { uuidDiscord: discordId }
+        });
+        
+        if (!learnerDiscordUser) {
+          learnerDiscordUser = await this.discordUserRepository.save({
+            uuidDiscord: discordId,
+            discordUsername: name,
+            discriminator: `200${i+1}`
+          });
+        }
+      }
+      
+      // 5. Créer/récupérer les membres
+      // Chargé de projet
+      let projectManager;
+      const existingPMMember = await this.memberRepository.findOne({
+        where: { uuidDiscord: cdpDiscordId }
+      });
+      
+      if (!existingPMMember) {
+        projectManager = await this.memberRepository.save({
+          uuidMember: uuidv4(),
+          guildUsername: 'Jean Dupont',
+          xp: '2500',
+          level: 5,
+          communityRole: 'ProjectManager',
+          status: 'Active',
+          uuidGuild: guildId,
+          uuidDiscord: cdpDiscordId
+        });
+      } else {
+        projectManager = existingPMMember;
+      }
+      
+      // Formateurs
+      const trainers: any[] = [];
+      for (let i = 0; i < trainerDiscordIds.length; i++) {
+        const discordId = trainerDiscordIds[i];
+        const name = trainerNames[i];
+        
+        // Pour Yohan qui a un double rôle (formateur et apprenant)
+        if (discordId === '223812446312202251') {
+          let yohanMember = await this.memberRepository.findOne({
+            where: { uuidDiscord: discordId }
+          });
+          
+          if (yohanMember) {
+            // S'il existe déjà, garder son rôle avec une préférence pour Formateur
+            if (yohanMember.communityRole !== 'Trainer') {
+              yohanMember.communityRole = 'Trainer';
+              yohanMember = await this.memberRepository.save(yohanMember);
+            }
+            trainers.push(yohanMember);
+          } else {
+            // S'il n'existe pas, le créer comme formateur
+            const trainer = await this.memberRepository.save({
+              uuidMember: uuidv4(),
+              guildUsername: name,
+              xp: '2000',
+              level: 4,
+              communityRole: 'Trainer', // On le crée d'abord comme formateur
+              status: 'Active',
+              uuidGuild: guildId,
+              uuidDiscord: discordId
+            });
+            trainers.push(trainer);
+          }
+        } else {
+          // Autres formateurs (pas Yohan)
+          let trainer;
+          const existingTrainer = await this.memberRepository.findOne({
+            where: { uuidDiscord: discordId }
+          });
+          
+          if (!existingTrainer) {
+            trainer = await this.memberRepository.save({
+              uuidMember: uuidv4(),
+              guildUsername: name,
+              xp: `${1500 + (i * 100)}`,
+              level: 4,
+              communityRole: 'Trainer',
+              status: 'Active',
+              uuidGuild: guildId,
+              uuidDiscord: discordId
+            });
+          } else {
+            trainer = existingTrainer;
+          }
+          
+          trainers.push(trainer);
+        }
+      }
+      
+      // Apprenants
+      const learners: any[] = [];
+      for (let i = 0; i < learnerDiscordIds.length; i++) {
+        const discordId = learnerDiscordIds[i];
+        const name = learnerNames[i];
+        
+        // Traitement spécial pour Yohan (qui est aussi formateur)
+        if (discordId === '223812446312202251') {
+          let yohanMember = await this.memberRepository.findOne({
+            where: { uuidDiscord: discordId }
+          });
+          
+          if (yohanMember) {
+            // On ajoute Yohan aussi comme apprenant (il est déjà dans trainers)
+            learners.push(yohanMember);
+          }
+          // On ne crée pas de nouveau membre pour Yohan ici car c'est déjà fait côté formateur
+        } else {
+          // Autres apprenants
+          let learner;
+          const existingLearner = await this.memberRepository.findOne({
+            where: { uuidDiscord: discordId }
+          });
+          
+          if (!existingLearner) {
+            learner = await this.memberRepository.save({
+              uuidMember: uuidv4(),
+              guildUsername: name,
+              xp: `${500 + (i * 50)}`,
+              level: 2,
+              communityRole: 'Learner',
+              status: 'Active',
+              uuidGuild: guildId,
+              uuidDiscord: discordId
+            });
+          } else {
+            learner = existingLearner;
+          }
+          
+          learners.push(learner);
+        }
+      }
+      
+      // 6. Créer/récupérer le cours
+      this.logger.log('Creating course for promotion...');
+      let course;
+      
+      const existingCourse = await this.courseRepository.findOne({
+        where: { name: 'Cda P4 Vals' }
+      });
+      
+      if (!existingCourse) {
+        course = await this.courseRepository.save({
+          name: 'Cda P4 Vals',
+          isCertified: true,
+          uuidGuild: guildId,
+          uuidCategory: category.uuid
+        });
+      } else {
+        course = existingCourse;
+      }
+      
+      // 7. Créer/récupérer la promotion
+      let promotion;
+      const promotionUuid = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
+      
+      // Vérifier si la promotion existe déjà
+      const existingPromotion = await this.promotionRepository.findOne({
+        where: { uuid: promotionUuid }
+      });
+      
+      if (!existingPromotion) {
+        promotion = new Promotion();
+        promotion.uuid = promotionUuid;
+        promotion.name = 'Cda P4 Vals';
+        promotion.startDate = new Date('2024-01-15');
+        promotion.endDate = new Date('2024-12-15');
+        promotion.status = 'active';
+        promotion.uuidCourse = course.uuid;
+        promotion.uuidGuild = guildId;
+        promotion.uuidRole = rolePromo.uuidRole;
+        promotion.uuidCategory = category.uuid;
+        
+        // Sauvegarder la promotion
+        promotion = await this.promotionRepository.save(promotion);
+      } else {
+        promotion = existingPromotion;
+      }
+      
+      // 8. Établir les relations entre promotion et membres
+      // Ajouter les followers (learners)
+      const promotionWithFollowers = await this.promotionRepository.findOne({
+        where: { uuid: promotion.uuid },
+        relations: ['followers'],
+      });
+      
+      if (promotionWithFollowers) {
+        // Recréer complètement la liste des apprenants
+        promotionWithFollowers.followers = learners;
+        await this.promotionRepository.save(promotionWithFollowers);
+      }
+      
+      // Ajouter les managers (PM et trainers)
+      const promotionWithManagers = await this.promotionRepository.findOne({
+        where: { uuid: promotion.uuid },
+        relations: ['managers'],
+      });
+      
+      if (promotionWithManagers) {
+        // Recréer complètement la liste des managers
+        promotionWithManagers.managers = [projectManager, ...trainers];
+        await this.promotionRepository.save(promotionWithManagers);
+      }
+      
+      this.logger.log('Données spécifiques de promotion ajoutées avec succès!');
+      
+      // Récupérer la promotion complète avec toutes les relations
+      const result = await this.promotionRepository.findOne({
+        where: { uuid: promotion.uuid },
+        relations: ['category', 'followers', 'managers', 'role'],
+      });
+      
+      return {
+        promotions: result ? [this.mapPromotionToDto(result)] : [],
+      };
+    } catch (error) {
+      this.logger.error(`Échec de l'ajout des données de promotion: ${error.message}`, error.stack);
+      throw new Error(`Échec de l'ajout des données de promotion: ${error.message}`);
+    }
+  }
 } 

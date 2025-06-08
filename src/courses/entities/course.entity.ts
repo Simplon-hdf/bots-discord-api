@@ -85,7 +85,7 @@ export class Course {
       name: 'Développement Web',
     },
   })
-  @OneToOne(() => Category, (category) => category.course)
+  @ManyToOne(() => Category, (category) => category.course)
   @JoinColumn({ name: 'uuid_category' })
   category: Category;
 

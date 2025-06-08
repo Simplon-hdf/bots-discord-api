@@ -48,6 +48,7 @@ describe('PollsController', () => {
       isAnonymous: false,
       isClosed: false,
       duration: 24,
+      uuidMember: '550e8400-e29b-41d4-a716-446655440000',
       questions: [
         {
           content: 'Test Question',
@@ -161,6 +162,7 @@ describe('PollsController', () => {
       isAnonymous: true,
       isClosed: false,
       duration: 48,
+      uuidMember: '550e8400-e29b-41d4-a716-446655440000',
       questions: [
         {
           content: 'Updated Question',

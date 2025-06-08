@@ -5,7 +5,11 @@ import { ThrottlerGuard, ThrottlerLimitDetail } from '@nestjs/throttler';
 export class DiscordUserThrottlerGuard extends ThrottlerGuard {
   /**
    * Override de la méthode generateKey pour appliquer le rate-limiting
-   * par utilisateur Discord au lieu de par IP
+   * par utilisateur Discord au lieu de par IP.
+   * Le but est de créer une clé unique pour chaque utilisateur Discord.
+   * Ansi, si deux requêtes arrivent avec le même discord-userId, 
+   * elles partagent le même compteur.
+   * Un fallback est prévu pour les cas où l'ID Discord n'est pas trouvé.
    */
   protected generateKey(context: ExecutionContext, suffix: string, name: string): string {
     const request = context.switchToHttp().getRequest();
@@ -45,6 +49,6 @@ export class DiscordUserThrottlerGuard extends ThrottlerGuard {
     context: ExecutionContext,
     throttlerLimitDetail: ThrottlerLimitDetail,
   ): Promise<string> {
-    return 'Limite de requêtes atteinte pour cet utilisateur Discord. Veuillez réessayer dans quelques instants.';
+    return 'Limite de requêtes atteinte pour cet utilisateur. Veuillez réessayer dans quelques instants.';
   }
 } 

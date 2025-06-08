@@ -14,6 +14,28 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
+  
+  const isDevelopment = process.env.NODE_ENV !== 'production';
+  
+  if (isDevelopment) {
+    // En développement : autoriser localhost pour Swagger
+    app.enableCors({
+      origin: [
+        'http://localhost:3000',    // API elle-même
+        'http://127.0.0.1:3000',   // API elle-même (variante)
+      ],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      credentials: false,
+      optionsSuccessStatus: 204,
+    });
+  } else {
+    // En production : CORS complètement désactivés
+    // Le bot Discord communique via le réseau Docker interne
+    app.enableCors({
+      origin: false, 
+      credentials: false,
+    });
+  }
 
   app.useGlobalInterceptors(new EmptyResponseInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());

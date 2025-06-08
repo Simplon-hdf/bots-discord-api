@@ -34,6 +34,10 @@ import { PollTemplatesModule } from './poll-templates/poll-templates.module';
 import { QuestionTemplatesModule } from './question-templates/question-templates.module';
 import { AnswerTemplatesModule } from './answer-templates/answer-templates.module';
 
+// IMPORTS POUR LA SÉCURITÉ GLOBALE
+import { APP_GUARD } from '@nestjs/core';
+import { GlobalAuthGuard } from './auth/guards/global-auth.guard';
+
 /**
  * Module principal de l'application
  *
@@ -44,7 +48,7 @@ import { AnswerTemplatesModule } from './answer-templates/answer-templates.modul
  */
 @Module({
   imports: [
-    TypeOrmModule.forRoot(typeOrmConfig),
+    TypeOrmModule.forRoot(typeOrmConfig), // Connexion à la base de données réactivée
     LoggerModule.forRoot(loggerConfig),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -83,7 +87,26 @@ import { AnswerTemplatesModule } from './answer-templates/answer-templates.modul
     AnswerTemplatesModule
   ],
   controllers: [AppController],
-  providers: [],
+  // CONFIGURATION DU GUARD GLOBAL
+  providers: [
+    {
+      // APP_GUARD = token spécial de NestJS pour les guards globaux
+      provide: APP_GUARD,
+      // Notre GlobalAuthGuard sera appliqué à TOUTES les routes
+      useClass: GlobalAuthGuard,
+      /*
+       * CE QUI SE PASSE MAINTENANT :
+       * 1. Chaque requête HTTP sera interceptée par GlobalAuthGuard
+       * 2. Le guard vérifiera si la route a @Public()
+       * 3. Si @Public() alors accès autorisé
+       * 4. Si PAS @Public() alors vérification JWT obligatoire
+       * 
+       * RÉSULTAT : 
+       * - Sécurité par défaut sur 100% de l'API
+       * - Impossible d'oublier de protéger une route
+       */
+    },
+  ],
 })
 export class AppModule implements OnModuleInit {
   constructor(private readonly logger: PinoLogger) {

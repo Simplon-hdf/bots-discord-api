@@ -4,6 +4,8 @@ import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { DiscordGuildMember } from './interfaces/discord-user.interface';
+// Import du décorateur pour les routes publiques
+import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -14,6 +16,9 @@ export class AuthController {
     private readonly configService: ConfigService
   ) {}
 
+  // ROUTE PUBLIQUE : Page de connexion Discord OAuth2
+  // Cette route DOIT être publique car c'est le point d'entrée d'authentification
+  @Public()
   @ApiOperation({ 
     summary: 'Connexion via Discord OAuth2',
     description: 'Redirige l\'utilisateur vers la page d\'authentification Discord OAuth2'
@@ -37,6 +42,9 @@ export class AuthController {
     res.status(302).header('Location', discordAuthUrl).send();
   }
 
+  // ROUTE PUBLIQUE : Alias pour la connexion Discord
+  // Cette route est aussi publique car c'est un autre point d'entrée d'auth
+  @Public()
   @ApiOperation({ 
     summary: 'Redirection vers Discord OAuth2',
     description: 'Alias pour la route login'
@@ -50,6 +58,10 @@ export class AuthController {
     return this.login(res);
   }
 
+  // ROUTE PUBLIQUE : Callback Discord OAuth2
+  // OBLIGATOIREMENT publique car Discord appelle cette URL après authentification
+  // Si elle était protégée, Discord ne pourrait pas y accéder
+  @Public()
   @ApiOperation({ 
     summary: 'Callback OAuth2 Discord',
     description: 'Endpoint appelé par Discord après authentification réussie'
@@ -114,6 +126,10 @@ export class AuthController {
     }
   }
 
+  // ROUTE PUBLIQUE : Informations utilisateur après OAuth
+  // Cette route est appelée avec un code Discord temporaire
+  // Elle doit être publique car c'est part du processus d'authentification
+  @Public()
   @ApiOperation({ 
     summary: 'Informations utilisateur',
     description: 'Récupère les informations de l\'utilisateur authentifié'

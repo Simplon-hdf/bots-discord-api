@@ -219,4 +219,57 @@ export class AuthService {
   hasRole(userRoles: string[], requiredRole: string): boolean {
     return userRoles.includes(requiredRole);
   }
+
+  /**
+   * Valide un token de bot Discord et récupère ses informations
+   */
+  async validateBotToken(botToken: string): Promise<DiscordUser> {
+    try {
+      this.logger.log('Validation du token bot Discord...');
+      
+      // Nettoyer le token (enlever "Bot " si présent)
+      const cleanToken = botToken.startsWith('Bot ') ? botToken.slice(4) : botToken;
+      
+      // Récupérer les informations du bot via l'API Discord
+      const botResponse = await firstValueFrom(
+        this.httpService.get(`${this.discordApiUrl}/users/@me`, {
+          headers: {
+            Authorization: `Bot ${cleanToken}`,
+          },
+        }),
+      );
+
+      const botUser = botResponse.data;
+      
+      // Vérifier que c'est bien un bot
+      if (!botUser.bot) {
+        throw new UnauthorizedException('Le token fourni n\'appartient pas à un bot');
+      }
+
+      this.logger.log(`Bot validé: ${botUser.username}#${botUser.discriminator} (${botUser.id})`);
+      return botUser;
+    } catch (error) {
+      this.logger.error(`Erreur lors de la validation du token bot: ${error.message}`);
+      if (error.response?.status === 401) {
+        throw new UnauthorizedException('Token bot invalide');
+      }
+      throw new UnauthorizedException(`Impossible de valider le bot: ${error.message}`);
+    }
+  }
+
+  /**
+   * Génère un token JWT spécifique pour un bot avec des permissions étendues
+   */
+  generateBotJwtToken(botUser: DiscordUser): string {
+    const payload: JwtPayload = {
+      sub: botUser.id,
+      username: botUser.username,
+      roles: ['bot', 'api_access'], // Rôles spéciaux pour les bots
+      guildId: this.allowedGuildId,
+      type: 'bot', // Identifier que c'est un token de bot
+    };
+
+    // Token avec une durée de vie plus longue pour les bots (24h)
+    return this.jwtService.sign(payload, { expiresIn: '24h' });
+  }
 } 

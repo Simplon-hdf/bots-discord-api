@@ -1,17 +1,20 @@
 import { Controller, Get, Res, Logger } from '@nestjs/common';
+import { Response } from 'express';
 import { join } from 'path';
 import * as fs from 'fs';
 import { FastifyReply } from 'fastify';
+import { DiscordUserId } from './common/decorators/discord-user.decorator';
 
 @Controller()
 export class AppController {
   private readonly logger = new Logger(AppController.name);
 
   @Get('test-rate-limit')
-  testRateLimit(): any {
+  testRateLimit(@DiscordUserId() discordUserId?: string): any {
     return {
-      message: 'Test du rate limiting',
+      message: 'Test du rate limiting par utilisateur Discord',
       timestamp: new Date().toISOString(),
+      discordUserId: discordUserId || 'non-identifié',
       success: true
     };
   }

@@ -1,10 +1,19 @@
 FROM node:22-alpine as development
 
+# Créer l'utilisateur app-user
+RUN addgroup -S app-user && adduser -S app-user -G app-user
+
 WORKDIR /app
 
 COPY package*.json ./
 
 RUN npm install
+
+# Changer la propriété du dossier
+RUN chown -R app-user:app-user /app
+
+# Passer à l'utilisateur non-root
+USER app-user
 
 COPY . .
 

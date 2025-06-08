@@ -9,7 +9,9 @@ import { XpTransaction } from '../../xp-transactions/entities/xp-transaction.ent
 import { Role } from 'src/roles/entities/role.entity';
 import { Comment } from '../../comments/entities/comment.entity';
 import { Promotion } from 'src/promotions/entities/promotion.entity';
+import { Poll } from 'src/polls/entities/poll.entity';
 import { Answer } from 'src/answers/entities/answer.entity';
+
 
 @Entity('members')
 export class Member {
@@ -140,6 +142,10 @@ export class Member {
   @ManyToMany(() => Promotion, promotion => promotion.managers)
   managedPromotions: Promotion[];
 
+  @OneToMany(()=>Poll, poll => poll.author)
+  polls: Poll[];
+
   @ManyToMany(() => Answer, (answer) => answer.members)
   answers: Answer[];
+
 }

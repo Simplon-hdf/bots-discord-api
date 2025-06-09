@@ -7,6 +7,7 @@ import { EmptyResponseInterceptor } from './common/interceptors/empty-response.i
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
+import helmet from '@fastify/helmet';
 
 dotenv.config();
 async function bootstrap() {
@@ -14,6 +15,17 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
+
+  await app.register(helmet, {
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"], 
+        imgSrc: ["'self'", "data:", "https:"],
+      },
+    },
+  });
   
   const isDevelopment = process.env.NODE_ENV !== 'production';
   

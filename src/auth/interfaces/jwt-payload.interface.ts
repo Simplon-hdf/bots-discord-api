@@ -3,4 +3,5 @@ export interface JwtPayload {
   username: string;
   roles: string[];
   guildId: string;
+  type?: 'user' | 'bot';
 } 

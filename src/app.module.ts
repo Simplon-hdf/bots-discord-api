@@ -41,6 +41,11 @@ import { GlobalAuthGuard } from './auth/guards/global-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { DiscordUserThrottlerGuard } from './common/guards/discord-user-throttler.guard';
 
+// IMPORTS POUR LE SEEDING
+import { SeedService } from './common/services/seed.service';
+import { Guild } from './guilds/entities/guild.entity';
+import { Category } from './categories/entities/category.entity';
+
 /**
  * Module principal de l'application
  *
@@ -54,6 +59,7 @@ import { DiscordUserThrottlerGuard } from './common/guards/discord-user-throttle
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig), // Connexion à la base de données réactivée
+    TypeOrmModule.forFeature([Guild, Category]), // Entités pour le seeding
     LoggerModule.forRoot(loggerConfig),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -112,6 +118,23 @@ import { DiscordUserThrottlerGuard } from './common/guards/discord-user-throttle
        * - Impossible d'oublier de protéger une route
        */
     },
+    {
+      // Guard global pour le rate-limiting par utilisateur Discord
+      provide: APP_GUARD,
+      useClass: DiscordUserThrottlerGuard,
+      /*
+       * CE QUE FAIT CE GUARD :
+       * 1. Applique le rate-limiting par utilisateur Discord (pas par IP)
+       * 2. Utilise l'ID Discord depuis le JWT ou les headers
+       * 3. Fallback sur l'IP si aucun ID Discord trouvé
+       * 
+       * RÉSULTAT :
+       * - Protection contre les attaques par déni de service
+       * - Rate-limiting intelligent par utilisateur
+       */
+    },
+    // Service de seeding pour initialiser les données de base
+    SeedService,
   ],
 })
 export class AppModule implements OnModuleInit {

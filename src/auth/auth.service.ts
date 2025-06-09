@@ -246,12 +246,39 @@ export class AuthService {
         throw new UnauthorizedException('Le token fourni n\'appartient pas à un bot');
       }
 
-      this.logger.log(`Bot validé: ${botUser.username}#${botUser.discriminator} (${botUser.id})`);
+      // 🔒 SÉCURITÉ : Vérifier que c'est LE bot attendu
+      const expectedBotId = this.configService.get<string>('EXPECTED_BOT_ID') || '';
+      if (expectedBotId && botUser.id !== expectedBotId) {
+        this.logger.error(`Bot non autorisé: ${botUser.username}#${botUser.discriminator} (${botUser.id}). Bot attendu: ${expectedBotId}`);
+        throw new UnauthorizedException(`Bot non autorisé. Seul le bot configuré peut accéder à cette API.`);
+      }
+
+      // 🔒 ALTERNATIVE : Vérifier que le bot est dans la guilde autorisée
+      try {
+        // Vérifier que le bot est membre de la guilde autorisée
+        const guildMemberResponse = await firstValueFrom(
+          this.httpService.get(`${this.discordApiUrl}/guilds/${this.allowedGuildId}/members/${botUser.id}`, {
+            headers: {
+              Authorization: `Bot ${this.botToken}`, // Utiliser le token de l'API, pas celui reçu
+            },
+          }),
+        );
+        
+        this.logger.log(`Bot vérifié comme membre de la guilde ${this.allowedGuildId}`);
+      } catch (guildError) {
+        this.logger.error(`Le bot ${botUser.id} n'est pas membre de la guilde autorisée ${this.allowedGuildId}`);
+        throw new UnauthorizedException('Le bot doit être membre de la guilde autorisée pour accéder à cette API');
+      }
+
+      this.logger.log(`Bot validé et autorisé: ${botUser.username}#${botUser.discriminator} (${botUser.id})`);
       return botUser;
     } catch (error) {
       this.logger.error(`Erreur lors de la validation du token bot: ${error.message}`);
       if (error.response?.status === 401) {
         throw new UnauthorizedException('Token bot invalide');
+      }
+      if (error instanceof UnauthorizedException) {
+        throw error; // Relancer les erreurs d'autorisation spécifiques
       }
       throw new UnauthorizedException(`Impossible de valider le bot: ${error.message}`);
     }

@@ -35,12 +35,25 @@ import { SignatureModule } from './signature/signature.module';
 import { PollTemplatesModule } from './poll-templates/poll-templates.module';
 import { QuestionTemplatesModule } from './question-templates/question-templates.module';
 import { AnswerTemplatesModule } from './answer-templates/answer-templates.module';
+
+// IMPORTS POUR LA SÉCURITÉ GLOBALE
+import { GlobalAuthGuard } from './auth/guards/global-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { DiscordUserThrottlerGuard } from './common/guards/discord-user-throttler.guard';
 
+/**
+ * Module principal de l'application
+ *
+ * Ce module importe et configure :
+ * - La connexion à la base de données via TypeORM
+ * - Le système de logging via Pino
+ * - Les modules fonctionnels de l'application
+ */
+
+
 @Module({
   imports: [
-    TypeOrmModule.forRoot(typeOrmConfig),
+    TypeOrmModule.forRoot(typeOrmConfig), // Connexion à la base de données réactivée
     LoggerModule.forRoot(loggerConfig),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -80,10 +93,24 @@ import { DiscordUserThrottlerGuard } from './common/guards/discord-user-throttle
     AnswerTemplatesModule
   ],
   controllers: [AppController],
+  // CONFIGURATION DU GUARD GLOBAL
   providers: [
     {
+      // APP_GUARD = token spécial de NestJS pour les guards globaux
       provide: APP_GUARD,
-      useClass: DiscordUserThrottlerGuard,
+      // Notre GlobalAuthGuard sera appliqué à TOUTES les routes
+      useClass: GlobalAuthGuard,
+      /*
+       * CE QUI SE PASSE MAINTENANT :
+       * 1. Chaque requête HTTP sera interceptée par GlobalAuthGuard
+       * 2. Le guard vérifiera si la route a @Public()
+       * 3. Si @Public() alors accès autorisé
+       * 4. Si PAS @Public() alors vérification JWT obligatoire
+       * 
+       * RÉSULTAT : 
+       * - Sécurité par défaut sur 100% de l'API
+       * - Impossible d'oublier de protéger une route
+       */
     },
   ],
 })

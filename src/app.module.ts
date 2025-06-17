@@ -37,6 +37,8 @@ import { AnswerTemplatesModule } from './answer-templates/answer-templates.modul
 // IMPORTS POUR LA SÉCURITÉ GLOBALE
 import { APP_GUARD } from '@nestjs/core';
 import { GlobalAuthGuard } from './auth/guards/global-auth.guard';
+import { ThrottlerModule } from '@nestjs/throttler';
+
 
 /**
  * Module principal de l'application
@@ -84,7 +86,11 @@ import { GlobalAuthGuard } from './auth/guards/global-auth.guard';
     SignatureModule,
     PollTemplatesModule,
     QuestionTemplatesModule,
-    AnswerTemplatesModule
+    AnswerTemplatesModule,
+    ThrottlerModule.forRoot([{
+      ttl: 1, // 1 seconde
+      limit: 50, // 50 requêtes par seconde
+    }]),
   ],
   controllers: [AppController],
   // CONFIGURATION DU GUARD GLOBAL

@@ -7,6 +7,8 @@ import { EmptyResponseInterceptor } from './common/interceptors/empty-response.i
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
+import helmet from '@fastify/helmet';
+import { createHash } from 'crypto';
 
 dotenv.config();
 async function bootstrap() {
@@ -14,6 +16,10 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
+  
+  const nonce = createHash('sha256')
+    .update(Date.now().toString())
+    .digest('base64');
 
   app.useGlobalInterceptors(new EmptyResponseInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -56,11 +62,34 @@ async function bootstrap() {
     });
   }
   
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document, {
+    customJs: [
+        `'nonce-${nonce}'`
+    ]
+  });
 
   // Nous ne définissons plus de préfixe global pour l'API
   // app.setGlobalPrefix('api');
   
+  //Attention, lorsque fastify et nestjs/platform-fastify n'ont pas la même version,
+  //cela provoque des erreurs sur helmet
+  await app.register(helmet, {
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", `'nonce-${nonce}'`],
+        styleSrc: ["'self'", `'nonce-${nonce}'`],
+        imgSrc: ["'self'", "data:", "validator.swagger.io"],
+        connectSrc: ["'self'", "https://discord.com/api","http://localhost:3000", "http://127.0.0.1:3000" ],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'none'"],
+        frameSrc: ["'none'"],
+        formAction: ["'self'"],
+      }
+    },
+  });
+
   // Configuration de la version de l'API
   await app.listen(3000, '0.0.0.0');
 }

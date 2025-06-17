@@ -16,6 +16,26 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
+
+  // Configuration CORS
+  app.enableCors({
+    origin: [
+      'http://localhost:3000',
+       'https://discord.com',
+      'https://discordapp.com',       
+      'https://cdn.discordapp.com',
+      'https://discord.gg',           
+      'wss://gateway.discord.gg' 
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Super-Properties',     
+      'X-Discord-Locale' 
+    ],
+    credentials: false, 
+  });
   
   const nonce = createHash('sha256')
     .update(Date.now().toString())

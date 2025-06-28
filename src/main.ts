@@ -8,7 +8,6 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import helmet from '@fastify/helmet';
-import { createHash } from 'crypto';
 
 dotenv.config();
 async function bootstrap() {
@@ -21,7 +20,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',
-       'https://discord.com',
+      'https://discord.com',
       'https://discordapp.com',       
       'https://cdn.discordapp.com',
       'https://discord.gg',           
@@ -36,10 +35,6 @@ async function bootstrap() {
     ],
     credentials: false, 
   });
-  
-  const nonce = createHash('sha256')
-    .update(Date.now().toString())
-    .digest('base64');
 
   app.useGlobalInterceptors(new EmptyResponseInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -83,24 +78,21 @@ async function bootstrap() {
   }
   
   SwaggerModule.setup('api', app, document, {
-    customJs: [
-        `'nonce-${nonce}'`
-    ]
   });
 
-  // Nous ne définissons plus de préfixe global pour l'API
-  // app.setGlobalPrefix('api');
+
+  const isDevelopment = process.env.NODE_ENV === 'development';
   
   //Attention, lorsque fastify et nestjs/platform-fastify n'ont pas la même version,
   //cela provoque des erreurs sur helmet
   await app.register(helmet, {
-    contentSecurityPolicy: {
+    contentSecurityPolicy: isDevelopment ? false : {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", `'nonce-${nonce}'`],
-        styleSrc: ["'self'", `'nonce-${nonce}'`],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'"],
         imgSrc: ["'self'", "data:", "validator.swagger.io"],
-        connectSrc: ["'self'", "https://discord.com/api","http://localhost:3000", "http://127.0.0.1:3000" ],
+        connectSrc: ["'self'", "https://discord.com", "https://discord.com/api", "http://localhost:3000", "http://127.0.0.1:3000" ],
         fontSrc: ["'self'"],
         objectSrc: ["'none'"],
         mediaSrc: ["'none'"],

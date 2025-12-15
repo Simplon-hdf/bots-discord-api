@@ -210,7 +210,11 @@ export class AuthService {
       guildId: this.allowedGuildId,
     };
 
-    return this.jwtService.sign(payload);
+    const token = this.jwtService.sign(payload);
+
+    console.log('JWT Token', token)
+
+    return token;
   }
 
   /**

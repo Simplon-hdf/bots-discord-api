@@ -20,12 +20,14 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiBearerAuth
 } from '@nestjs/swagger';
 import { Member } from './entities/member.entity';
 import { Role } from '../roles/entities/role.entity';
 import { Promotion } from '../promotions/entities/promotion.entity';
 
 @ApiTags('members')
+@ApiBearerAuth('JWT-auth')
 @Controller('members')
 export class MembersController {
   constructor(private readonly membersService: MembersService) {}

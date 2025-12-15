@@ -2,10 +2,11 @@ import { Controller, Get, Post, Body, Put, Param, Delete, NotFoundException } fr
 import { GuildsTemplatesService } from './guilds-templates.service';
 import { CreateGuildTemplateDto } from './dto/create-guild-template.dto';
 import { UpdateGuildTemplateDto } from './dto/update-guild-template.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { GuildTemplate } from './entities/guild-template.entity';
 
 @ApiTags('guilds-templates')
+@ApiBearerAuth('JWT-auth')
 @Controller('guilds-templates')
 export class GuildsTemplatesController {
   constructor(private readonly guildsTemplatesService: GuildsTemplatesService) {}

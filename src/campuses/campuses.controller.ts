@@ -2,10 +2,11 @@ import { Controller, Get, Post, Body, Put, Param, Delete, NotFoundException } fr
 import { CampusesService } from './campuses.service';
 import { CreateCampusDto } from './dto/create-campus.dto';
 import { UpdateCampusDto } from './dto/update-campus.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Campus } from './entities/campus.entity';
 
 @ApiTags('campuses')
+@ApiBearerAuth('JWT-auth')
 @Controller('campuses')
 export class CampusesController {
   constructor(private readonly campusService: CampusesService) {}

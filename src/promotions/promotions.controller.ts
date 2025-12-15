@@ -2,10 +2,11 @@ import { Controller, Get, Post, Body, Put, Param, Delete, NotFoundException, Htt
 import { PromotionsService } from './promotions.service';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { UpdatePromotionDto } from './dto/update-promotion.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { Promotion } from './entities/promotion.entity';
 
 @ApiTags('promotions')
+@ApiBearerAuth('JWT-auth')
 @Controller('promotions')
 export class PromotionsController {
   constructor(

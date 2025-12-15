@@ -2,10 +2,11 @@ import { Controller, Get, Post, Body, Put, Param, Delete, NotFoundException } fr
 import { MembersInformationsService } from './members-informations.service';
 import { CreateMemberInformationsDto } from './dto/create-member-informations.dto';
 import { UpdateMemberInformationsDto } from './dto/update-member-informations.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { MemberInformation } from './entities/member-information.entity';
 
 @ApiTags('members-informations')
+@ApiBearerAuth('JWT-auth')
 @Controller('members-informations')
 export class MembersInformationsController {
   constructor(private readonly membersInformationsService: MembersInformationsService) {}

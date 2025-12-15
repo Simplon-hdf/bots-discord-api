@@ -2,10 +2,11 @@ import { Controller, Get, Post, Body, Put, Param, Delete, NotFoundException } fr
 import { DiscordUsersService } from './discord-users.service';
 import { CreateDiscordUserDto } from './dto/create-discord-user.dto';
 import { UpdateDiscordUserDto } from './dto/update-discord-user.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { DiscordUser } from './entities/discord-user.entity';
 
 @ApiTags('discord-users')
+@ApiBearerAuth('JWT-auth')
 @Controller('discord-users')
 export class DiscordUsersController {
   constructor(private readonly discordUsersService: DiscordUsersService) {}

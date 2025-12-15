@@ -10,7 +10,7 @@ export class CreateCourseDto extends PickType(IntersectionType(PickableDiscordUU
     'uuidCategory'
 ]) {
     @MinLength(3)
-    name: string;
+    name: string; //name_course dans le MCD
 
     @ApiProperty({
         description: 'Si la formation est certifiante',

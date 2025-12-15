@@ -3,7 +3,7 @@ import { ApiProperty, PickType } from '@nestjs/swagger';
 import { PickableInternUUIDFields } from 'src/utils/pickable-intern-uuid-fields';
 
 export class CreateMemberInformationsDto extends PickType(PickableInternUUIDFields, [
-    'uuidMember'
+    'uuidMember' // uuid_member_info dans le MCD
 ]) {
 
     @ApiProperty({
@@ -12,7 +12,7 @@ export class CreateMemberInformationsDto extends PickType(PickableInternUUIDFiel
     })
     @IsString()
     @MaxLength(50)
-    firstName: string;
+    firstName: string; // firstname_member_info dans le MCD
 
     @ApiProperty({
         description: 'Nom de famille du membre',
@@ -20,7 +20,7 @@ export class CreateMemberInformationsDto extends PickType(PickableInternUUIDFiel
     })
     @IsString()
     @MaxLength(50)
-    lastName: string;
+    lastName: string; // lastname_member_info dans le MCD
 
     @ApiProperty({
         description: 'Adresse email du membre',
@@ -28,7 +28,7 @@ export class CreateMemberInformationsDto extends PickType(PickableInternUUIDFiel
     })
     @IsEmail()
     @MaxLength(100)
-    email: string;
+    email: string; // email_member_info dans le MCD
 
     uuidMember: string;
 }

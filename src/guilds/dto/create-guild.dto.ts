@@ -8,7 +8,7 @@ export class CreateGuildDto {
   })
   @IsString()
   @Length(17, 19)
-  uuid: string;
+  uuid: string; // uuid_guild dans le MCD
 
   @ApiProperty({
     description: 'Nom du serveur',
@@ -16,7 +16,7 @@ export class CreateGuildDto {
   })
   @IsString()
   @MaxLength(50)
-  name: string;
+  name: string; // name_guild dans le MCD
 
   @ApiProperty({
     description: 'Nombre de membres dans le serveur',
@@ -24,7 +24,7 @@ export class CreateGuildDto {
   })
   @IsString()
   @MaxLength(50)
-  memberCount: string;
+  memberCount: string; // member_count_guild dans le MCD
 
   @ApiProperty({
     description: 'Configuration du serveur',

@@ -13,7 +13,7 @@ export class CreateMemberDto extends PickType(PickableDiscordUUIDFields, [
   })
   @IsString()
   @MaxLength(50)
-  guildUsername: string;
+  guildUsername: string; //name_member dans le MCD
 
   @ApiProperty({
     description: 'Points d\'expérience du membre',

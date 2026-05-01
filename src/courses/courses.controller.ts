@@ -7,8 +7,12 @@ import {
   Param,
   Body,
   HttpStatus,
+  Inject,
 } from '@nestjs/common';
-import { CoursesService } from './courses.service';
+import {
+  ICoursesServiceToken,
+  ICoursesService,
+} from './interfaces/course.interface';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { Course } from './entities/course.entity';
@@ -18,14 +22,17 @@ import {
   ApiResponse,
   ApiTags,
   ApiBody,
-  ApiBearerAuth
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 
 @ApiTags('courses')
 @ApiBearerAuth('JWT-auth')
 @Controller('courses')
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) {}
+  constructor(
+    @Inject(ICoursesServiceToken)
+    private readonly coursesService: ICoursesService,
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -49,20 +56,21 @@ export class CoursesController {
 
   @Get()
   @ApiOperation({
-      summary: 'Récupérer toutes les formations',
-      description: 'Retourne la liste complète des formations avec leurs relations'
+    summary: 'Récupérer toutes les formations',
+    description:
+      'Retourne la liste complète des formations avec leurs relations',
   })
   @ApiResponse({
-      status: HttpStatus.OK,
-      description: 'Liste des formations récupérée avec succès',
-      type: [Course]
+    status: HttpStatus.OK,
+    description: 'Liste des formations récupérée avec succès',
+    type: [Course],
   })
   @ApiResponse({
-      status: HttpStatus.BAD_REQUEST,
-      description: 'Erreur lors de la récupération des formations'
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Erreur lors de la récupération des formations',
   })
   async findAll(): Promise<Course[]> {
-      return this.coursesService.findAll();
+    return this.coursesService.findAll();
   }
 
   @Get(':uuid_course')

@@ -1,13 +1,18 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCampusDto } from './dto/create-campus.dto';
 import { UpdateCampusDto } from './dto/update-campus.dto';
-import { Campus } from './entities/campus.entity';
 import { Role } from 'src/roles/entities/role.entity';
+import { Campus } from './entities/campus.entity';
+import { ICampusesService } from './interfaces/campus.interface';
 
 @Injectable()
-export class CampusesService {
+export class CampusesService implements ICampusesService {
   constructor(
     @InjectRepository(Campus)
     private campusRepository: Repository<Campus>,
@@ -19,13 +24,13 @@ export class CampusesService {
   async create(createCampusDto: CreateCampusDto): Promise<Campus> {
     try {
       const newRole = this.roleRepository.create({
-        uuidRole: createCampusDto.uuidRole, 
+        uuidRole: createCampusDto.uuidRole,
         uuidGuild: createCampusDto.uuidGuild,
         name: createCampusDto.name,
         memberCount: 0,
         rolePosition: 0,
         hoist: false,
-        color: "#000000",
+        color: '#000000',
       });
 
       const savedRole = await this.roleRepository.save(newRole);
@@ -37,11 +42,13 @@ export class CampusesService {
 
       return await this.campusRepository.save(newCampus);
     } catch (error) {
-      throw new BadRequestException('Erreur lors de la création du campus: ' + error.message);
+      throw new BadRequestException(
+        'Erreur lors de la création du campus: ' + error.message,
+      );
     }
   }
 
-  findAll() {
+  findAll(): Promise<Campus[]> {
     return this.campusRepository.find();
   }
 

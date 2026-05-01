@@ -4,9 +4,10 @@ import { UpdateMemberInformationsDto } from './dto/update-member-informations.dt
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MemberInformation } from './entities/member-information.entity';
+import { IMembersInformationsService } from './interfaces/member-information.interface';
 
 @Injectable()
-export class MembersInformationsService {
+export class MembersInformationsService implements IMembersInformationsService {
   constructor(
     @InjectRepository(MemberInformation)
     private memberInformationsRepository: Repository<MemberInformation>,
@@ -24,18 +25,23 @@ export class MembersInformationsService {
     return this.memberInformationsRepository.findOneBy({ uuid });
   }
 
-  async update(uuid: string, updateMemberInformationDto: UpdateMemberInformationsDto) {
-    const memberInfo = await this.memberInformationsRepository.findOneBy({ uuid });
+  async update(
+    uuid: string,
+    updateMemberInformationDto: UpdateMemberInformationsDto,
+  ) {
+    const memberInfo = await this.memberInformationsRepository.findOneBy({
+      uuid,
+    });
     if (!memberInfo) {
       return null;
     }
-    
+
     // Mise à jour des champs autorisés uniquement
     const { firstName, lastName, email } = updateMemberInformationDto;
     if (firstName !== undefined) memberInfo.firstName = firstName;
     if (lastName !== undefined) memberInfo.lastName = lastName;
     if (email !== undefined) memberInfo.email = email;
-    
+
     memberInfo.updatedAt = new Date();
     return this.memberInformationsRepository.save(memberInfo);
   }

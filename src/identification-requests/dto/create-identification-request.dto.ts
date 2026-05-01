@@ -8,14 +8,14 @@ export class CreateIdentificationRequestDto extends PickType(PickableInternUUIDF
 
   @IsString()
   @Length(2, 50)
-  firstname: string;
+  firstname: string; // fistname_identification_request dans le MCD
 
   @IsString()
   @Length(2, 50)
-  lastname: string;
+  lastname: string; // lastname_identification_request dans le MCD
 
   @IsEmail()
-  email: string;
+  email: string; // email_identification_request dans le MCD
 
   uuidMember: string; 
 

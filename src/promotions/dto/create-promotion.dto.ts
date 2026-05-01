@@ -6,7 +6,7 @@ import { PickableDiscordUUIDFields } from 'src/utils/pickable-discord-uuid-field
 import { PickableInternUUIDFields } from 'src/utils/pickable-intern-uuid-fields';
 
 export class CreatePromotionDto extends PickType(IntersectionType(PickableDtoFields, PickableDiscordUUIDFields, PickableInternUUIDFields), [
-  'name',
+  'name', // name_promotion dans le MCD
   'uuidRole',
   'uuidGuild',
   'uuidCourse',

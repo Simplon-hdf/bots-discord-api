@@ -4,31 +4,36 @@ import {
   Post,
   Body,
   Put,
-  Patch,
   Param,
   Delete,
   HttpStatus,
+  Inject,
 } from '@nestjs/common';
-import { MembersService } from './members.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
-import { AssignRoleToMemberDto } from '../roles/dto/assign-role-to-member.dto';
-import { UpdateMemberRolesDto } from '../roles/dto/update-member-roles.dto';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { Member } from './entities/member.entity';
 import { Role } from '../roles/entities/role.entity';
-import { Promotion } from '../promotions/entities/promotion.entity';
+import {
+  IMembersServiceToken,
+  IMembersService,
+} from './interfaces/member.interface';
 
 @ApiTags('members')
+@ApiBearerAuth('JWT-auth')
 @Controller('members')
 export class MembersController {
-  constructor(private readonly membersService: MembersService) {}
+  constructor(
+    @Inject(IMembersServiceToken)
+    private readonly membersService: IMembersService,
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -237,7 +242,7 @@ export class MembersController {
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: "Erreur lors de la récupération des promotions du membre.",
+    description: 'Erreur lors de la récupération des promotions du membre.',
   })
   findMemberPromotions(@Param('uuid') uuid: string) {
     return this.membersService.findMemberPromotions(uuid);

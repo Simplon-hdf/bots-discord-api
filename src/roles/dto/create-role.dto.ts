@@ -4,7 +4,9 @@ import { PickableDtoFields } from 'src/utils/pickable-dto-fields';
 import { PickableDiscordUUIDFields } from 'src/utils/pickable-discord-uuid-fields';
 
 export class CreateRoleDto extends PickType(IntersectionType(PickableDtoFields, PickableDiscordUUIDFields), [
-    'uuidRole', 'name', 'uuidGuild'
+    'uuidRole',
+    'name', // name_role dans le MCD
+    'uuidGuild'
 ]) {
     
     @ApiProperty({
@@ -15,7 +17,7 @@ export class CreateRoleDto extends PickType(IntersectionType(PickableDtoFields, 
     @IsString()
     @MaxLength(50)
     @Matches(/^\d+$/, { message: 'memberCount doit être une chaîne numérique' })
-    memberCount: string = '0';
+    memberCount: string = '0'; // member_count_role dans le MCD
 
     @ApiProperty({
         description: 'Position du rôle dans la hiérarchie',
@@ -24,7 +26,7 @@ export class CreateRoleDto extends PickType(IntersectionType(PickableDtoFields, 
     @IsString()
     @MaxLength(50)
     @Matches(/^\d+$/, { message: 'rolePosition doit être une chaîne numérique' })
-    rolePosition: string;
+    rolePosition: string; // position_role dans le MCD
 
     @ApiProperty({
         description: 'Indique si le rôle est affiché séparément dans la liste des membres',

@@ -5,16 +5,20 @@ import { UpdateIdentificationRequestDto } from './dto/update-identification-requ
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { IdentificationRequest } from './entities/identification-request.entity';
+import { IIdentificationRequestsService } from './interfaces/identification-request.interface';
 
 @Injectable()
-export class IdentificationRequestsService {
-
+export class IdentificationRequestsService
+  implements IIdentificationRequestsService
+{
   constructor(
     @InjectRepository(IdentificationRequest)
     private identificationRequestsRepository: Repository<IdentificationRequest>,
   ) {}
   create(createIdentificationRequestDto: CreateIdentificationRequestDto) {
-    const identificationRequest = this.identificationRequestsRepository.create(createIdentificationRequestDto);
+    const identificationRequest = this.identificationRequestsRepository.create(
+      createIdentificationRequestDto,
+    );
     return this.identificationRequestsRepository.save(identificationRequest);
   }
 
@@ -26,22 +30,26 @@ export class IdentificationRequestsService {
     return this.identificationRequestsRepository.findOneBy({ uuid });
   }
 
-  async update(uuid: string, updateIdentificationRequestDto: UpdateIdentificationRequestDto) {
-    const identificationRequest = await this.identificationRequestsRepository.findOneBy({ uuid });
-  
+  async update(
+    uuid: string,
+    updateIdentificationRequestDto: UpdateIdentificationRequestDto,
+  ) {
+    const identificationRequest =
+      await this.identificationRequestsRepository.findOneBy({ uuid });
+
     if (!identificationRequest) {
       return null;
     }
-  
+
     Object.assign(identificationRequest, updateIdentificationRequestDto);
-  
+
     if (updateIdentificationRequestDto.uuidMember !== undefined) {
-      identificationRequest.uuidMember = updateIdentificationRequestDto.uuidMember;
+      identificationRequest.uuidMember =
+        updateIdentificationRequestDto.uuidMember;
     }
-  
+
     return this.identificationRequestsRepository.save(identificationRequest);
   }
-  
 
   remove(uuid: string) {
     return this.identificationRequestsRepository.delete(uuid);

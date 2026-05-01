@@ -11,7 +11,7 @@ export class CreateDiscordUserDto extends PickType(PickableDiscordUUIDFields, [
   })
   @IsString()
   @Length(2, 50)
-  discordUsername: string;
+  discordUsername: string; //name_discord_user dans le MCD
 
   @ApiProperty({
     description: 'Discriminateur Discord',

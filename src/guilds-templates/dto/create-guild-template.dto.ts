@@ -14,7 +14,7 @@ export class CreateGuildTemplateDto extends PickType(IntersectionType(PickableDi
   })
   @IsString()
   @Length(17, 19)
-  uuid: string;
+  uuid: string; // uuid_guild_template dans le MCD
 
   @ApiProperty({
     description: 'Nom du template',

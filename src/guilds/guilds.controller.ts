@@ -1,18 +1,43 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, NotFoundException } from '@nestjs/common';
-import { GuildsService } from './guilds.service';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  NotFoundException,
+  Inject,
+} from '@nestjs/common';
 import { CreateGuildDto } from './dto/create-guild.dto';
 import { UpdateGuildDto } from './dto/update-guild.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { Guild } from './entities/guild.entity';
+import {
+  IGuildsServiceToken,
+  IGuildsService,
+} from './interfaces/guild.interface';
 
 @ApiTags('guilds')
+@ApiBearerAuth('JWT-auth')
 @Controller('guilds')
 export class GuildsController {
-  constructor(private readonly guildService: GuildsService) {}
+  constructor(
+    @Inject(IGuildsServiceToken) private readonly guildService: IGuildsService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Créer un nouveau serveur Discord' })
-  @ApiResponse({ status: 201, description: 'Le serveur a été créé avec succès.', type: Guild })
+  @ApiResponse({
+    status: 201,
+    description: 'Le serveur a été créé avec succès.',
+    type: Guild,
+  })
   @ApiResponse({ status: 400, description: 'Requête invalide' })
   create(@Body() createGuildDto: CreateGuildDto) {
     return this.guildService.create(createGuildDto);
@@ -20,14 +45,22 @@ export class GuildsController {
 
   @Get()
   @ApiOperation({ summary: 'Récupérer tous les serveurs Discord' })
-  @ApiResponse({ status: 200, description: 'Liste des serveurs récupérée avec succès.', type: [Guild] })
+  @ApiResponse({
+    status: 200,
+    description: 'Liste des serveurs récupérée avec succès.',
+    type: [Guild],
+  })
   findAll() {
     return this.guildService.findAll();
   }
 
   @Get(':uuid')
   @ApiOperation({ summary: 'Récupérer un serveur Discord par son UUID' })
-  @ApiResponse({ status: 200, description: 'Le serveur a été trouvé.', type: Guild })
+  @ApiResponse({
+    status: 200,
+    description: 'Le serveur a été trouvé.',
+    type: Guild,
+  })
   @ApiResponse({ status: 404, description: 'Serveur non trouvé' })
   findOne(@Param('uuid') uuid: string) {
     return this.guildService.findOne(uuid);
@@ -35,9 +68,16 @@ export class GuildsController {
 
   @Put(':uuid')
   @ApiOperation({ summary: 'Mettre à jour un serveur Discord' })
-  @ApiResponse({ status: 200, description: 'Le serveur a été mis à jour avec succès.', type: Guild })
+  @ApiResponse({
+    status: 200,
+    description: 'Le serveur a été mis à jour avec succès.',
+    type: Guild,
+  })
   @ApiResponse({ status: 404, description: 'Serveur non trouvé' })
-  async update(@Param('uuid') uuid: string, @Body() updateGuildDto: UpdateGuildDto) {
+  async update(
+    @Param('uuid') uuid: string,
+    @Body() updateGuildDto: UpdateGuildDto,
+  ) {
     const guild = await this.guildService.update(uuid, updateGuildDto);
     if (!guild) {
       throw new NotFoundException(`Guild with UUID "${uuid}" not found`);
@@ -47,7 +87,10 @@ export class GuildsController {
 
   @Delete(':uuid')
   @ApiOperation({ summary: 'Supprimer un serveur Discord' })
-  @ApiResponse({ status: 200, description: 'Le serveur a été supprimé avec succès.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Le serveur a été supprimé avec succès.',
+  })
   @ApiResponse({ status: 404, description: 'Serveur non trouvé' })
   remove(@Param('uuid') uuid: string) {
     return this.guildService.remove(uuid);

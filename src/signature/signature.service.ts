@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
-import { PromotionsService } from '../promotions/promotions.service';
-import { MembersService } from '../members/members.service';
-import { RolesService } from '../roles/roles.service';
-import { GuildsService } from '../guilds/guilds.service';
-import { ChannelsService } from '../channels/channels.service';
-import { DiscordUsersService } from '../discord-users/discord-users.service';
+import { Injectable, NotFoundException, Logger, Inject } from '@nestjs/common';
+import { IPromotionsServiceToken, IPromotionsService } from 'src/promotions/interfaces/promotion.interface';
+import { IMembersServiceToken, IMembersService } from 'src/members/interfaces/member.interface';
+import { IRolesServicesToken, IRolesService } from 'src/roles/interfaces/role.interface';
+import { IGuildsServiceToken, IGuildsService } from 'src/guilds/interfaces/guild.interface';
+import { IChannelsServiceToken, IChannelsService } from 'src/channels/interfaces/channel.interface';
+import { IDiscordUsersServiceToken, IDiscordUsersService } from 'src/discord-users/interfaces/discord-user.interface';
+
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Promotion } from '../promotions/entities/promotion.entity';
@@ -22,12 +24,24 @@ export class SignatureService {
   private readonly logger = new Logger(SignatureService.name);
 
   constructor(
-    private readonly promotionsService: PromotionsService,
-    private readonly membersService: MembersService,
-    private readonly rolesService: RolesService,
-    private readonly guildsService: GuildsService,
-    private readonly channelsService: ChannelsService,
-    private readonly discordUsersService: DiscordUsersService,
+    @Inject(IPromotionsServiceToken)
+    private readonly promotionsService: IPromotionsService,
+
+    @Inject(IMembersServiceToken)
+    private readonly membersService: IMembersService,
+
+    @Inject(IRolesServicesToken)
+    private readonly rolesService: IRolesService,
+
+    @Inject(IGuildsServiceToken)
+    private readonly guildsService: IGuildsService,
+
+    @Inject(IChannelsServiceToken)
+    private readonly channelsService: IChannelsService,
+
+    @Inject(IDiscordUsersServiceToken)
+    private readonly discordUsersService: IDiscordUsersService,
+
     @InjectRepository(Promotion)
     private promotionRepository: Repository<Promotion>,
     @InjectRepository(Member)

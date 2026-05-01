@@ -4,9 +4,10 @@ import { Repository } from 'typeorm';
 import { CreateDiscordUserDto } from './dto/create-discord-user.dto';
 import { UpdateDiscordUserDto } from './dto/update-discord-user.dto';
 import { DiscordUser } from './entities/discord-user.entity';
+import { IDiscordUsersService } from './interfaces/discord-user.interface';
 
 @Injectable()
-export class DiscordUsersService {
+export class DiscordUsersService implements IDiscordUsersService {
   constructor(
     @InjectRepository(DiscordUser)
     private discordUserRepository: Repository<DiscordUser>,
@@ -25,16 +26,22 @@ export class DiscordUsersService {
     return this.discordUserRepository.findOneBy({ uuidDiscord });
   }
 
-  async update(uuidDiscord: string, updateDiscordUserDto: UpdateDiscordUserDto) {
-    const discordUser = await this.discordUserRepository.findOneBy({ uuidDiscord });
+  async update(
+    uuidDiscord: string,
+    updateDiscordUserDto: UpdateDiscordUserDto,
+  ) {
+    const discordUser = await this.discordUserRepository.findOneBy({
+      uuidDiscord,
+    });
     if (!discordUser) {
       return null;
     }
-    
+
     const { discordUsername, discriminator } = updateDiscordUserDto;
-    if (discordUsername !== undefined) discordUser.discordUsername = discordUsername;
+    if (discordUsername !== undefined)
+      discordUser.discordUsername = discordUsername;
     if (discriminator !== undefined) discordUser.discriminator = discriminator;
-    
+
     discordUser.updatedAt = new Date();
     return this.discordUserRepository.save(discordUser);
   }
@@ -42,4 +49,4 @@ export class DiscordUsersService {
   remove(uuidDiscord: string) {
     return this.discordUserRepository.delete({ uuidDiscord });
   }
-} 
+}

@@ -1,12 +1,17 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { Role } from './entities/role.entity';
+import { IRolesService } from './interfaces/role.interface';
 
 @Injectable()
-export class RolesService {
+export class RolesService implements IRolesService {
   constructor(
     @InjectRepository(Role)
     private roleRepository: Repository<Role>,
@@ -19,17 +24,20 @@ export class RolesService {
       const roleData = {
         ...createRoleDto,
         memberCount: parseInt(createRoleDto.memberCount, 10),
-        rolePosition: parseInt(createRoleDto.rolePosition, 10)
+        rolePosition: parseInt(createRoleDto.rolePosition, 10),
       };
 
       const role = this.roleRepository.create(roleData);
       const savedRole = await this.roleRepository.save(role);
       return savedRole;
     } catch (error) {
-      if (error.code === '23505') { // Code PostgreSQL pour violation de contrainte unique
+      if (error.code === '23505') {
+        // Code PostgreSQL pour violation de contrainte unique
         throw new BadRequestException('Un rôle avec cet UUID existe déjà');
       }
-      throw new BadRequestException('Erreur lors de la création du rôle: ' + error.message);
+      throw new BadRequestException(
+        'Erreur lors de la création du rôle: ' + error.message,
+      );
     }
   }
 
@@ -38,7 +46,9 @@ export class RolesService {
     try {
       return await this.roleRepository.find();
     } catch (error) {
-      throw new BadRequestException('Erreur lors de la récupération des rôles: ' + error.message);
+      throw new BadRequestException(
+        'Erreur lors de la récupération des rôles: ' + error.message,
+      );
     }
   }
 
@@ -54,7 +64,9 @@ export class RolesService {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new BadRequestException('Erreur lors de la récupération du rôle: ' + error.message);
+      throw new BadRequestException(
+        'Erreur lors de la récupération du rôle: ' + error.message,
+      );
     }
   }
 
@@ -68,7 +80,9 @@ export class RolesService {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new BadRequestException('Erreur lors de la mise à jour du rôle: ' + error.message);
+      throw new BadRequestException(
+        'Erreur lors de la mise à jour du rôle: ' + error.message,
+      );
     }
   }
 
@@ -83,7 +97,9 @@ export class RolesService {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new BadRequestException('Erreur lors de la suppression du rôle: ' + error.message);
+      throw new BadRequestException(
+        'Erreur lors de la suppression du rôle: ' + error.message,
+      );
     }
   }
 }

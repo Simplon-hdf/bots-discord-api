@@ -18,7 +18,7 @@ export class CreateChannelDto extends PickType(PickableDiscordUUIDFields, [
   })
   @IsString()
   @Length(17, 19)
-  uuid: string;
+  uuid: string; // uuid_channel dans le MCD
 
   @ApiProperty({
     description: 'Le nom du channel',
@@ -27,7 +27,7 @@ export class CreateChannelDto extends PickType(PickableDiscordUUIDFields, [
   })
   @IsString()
   @MaxLength(100)
-  name: string;
+  name: string; // name_channel dans le MCD
 
   @ApiProperty({
     description: 'Le type de channel',
@@ -45,7 +45,7 @@ export class CreateChannelDto extends PickType(PickableDiscordUUIDFields, [
   })
   @IsInt()
   @Min(0)
-  channelPosition: number;
+  channelPosition: number; // position_channel dans le MCD
 
   uuidGuild: string;
   uuidCategory: string;

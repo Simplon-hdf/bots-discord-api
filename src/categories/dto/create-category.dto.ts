@@ -8,7 +8,7 @@ export class CreateCategoryDto {
     })
     @IsString()
     @Length(17, 19)
-    uuid: string;
+    uuid: string; //uuid_category dans le MCD
 
     @ApiProperty({
         description: 'ID Discord du serveur',
@@ -24,7 +24,7 @@ export class CreateCategoryDto {
     })
     @IsString()
     @MaxLength(50)
-    name: string;
+    name: string; //name_category dans le MCD
 
     @ApiProperty({
         description: 'Position de la catégorie dans le serveur',
@@ -32,5 +32,5 @@ export class CreateCategoryDto {
     })
     @IsInt()
     @Min(0)
-    position: number;
+    position: number; // position_category dans le MCD
 }

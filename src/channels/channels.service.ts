@@ -4,9 +4,10 @@ import { Repository } from 'typeorm';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { Channel } from './entities/channel.entity';
+import { IChannelsService } from './interfaces/channel.interface';
 
 @Injectable()
-export class ChannelsService {
+export class ChannelsService implements IChannelsService {
   constructor(
     @InjectRepository(Channel)
     private channelRepository: Repository<Channel>,
@@ -19,14 +20,14 @@ export class ChannelsService {
 
   findAll() {
     return this.channelRepository.find({
-      relations: ['guild', 'category']
+      relations: ['guild', 'category'],
     });
   }
 
   findOne(uuid: string) {
     return this.channelRepository.findOne({
       where: { uuid },
-      relations: ['guild', 'category']
+      relations: ['guild', 'category'],
     });
   }
 
@@ -35,14 +36,15 @@ export class ChannelsService {
     if (!channel) {
       return null;
     }
-    
+
     // Mise à jour des champs autorisés uniquement
     const { name, type, channelPosition, uuidCategory } = updateChannelDto;
     if (name !== undefined) channel.name = name;
     if (type !== undefined) channel.type = type;
-    if (channelPosition !== undefined) channel.channelPosition = channelPosition;
+    if (channelPosition !== undefined)
+      channel.channelPosition = channelPosition;
     if (uuidCategory !== undefined) channel.uuidCategory = uuidCategory;
-    
+
     channel.updatedAt = new Date();
     return this.channelRepository.save(channel);
   }
@@ -50,4 +52,4 @@ export class ChannelsService {
   remove(uuid: string) {
     return this.channelRepository.delete({ uuid });
   }
-} 
+}

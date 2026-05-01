@@ -5,14 +5,17 @@ import { PromotionsController } from './promotions.controller';
 import { Promotion } from './entities/promotion.entity';
 import { RolesModule } from 'src/roles/roles.module';
 import { Member } from 'src/members/entities/member.entity';
+import { IPromotionsServiceToken } from './interfaces/promotion.interface';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Promotion, Member]), 
-    RolesModule
-  ],
+  imports: [TypeOrmModule.forFeature([Promotion, Member]), RolesModule],
   controllers: [PromotionsController],
-  providers: [PromotionsService],
-  exports: [PromotionsService]
+  providers: [
+    {
+      provide: IPromotionsServiceToken,
+      useClass: PromotionsService,
+    },
+  ],
+  exports: [IPromotionsServiceToken],
 })
-export class PromotionsModule {} 
+export class PromotionsModule {}

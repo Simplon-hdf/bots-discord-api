@@ -4,10 +4,17 @@ import { IdentificationRequestsController } from './identification-requests.cont
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { IdentificationRequest } from './entities/identification-request.entity';
+import { IIdentificationRequestsServiceToken } from './interfaces/identification-request.interface';
 
 @Module({
   imports: [TypeOrmModule.forFeature([IdentificationRequest])],
   controllers: [IdentificationRequestsController],
-  providers: [IdentificationRequestsService],
+  providers: [
+    {
+      provide: IIdentificationRequestsServiceToken,
+      useClass: IdentificationRequestsService,
+    },
+  ],
+  exports: [IIdentificationRequestsServiceToken],
 })
 export class IdentificationRequestsModule {}
